@@ -1,0 +1,17 @@
+# This file is used to run the Exomiser service in a Docker container.
+services:
+  exomiser:
+    build:
+      context: .
+      dockerfile: ./compose/production/exomiser/Dockerfile
+    image: genosys_production_exomiser
+    container_name: genosys_local_exomiser
+    volumes:
+      - /Volumes/GDrive/Genosys/data:/opt/exomiser/data
+      - ./results:/opt/exomiser/tasks
+    ports:
+      - "9000:9000"
+    environment:
+      - JAVA_OPTS=-Xms1g -Xmx2g
+    restart: unless-stopped
+    # command: "tail -F anything"
