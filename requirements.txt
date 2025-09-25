@@ -1,0 +1,8 @@
+# File: requirements.txt
+flask>=2.2
+flask_sqlalchemy>=3.0
+flask_login>=0.6
+flask_wtf>=1.0
+wtforms>=3.0
+email_validator>=1.3
+gunicorn>=20.1

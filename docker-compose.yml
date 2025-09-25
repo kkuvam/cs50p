@@ -1,17 +1,64 @@
-# This file is used to run the Exomiser service in a Docker container.
+# Exomiser UI - Docker Compose Configuration
+version: '3.8'
+
 services:
-  exomiser:
+  web:
     build:
       context: .
-      dockerfile: ./compose/production/exomiser/Dockerfile
-    image: genosys_production_exomiser
-    container_name: genosys_local_exomiser
+      dockerfile: ./compose/Dockerfile
+      args:
+        - EXOMISER_VERSION=14.1.0
+    image: exomiser-ui:latest
+    container_name: exomiser-ui
     volumes:
-      - /Volumes/GDrive/Genosys/data:/opt/exomiser/data
-      - ./results:/opt/exomiser/tasks
+      # Development: mount source code for hot reload
+      - ./app:/opt/app:ro
+      # Persistent data volumes
+      - ./instance:/opt/instance
+      - ./data:/opt/exomiser/data
+      - ./results:/opt/exomiser/results
+      # Optional: mount configuration
+      - ./compose/application.properties:/opt/exomiser/application.properties:ro
     ports:
-      - "9000:9000"
+      - "${PORT:-8000}:8000"
     environment:
-      - JAVA_OPTS=-Xms1g -Xmx2g
+      # Flask configuration
+      - FLASK_ENV=${FLASK_ENV:-development}
+      - FLASK_DEBUG=${FLASK_DEBUG:-1}
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-in-production}
+      - DATABASE_URL=sqlite:////opt/instance/app.db
+      # Java/Exomiser configuration
+      - JAVA_OPTS=-Xms1g -Xmx${MAX_MEMORY:-2g}
+      - EXOMISER_DATA_DIR=/opt/exomiser/data
+      - EXOMISER_RESULTS_DIR=/opt/exomiser/results
+      # Production settings
+      - PYTHONUNBUFFERED=1
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}
+      - GUNICORN_THREADS=${GUNICORN_THREADS:-4}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
-    # command: "tail -F anything"
+    networks:
+      - exomiser-network
+    deploy:
+      resources:
+        limits:
+          memory: 3g
+          cpus: '2.0'
+        reservations:
+          memory: 1g
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  exomiser-network:
+    driver: bridge
+    name: exomiser-network
