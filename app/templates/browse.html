@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exomiser Tasks Directory</title>
+  <!-- Tailwind CSS (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Additional styles to complement Tailwind */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 py-8">
+  <main class="max-w-4xl mx-auto bg-white shadow rounded-xl p-8 space-y-6">
+    <h1 class="text-2xl font-semibold text-center">Exomiser Tasks Directory</h1>
+    <div class="space-y-4">
+      <p><strong>Directory:</strong> /tasks/{{ current_path | default("") }}</p>
+      {% if current_path %}
+        <p>
+          <a href="/browse?path={{ current_path | dirname }}" class="text-blue-600 hover:underline">Parent Directory</a>
+        </p>
+      {% endif %}
+      {% if error %}
+        <p class="text-sm text-red-600">{{ error }}</p>
+      {% else %}
+        {% if files %}
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="border p-2 text-left">Name</th>
+                <th class="border p-2 text-left">Type</th>
+                <th class="border p-2 text-left">Size (bytes)</th>
+                <th class="border p-2 text-left">Modified</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for file in files %}
+                <tr>
+                  <td class="border p-2">
+                    {% if file.is_dir %}
+                      <a href="/browse?path={{ (current_path + '/' + file.name) | urlencode }}" class="text-blue-600 hover:underline">{{ file.name }}/</a>
+                    {% else %}
+                      <a href="/browse/{{ (current_path + '/' + file.name) | urlencode }}" class="text-blue-600 hover:underline">{{ file.name }}</a>
+                    {% endif %}
+                  </td>
+                  <td class="border p-2">{{ 'Directory' if file.is_dir else 'File' }}</td>
+                  <td class="border p-2">{{ file.size if not file.is_dir else '-' }}</td>
+                  <td class="border p-2">{{ file.modified | datetime }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="text-sm text-gray-600">Directory is empty.</p>
+        {% endif %}
+      {% endif %}
+      <a href="/" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+        Submit Another Task
+      </a>
+    </div>
+  </main>
+</body>
+</html>

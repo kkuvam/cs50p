@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exomiser Task Status</title>
+  <!-- Tailwind CSS (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Auto-refresh every 5 seconds -->
+  <!-- Auto-refresh every 5 seconds for queued/running tasks -->
+  {% if status in ["queued", "running"] %}
+    <meta http-equiv="refresh" content="5">
+  {% endif %}
+  <style>
+    /* Additional styles to complement Tailwind */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 py-8">
+  <main class="max-w-4xl mx-auto bg-white shadow rounded-xl p-8 space-y-6">
+    <h1 class="text-2xl font-semibold text-center">Exomiser Task Status</h1>
+    <div class="space-y-4">
+      <p><strong>Task ID:</strong> {{ task_id }}</p>
+      <p><strong>Status:</strong>
+        {% if status == "not_found" %}
+          Not Found
+        {% elif status == "queued" %}
+          Queued
+        {% elif status == "running" %}
+          Running
+        {% elif status == "failed" %}
+          Failed
+        {% else %}
+          {{ status | default("Checking...") }}
+        {% endif %}
+      </p>
+      {% if status == "not_found" %}
+        <p class="text-sm text-red-600">
+          The task with ID {{ task_id }} was not found. It may have been deleted or never existed.
+        </p>
+      {% elif status == "queued" %}
+        <p class="text-sm text-gray-600">
+          Task is queued and will start when a slot is available.
+        </p>
+      {% elif status == "running" %}
+        <p class="text-sm text-gray-600">
+          Task is running. This page will auto-refresh every 5 seconds.
+        </p>
+      {% elif status == "failed" %}
+        <p class="text-sm text-red-600">
+          Task failed: {{ error }}
+        </p>
+      {% endif %}
+      <a href="/" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+        Submit Another Task
+      </a>
+    </div>
+  </main>
+</body>
+</html>
