@@ -1,23 +1,24 @@
-FROM amazoncorretto:21-alpine
+FROM amazoncorretto:21
 
 # Install system dependencies
-RUN apk add --no-cache \
+RUN yum update -y && \
+    yum install -y \
     python3 \
-    python3-dev \
-    py3-pip \
-    py3-wheel \
+    python3-pip \
+    python3-devel \
     curl \
     unzip \
-    shadow \
-    procps \
+    shadow-utils \
+    procps-ng \
     gcc \
-    musl-dev \
-    libffi-dev \
+    && yum clean all \
     && ln -sf python3 /usr/bin/python
 
 # Create non-root user
-RUN addgroup -g 1001 exomiser && \
-    adduser -D -s /bin/sh -u 1001 -G exomiser exomiser
+RUN groupadd -g 1001 exomiser && \
+    useradd -r -u 1001 -g exomiser -s /bin/bash -d /home/exomiser exomiser && \
+    mkdir -p /home/exomiser && \
+    chown exomiser:exomiser /home/exomiser
 
 # Set environment variables
 ENV EXOMISER_VERSION=14.1.0
@@ -41,8 +42,8 @@ RUN mkdir -p /opt/app /opt/instance /opt/exomiser/data /opt/exomiser/results && 
 COPY --chown=exomiser:exomiser requirements.txt /opt/app/requirements.txt
 
 # Install Python dependencies
-RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -m pip install --no-cache-dir -r /opt/app/requirements.txt
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip3 install --no-cache-dir -r /opt/app/requirements.txt
 
 # Copy application code
 COPY --chown=exomiser:exomiser ./app /opt/app
@@ -66,7 +67,7 @@ CMD ["gunicorn", \
      "--workers", "2", \
      "--threads", "4", \
      "--timeout", "120", \
-     "--keepalive", "2", \
+     "--keep-alive", "2", \
      "--max-requests", "1000", \
      "--max-requests-jitter", "100", \
      "--log-level", "info", \

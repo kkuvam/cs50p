@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block title %}Patients | Exomiser App{% endblock %}
+
+{% block description %}Patient Management - List all patients{% endblock %}
+
+{% block content %}
+<div class="mx-auto p-6 max-w-6xl">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Patients</h1>
+      <p class="text-gray-600 dark:text-gray-400">Manage patient records and genomic analysis data</p>
+    </div>
+    <a href="{{ url_for('routes.patient_add') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+      </svg>
+      Add Patient
+    </a>
+  </div>
+
+  <!-- Content Placeholder -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+    <div class="text-center py-12">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Patient List</h3>
+      <p class="text-gray-500 dark:text-gray-400 mb-4">Patient listing functionality will be implemented here.</p>
+      <div class="space-x-2">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">CRUD Operations</span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Search & Filter</span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">Pagination</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
