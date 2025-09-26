@@ -1,52 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support - Exomiser Help</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-green-600 mr-3" viewBox="0 0 16 16">
-                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-                </svg>
-                <h1 class="text-3xl font-bold text-gray-800">Support & Contact</h1>
+{% extends "layout.html" %}
+
+{% block title %}Support - Exomiser Help{% endblock %}
+
+{% block content %}
+<div class="relative flex flex-wrap layhetgsjdcb -mx-4">
+  <div class="shrink max-w-full uajskeiolksb w-full overflow-hidden">
+    <div class="w-full dkslaoeyhnmj mt-8">
+      <div class="bg-white dark:bg-gray-800 dkslaoeyhnmj border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center mb-6 dkslaoeyhnmj">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-green-600 dark:text-green-400 mr-3" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+          </svg>
+          <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-300">Support & Contact</h1>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 dkslaoeyhnmj">
+          <div>
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-300 mb-4">Get Help</h2>
+
+            <div class="space-y-4">
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 class="font-semibold text-gray-800 dark:text-gray-300 mb-2">📧 Email Support</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-2">For technical issues and questions:</p>
+                <a href="mailto:exomiser-support@example.com" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">exomiser-support@example.com</a>
+              </div>
+
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 class="font-semibold text-gray-800 dark:text-gray-300 mb-2">📚 Documentation</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-2">Comprehensive guides and tutorials:</p>
+                <a href="#" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">View Documentation</a>
+              </div>
+
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 class="font-semibold text-gray-800 dark:text-gray-300 mb-2">💬 Community Forum</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-2">Connect with other users:</p>
+                <a href="#" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Join Discussion</a>
+              </div>
             </div>
+          </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Get Help</h2>
+          <div>
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-300 mb-4">Contact Form</h2>
 
-                    <div class="space-y-4">
-                        <div class="border rounded-lg p-4">
-                            <h3 class="font-semibold text-gray-800 mb-2">📧 Email Support</h3>
-                            <p class="text-gray-600 mb-2">For technical issues and questions:</p>
-                            <a href="mailto:exomiser-support@example.com" class="text-blue-600 hover:text-blue-800">exomiser-support@example.com</a>
-                        </div>
+            <form class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+                <select class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg px-3 py-2">
+                  <option>Technical Issue</option>
+                  <option>Feature Request</option>
+                  <option>General Question</option>
+                  <option>Bug Report</option>
+                </select>
+              </div>
 
-                        <div class="border rounded-lg p-4">
-                            <h3 class="font-semibold text-gray-800 mb-2">📚 Documentation</h3>
-                            <p class="text-gray-600 mb-2">Comprehensive guides and tutorials:</p>
-                            <a href="#" class="text-blue-600 hover:text-blue-800">View Documentation</a>
-                        </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input type="email" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg px-3 py-2" placeholder="your@email.com">
+              </div>
 
-                        <div class="border rounded-lg p-4">
-                            <h3 class="font-semibold text-gray-800 mb-2">💬 Community Forum</h3>
-                            <p class="text-gray-600 mb-2">Connect with other users:</p>
-                            <a href="#" class="text-blue-600 hover:text-blue-800">Join Discussion</a>
-                        </div>
-                    </div>
-                </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
+                <textarea rows="4" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg px-3 py-2" placeholder="Describe your issue or question..."></textarea>
+              </div>
 
-                <div>
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Contact Form</h2>
+              <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
 
-                    <form class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+        <div class="mt-8 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+          <h3 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">⚠️ Before contacting support:</h3>
+          <ul class="list-disc list-inside text-yellow-700 dark:text-yellow-300 space-y-1">
+            <li>Check our <a href="{{ url_for('routes.help_faq') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">FAQ section</a> first</li>
+            <li>Include relevant error messages and <a href="{{ url_for('routes.help_logs') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">log information</a></li>
+            <li>Describe the steps that led to the issue</li>
+          </ul>
+        </div>
+
+        <div class="mt-8">
+          <a href="{{ url_for('routes.index') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-2" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
                             <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
                                 <option>Technical Issue</option>
                                 <option>Feature Request</option>
