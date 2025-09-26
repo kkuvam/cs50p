@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!-- In the live demo some of our CSS names are random/ protected,
+get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
+
+<!-- Mirrored from taildash.tailwinddashboard.com/authentication/login-ilustration.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 13 Apr 2025 05:29:52 GMT -->
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Title  -->
+  <title>Exomiser App | Genomic Analysis Platform</title>
+  <meta name="description" content="Exomiser App">
+
+  <!-- Development css (used in all pages) -->
+  <link rel="stylesheet" id="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Production css (used in all pages) -->
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+
+  <!--start::Vendor Stylesheets (only on this page)-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/customizer.css') }}">
+  <!--end::Vendor Stylesheets (only on this page)-->
+
+  <!-- google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+
+  <!-- Favicon  -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+<body class="font-sans text-base font-normal text-gray-600 dark:text-gray-400 dark:bg-gray-900">
+  <!-- preloader -->
+  <div class="preloader loaded-success fixed inset-0 bg-gray-100 dark:bg-gray-900">
+    <div class="absolute start-1/2 top-1/2 transform -translate-y-1/2">
+      <div class="relative mx-auto my-12">
+        <div class="inline-block">
+          <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <!-- <i class="text-3xl text-indigo-500 fas fa-circle-notch fa-spin"></i> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="border-b border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-800">
+    <div class="container mx-auto xl:max-w-6xl ">
+      <!-- Navbar -->
+      <nav class="flex klsuaonrmcha flex-nowrap layhetgsjdcb vlaoethsnkma mt-0 py-4 dkslaoeyhnmj" id="desktop-menu">
+        <!-- logo -->
+        <a class="flex layhetgsjdcb py-2 me-4 text-xl" href="{{ url_for('routes.index') }}">
+          <h2 class="text-2xl font-semibold text-gray-200 uajskeiolksb max-h-9 mklausjenrhtm">
+            <img class="inline-block w-8 h-8 me-2 -mt-1" src="{{ url_for('static', filename='img/logo.png') }}" alt="Exomiser Logo">
+            <span class="text-gray-700 dark:text-gray-200">Exomiser App</span>
+          </h2>
+        </a>
+
+        <!-- menu -->
+        <ul class="flex ms-auto mt-2">
+          <!-- Customizer (Only for demo purpose) -->
+          <li x-data="{ open: false }" class="relative">
+            <a href="javascript:;" class="py-3 uajskeiolksb flex text-sm boalstehwqbj focus:outline-hidden" aria-controls="mobile-canvas" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
+              <span class="sr-only">Customizer</span>
+              <svg x-description="Icon closed" x-state:on="Menu open" x-state:off="Menu closed" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+              </svg>
+              <!-- <i class="text-2xl bi bi-gear"></i> -->
+            </a>
+
+            <!-- Right Offcanvas -->
+          <div class="fixed w-full h-full inset-0 z-50" id="mobile-canvas" x-description="Mobile menu" x-show="open" style="display: none;">
+            <!-- bg open -->
+            <span class="fixed bg-gray-900 opacity-70 w-full h-full ajsklekajsnm top-0"></span>
+
+            <nav id="mobile-nav" class="flex ioajsklehsnm cklsoitaghrv end-0 w-72 fixed top-0 bg-white dark:bg-gray-800 h-full fioplahensmk z-40 scrollbars show"
+            x-show="open" @click.away="open=false"
+            x-description="Mobile menu" role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="navbartoggle"
+            x-transition:enter="transition-transform duration-300" x-transition:enter-start="ltr:translate-x-full rtl:-translate-x-full" x-transition:enter-end="translate-x-0"
+            x-transition:leave="transition-transform duration-300" x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="ltr:translate-x-full rtl:-translate-x-full">
+              <div class="p-6 bg-indigo-500 text-gray-100 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex klsuaonrmcha vlaoethsnkma">
+                  <h3 class="text-md font-bold">Customizer</h3>
+                  <button @click="open = false" type="button" class="inline-block size-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block text-gray-100 bi bi-x-lg" viewBox="0 0 16 16" id="x-lg"><path d="M1.293 1.293a1 1 0 011.414 0L8 6.586l5.293-5.293a1 1 0 111.414 1.414L9.414 8l5.293 5.293a1 1 0 01-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 01-1.414-1.414L6.586 8 1.293 2.707a1 1 0 010-1.414z"></path></svg>
+                    <!-- <i class="bi bi-x-lg"></i> -->
+                  </Button>
+                </div>
+              </div>
+
+              <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                <h3>Theme Color</h3>
+                <div class="relative flex flex-wrap layhetgsjdcb gap-2">
+                  <button data-color="default" title="default" class="inline-block p-3 bg-[#6366f1] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="red" title="red" class="inline-block p-3 bg-red-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="yellow" title="yellow" class="inline-block p-3 bg-yellow-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="green" title="green" class="inline-block p-3 bg-green-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="blue" title="blue" class="inline-block p-3 bg-blue-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="purple" title="purple" class="inline-block p-3 bg-purple-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="lime" title="lime" class="inline-block p-3 bg-lime-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="pink" title="pink" class="inline-block p-3 bg-pink-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="sky" title="sky" class="inline-block p-3 bg-sky-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="rosewood" title="rosewood" class="inline-block p-3 bg-[#9F2A2A] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="genoa" title="genoa" class="inline-block p-3 bg-[#166064] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="seance" title="seance" class="inline-block p-3 bg-[#7E2A9F] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="gold" title="gold" class="inline-block p-3 bg-[#B58429] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-color="orange" title="orange" class="inline-block p-3 bg-orange-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                </div>
+              </div>
+
+              <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                <h3>Neutral Color</h3>
+                <div class="relative flex layhetgsjdcb gap-2">
+                  <button data-neutral="default" title="default" class="inline-block p-3 bg-[#84848f] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-neutral="zinc" title="zinc" class="inline-block p-3 bg-zinc-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-neutral="stone" title="stone" class="inline-block p-3 bg-stone-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-neutral="slate" title="slate" class="inline-block p-3 bg-slate-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-neutral="gray" title="gray" class="inline-block p-3 bg-gray-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  <button data-neutral="neutral" title="neutral" class="inline-block p-3 bg-neutral-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                </div>
+              </div>
+
+              <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                <h3>Light &amp; Dark</h3>
+                <!-- light and dark mode -->
+                <button data-type="theme" id="lightdark"
+                  class="theme-icon text-yellow-500 flex layhetgsjdcb yhansklopals size-8 boalstehwqbj bg-white dark:bg-gray-600 border border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-900">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun" viewBox="0 0 16 16">
+                    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon" viewBox="0 0 16 16">
+                    <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
+                    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z"/>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                <h3>Switch RTL</h3>
+                <!-- switch -->
+                <label for="switch-rtl" class="relative w-8 py-3">
+                  <input data-type="rtl" id="switch-rtl" type="checkbox" name="lightdarks" id="lightdarks" class="toggle-checkbox absolute block w-5 h-5 boalstehwqbj bg-white dark:bg-gray-700 border border-gray-500 appearance-none cursor-pointer"/>
+                  <span class="toggle-label block mklausjenrhtm h-5 boalstehwqbj bg-gray-300 dark:bg-gray-900 cursor-pointer"></span>
+                  </label>
+              </div>
+
+              <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                <h3>Refresh Chart Color</h3>
+                <!-- reload -->
+                <button id="reload"
+                  class="flex layhetgsjdcb yhansklopals size-8 boalstehwqbj bg-white dark:bg-gray-600 border border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-900">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="pt-6 dkslaoeyhnmj">
+                <div x-data="{ open: true }" x-show="open" class="flex vlaoethsnkma layhetgsjdcb relative bg-yellow-100 text-yellow-900 p-3 rounded-lg mb-4">
+                  <div>
+                    How to apply? please read the documentation text
+                  </div>
+                  <button type="button" @click="open = false">
+                    <span class="text-2xl">×</span>
+                    <!-- <i class="bi bi-x-lg"></i> -->
+                  </button>
+                </div>
+              </div>
+            </nav>
+          </div>
+          </li><!-- End Customizer (Only for demo purpose) -->
+
+          <li class="relative">
+            <a href="{{ url_for('auth.login') }}" class="py-3 uajskeiolksb flex hover:text-indigo-500 focus:outline-hidden">
+              <div class="relative inline-block">Login</div>
+            </a>
+          </li>
+          <li class="relative">
+            <a href="{{ url_for('auth.register') }}" class="py-3 uajskeiolksb flex hover:text-indigo-500 focus:outline-hidden">
+              <div class="relative inline-block">Register</div>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- End Navbar -->
+    </div>
+  </header>
+
+  <main>
+    <div class="py-8 md:py-12 bg-gray-100 dark:bg-gray-900/40">
+      <div class="container mx-auto uajskeiolksb xl:max-w-6xl">
+        <div class="flex flex-wrap -mx-4 klsuaonrmcha">
+          <div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2">
+            <!-- login form -->
+            <div class="max-w-full w-full px-2 sm:px-12 lg:pe-20 mb-12 lg:mb-0">
+              <div class="relative">
+                <div class="p-6 sm:py-8 sm:px-12 rounded-lg bg-white dark:bg-gray-800 shadow-xl">
+                  <form id="login-form">
+                    <div class="text-center">
+                      <h1 class="text-2xl leading-normal mb-3 font-bold text-gray-800 dark:text-gray-300 text-center">Welcome Back</h1>
+                    </div>
+                    <hr class="block w-12 h-0.5 mx-auto my-5 bg-gray-700 border-gray-700">
+                    <div class="mb-6">
+                      <label for="inputemail" class="inline-block mb-2">Email</label>
+                      <input name="email" id="inputemail" class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600" value="" aria-label="email" type="email" required="">
+                    </div>
+                    <div class="mb-6">
+                      <div class="flex flex-wrap klsuaonrmcha">
+                        <div class="shrink max-w-full w-1/2">
+                          <label for="inputpass" class="inline-block mb-2">Password</label>
+                        </div>
+                        <div class="shrink max-w-full w-1/2 text-end">
+                          <a class="hover:text-blue-700" href="#">Forgot password?</a>
+                        </div>
+                      </div>
+                      <input id="inputpass" class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600" aria-label="password" type="password" value="" required="">
+                    </div>
+                    <div class="mb-6">
+                      <input class="form-checkbox h-5 w-5 text-indigo-500 dark:bg-gray-700 border border-gray-300 dark:border-gray-700 rounded-sm focus:outline-hidden" type="checkbox" value="" id="remember" required>
+                      <label class="ms-2" for="remember">
+                        Remember me
+                      </label>
+                    </div>
+                    <div class="grid">
+                      <button type="submit" class="py-2 uajskeiolksb inline-block text-center rounded-sm leading-normal text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 me-2 bi bi-box-arrow-in-right" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+                          <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                        </svg>Login
+                      </button>
+                    </div>
+                  </form>
+                  <div class="mt-4">
+                    <p class="text-center mb-0">Don't have an account? <a class="hover:text-indigo-500" href="{{ url_for('auth.register') }}">Register</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2">
+             <div class="text-center mt-6 lg:mt-0">
+              <img src="{{ url_for('static', filename='img/svg/meeting.svg') }}" alt="welcome" class="max-w-full h-auto mx-auto">
+              <div class="uajskeiolksb mt-12">
+                <h1 class="text-bold text-4xl mb-2">Advanced Genomic Variant Analysis</h1>
+                <p class="text-lg mb-4 text-gray-500">Discover genetic anomalies with precision. Our powerful Exomiser pipeline analyzes genomic variants to identify disease-causing mutations and accelerate genetic diagnosis.</p>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white py-6 border-t border-gray-200 dark:bg-gray-800 dark:border-gray-800">
+    <div class="container mx-auto uajskeiolksb xl:max-w-6xl ">
+      <div class="mx-auto uajskeiolksb">
+        <div class="flex flex-wrap klsuaonrmcha">
+          <div class="shrink max-w-full w-full lg:w-1/2 text-center lg:text-start">
+            <ul class="ps-0 space-x-3">
+              <li class="inline-block">
+                <a class="hover:text-indigo-500" href="#">Support</a>
+              </li>
+              <li class="inline-block">
+                <a class="hover:text-indigo-500" href="#">Help Center</a>
+              </li>
+              <li class="inline-block">
+                <a class="hover:text-indigo-500" href="#">Privacy</a>
+              </li>
+              <li class="inline-block">
+                <a class="hover:text-indigo-500" href="#">Terms of Service</a>
+              </li>
+            </ul>
+          </div>
+          <div class="shrink max-w-full w-full lg:w-1/2 text-center lg:text-end">
+            <p class="mb-0 mt-3 md:mt-0">
+              <a href="{{ url_for('routes.index') }}" class="hover:text-indigo-500">Exomiser App</a> | All right reserved
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!--start::Global javascript (used in all pages)-->
+  <script src="{{ url_for('static', filename='vendors/alpinejs/dist/cdn.min.js') }}"></script><!-- core js -->
+  <script src="{{ url_for('static', filename='vendors/flatpickr/dist/flatpickr.min.js') }}"></script><!-- input date -->
+  <script src="{{ url_for('static', filename='vendors/flatpickr/dist/plugins/rangePlugin.js') }}"></script><!-- input range date -->
+  <script src="{{ url_for('static', filename='vendors/@yaireo/tagify/dist/tagify.js') }}"></script><!-- input tags -->
+  <script src="{{ url_for('static', filename='vendors/pristinejs/dist/pristine.min.js') }}"></script><!-- form validation -->
+  <script src="{{ url_for('static', filename='vendors/simple-datatables/dist/umd/simple-datatables.js') }}"></script><!--sort table-->
+  <!--end::Global javascript (used in all pages)-->
+
+  <!-- Minify Global javascript (for production purpose) -->
+  <!-- <script src="{{ url_for('static', filename='js/scripts.js') }}"></script> -->
+   <!--start::Demo javascript ( initialize global javascript )-->
+  <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+
+  <!--start::Customizer js ( Only for demo purpose )-->
+  <script src="{{ url_for('static', filename='js/customizer.js') }}"></script>
+</body>
+
+<!-- Mirrored from taildash.tailwinddashboard.com/authentication/login-ilustration.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 13 Apr 2025 05:29:52 GMT -->
+</html>
