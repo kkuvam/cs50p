@@ -315,11 +315,12 @@ def task_delete(task_id):
 
     return render_template("task/delete.html", task=task, user=current_user)
 
-@routes_bp.route("/status")
+@routes_bp.route("/results")
 @login_required
-def status():
+def results():
     """Results page - shows analysis results and status"""
-    return render_template("status.html", user=current_user)
+    tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.updated_at.desc()).all()
+    return render_template("task/results.html", tasks=tasks, user=current_user)
 
 @routes_bp.route("/help/faq")
 @login_required
