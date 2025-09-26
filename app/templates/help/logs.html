@@ -1,105 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Logs - Exomiser Help</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-gray-600 mr-3" viewBox="0 0 16 16">
-                    <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
-                    <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
-                </svg>
-                <h1 class="text-3xl font-bold text-gray-800">System Logs</h1>
-            </div>
+{% extends "layout.html" %}
 
-            <div class="mb-6">
-                <div class="flex gap-4 mb-4">
-                    <select class="border border-gray-300 rounded-lg px-3 py-2">
-                        <option>All Logs</option>
-                        <option>Application Logs</option>
-                        <option>Analysis Logs</option>
-                        <option>Error Logs</option>
-                        <option>System Logs</option>
-                    </select>
+{% block title %}System Logs - Exomiser Help{% endblock %}
 
-                    <select class="border border-gray-300 rounded-lg px-3 py-2">
-                        <option>Last 24 Hours</option>
-                        <option>Last Week</option>
-                        <option>Last Month</option>
-                        <option>Custom Range</option>
-                    </select>
-
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-                        Refresh
-                    </button>
-
-                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-2" viewBox="0 0 16 16">
-                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                        </svg>
-                        Download
-                    </button>
-                </div>
-            </div>
-
-            <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm h-96 overflow-y-auto">
-                <div class="mb-2 text-gray-400"># System Logs - Last 24 Hours</div>
-                <div class="space-y-1">
-                    <div>[2024-01-15 14:32:15] INFO - Exomiser service started successfully</div>
-                    <div>[2024-01-15 14:32:16] INFO - Database connection established</div>
-                    <div>[2024-01-15 14:32:17] INFO - Loading HPO ontology data</div>
-                    <div>[2024-01-15 14:32:20] INFO - HPO data loaded successfully (15,847 terms)</div>
-                    <div>[2024-01-15 14:35:42] INFO - New analysis started: user123_sample456</div>
-                    <div>[2024-01-15 14:35:43] INFO - Processing VCF file: sample456.vcf (1.2MB)</div>
-                    <div>[2024-01-15 14:35:45] INFO - Found 2,843 variants for analysis</div>
-                    <div>[2024-01-15 14:36:12] INFO - Phenotype scoring completed</div>
-                    <div>[2024-01-15 14:36:15] INFO - Variant prioritization completed</div>
-                    <div>[2024-01-15 14:36:16] INFO - Analysis completed successfully</div>
-                    <div>[2024-01-15 14:36:17] INFO - Results saved to: results/user123/sample456_results.html</div>
-                    <div class="text-yellow-400">[2024-01-15 14:45:33] WARN - High memory usage detected (85%)</div>
-                    <div>[2024-01-15 15:15:22] INFO - New user registration: user789</div>
-                    <div>[2024-01-15 15:20:11] INFO - User login: user456</div>
-                    <div class="text-red-400">[2024-01-15 15:25:44] ERROR - Failed to load VCF file: malformed_sample.vcf</div>
-                    <div class="text-red-400">[2024-01-15 15:25:44] ERROR - VCF validation failed: Line 42 - Invalid variant format</div>
-                    <div>[2024-01-15 15:30:15] INFO - Cleanup task started</div>
-                    <div>[2024-01-15 15:30:18] INFO - Removed 3 expired analysis results</div>
-                    <div>[2024-01-15 15:30:19] INFO - Cleanup task completed</div>
-                </div>
-                <div class="mt-4 text-gray-400">--- End of current logs ---</div>
-            </div>
-
-            <div class="mt-6 grid md:grid-cols-3 gap-4">
-                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h3 class="font-semibold text-green-800 mb-2">✅ System Status</h3>
-                    <p class="text-green-700">All services running normally</p>
-                </div>
-
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h3 class="font-semibold text-yellow-800 mb-2">⚠️ Warnings</h3>
-                    <p class="text-yellow-700">1 memory usage warning</p>
-                </div>
-
-                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h3 class="font-semibold text-red-800 mb-2">❌ Errors</h3>
-                    <p class="text-red-700">1 VCF validation error</p>
-                </div>
-            </div>
-
-            <div class="mt-8">
-                <a href="{{ url_for('routes.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-2" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-                    </svg>
-                    Back to Dashboard
-                </a>
-            </div>
+{% block content %}
+<div class="relative flex flex-wrap layhetgsjdcb -mx-4">
+  <div class="shrink max-w-full uajskeiolksb w-full overflow-hidden">
+    <div class="w-full dkslaoeyhnmj mt-8">
+      <div class="bg-white dark:bg-gray-800 dkslaoeyhnmj border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center mb-6 dkslaoeyhnmj">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-gray-600 dark:text-gray-400 mr-3" viewBox="0 0 16 16">
+            <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+            <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+          </svg>
+          <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-300">System Logs</h1>
         </div>
+
+        <div class="mb-6 dkslaoeyhnmj">
+          <div class="flex gap-4 mb-4">
+            <select class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg px-3 py-2">
+              <option>All Logs</option>
+              <option>Application Logs</option>
+              <option>Analysis Logs</option>
+              <option>Error Logs</option>
+              <option>System Logs</option>
+            </select>
+
+            <select class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg px-3 py-2">
+              <option>Last 24 Hours</option>
+              <option>Last Week</option>
+              <option>Last Month</option>
+              <option>Custom Range</option>
+            </select>
+
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+              Refresh
+            </button>
+
+            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-2" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Download
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 text-green-400 rounded-lg p-4 font-mono text-sm h-96 overflow-y-auto">
+          <div class="mb-2 text-gray-400"># System Logs - Last 24 Hours</div>
+          <div class="space-y-1">
+            <div>[2024-01-15 14:32:15] INFO - Exomiser service started successfully</div>
+            <div>[2024-01-15 14:32:16] INFO - Database connection established</div>
+            <div>[2024-01-15 14:32:17] INFO - Loading HPO ontology data</div>
+            <div>[2024-01-15 14:32:20] INFO - HPO data loaded successfully (15,847 terms)</div>
+            <div>[2024-01-15 14:35:42] INFO - New analysis started: user123_sample456</div>
+            <div>[2024-01-15 14:35:43] INFO - Processing VCF file: sample456.vcf (1.2MB)</div>
+            <div>[2024-01-15 14:35:45] INFO - Found 2,843 variants for analysis</div>
+            <div>[2024-01-15 14:36:12] INFO - Phenotype scoring completed</div>
+            <div>[2024-01-15 14:36:15] INFO - Variant prioritization completed</div>
+            <div>[2024-01-15 14:36:16] INFO - Analysis completed successfully</div>
+            <div>[2024-01-15 14:36:17] INFO - Results saved to: results/user123/sample456_results.html</div>
+            <div class="text-yellow-400">[2024-01-15 14:45:33] WARN - High memory usage detected (85%)</div>
+            <div>[2024-01-15 15:15:22] INFO - New user registration: user789</div>
+            <div>[2024-01-15 15:20:11] INFO - User login: user456</div>
+            <div class="text-red-400">[2024-01-15 15:25:44] ERROR - Failed to load VCF file: malformed_sample.vcf</div>
+            <div class="text-red-400">[2024-01-15 15:25:44] ERROR - VCF validation failed: Line 42 - Invalid variant format</div>
+            <div>[2024-01-15 15:30:15] INFO - Cleanup task started</div>
+            <div>[2024-01-15 15:30:18] INFO - Removed 3 expired analysis results</div>
+            <div>[2024-01-15 15:30:19] INFO - Cleanup task completed</div>
+          </div>
+          <div class="mt-4 text-gray-400">--- End of current logs ---</div>
+        </div>
+
+        <div class="mt-6 grid md:grid-cols-3 gap-4">
+          <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+            <h3 class="font-semibold text-green-800 dark:text-green-300 mb-2">✅ System Status</h3>
+            <p class="text-green-700 dark:text-green-300">All services running normally</p>
+          </div>
+
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+            <h3 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">⚠️ Warnings</h3>
+            <p class="text-yellow-700 dark:text-yellow-300">1 memory usage warning</p>
+          </div>
+
+          <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+            <h3 class="font-semibold text-red-800 dark:text-red-300 mb-2">❌ Errors</h3>
+            <p class="text-red-700 dark:text-red-300">1 VCF validation error</p>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <a href="{{ url_for('routes.index') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-2" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Back to Dashboard
+          </a>
+        </div>
+      </div>
     </div>
-</body>
-</html>
+  </div>
+</div>
+{% endblock %}
