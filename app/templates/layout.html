@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!-- In the live demo some of our CSS names are random/ protected,
+get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
+
+<!-- Mirrored from taildash.tailwinddashboard.com/layout-topnav.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 13 Apr 2025 05:30:08 GMT -->
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Title  -->
+  <title>{% block title %}Exomiser App | Genomic Variant Analysis{% endblock %}</title>
+
+  <meta name="description" content="Exomiser App - Genomic Variant Analysis Platform">
+
+  <!-- Development css (used in all pages) -->
+  <link rel="stylesheet" id="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Production css (used in all pages) -->
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+
+  <!--start::Customizer Stylesheets (Only for demo purpose)-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/customizer.css') }}">
+  <!--end::Customizer Stylesheets (Only for demo purpose)-->
+
+  <!-- google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+
+  <!-- Favicon  -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="font-sans text-base font-normal text-gray-600 dark:text-gray-400 dark:bg-gray-900">
+  <!-- wrapper -->
+  <div x-data="{ open: false }" class="wrapper overflow-x-hidden bg-gray-100 dark:bg-gray-900/40">
+    <div class="flex ioajsklehsnm min-h-screen transition-all duration-500 ease-in-out">
+      <!-- Navbar -->
+      <nav class="flex klsuaonrmcha flex-nowrap layhetgsjdcb vlaoethsnkma mt-0 py-2 dkslaoeyhnmj border-b border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-800" id="desktop-menu">
+        <!-- logo -->
+        <a class="flex layhetgsjdcb py-2 me-4 text-xl" href="{{ url_for('routes.index') }}">
+          <span class="text-2xl font-semibold text-gray-200 block lg:hidden">
+            <img class="inline-block w-8 h-8 -mt-1 me-2" src="{{ url_for('static', filename='img/logo.png') }}" alt="Exomiser Logo">
+            Exomiser App
+          </span>
+          <span class="text-2xl font-semibold text-gray-200 hidden lg:block dark:text-gray-300">
+            <img class="inline-block w-8 h-8 me-2 -mt-1" src="{{ url_for('static', filename='img/logo.png') }}" alt="Exomiser Logo">
+            </span>
+        </a>
+
+        <!-- sidenav button-->
+        <button id="navbartoggle" type="button" class="inline-flex layhetgsjdcb yhansklopals text-gray-800 hover:text-gray-600 focus:outline-hidden focus:ring-0 dark:text-gray-300 dark:hover:text-gray-200" aria-controls="desktp-menu" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
+          <span class="sr-only">Mobile menu</span>
+          <svg x-description="Icon open" x-state:on="Menu open" x-state:off="Menu closed" class="hidden h-8 w-8" :class="{ 'block': open, 'hidden': !(open) }" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+            <path class="hidden lg:block" fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+            <path class="lg:hidden" d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+          </svg>
+
+          <svg x-description="Icon closed" x-state:on="Menu open" x-state:off="Menu closed" class="block h-8 w-8" :class="{ 'hidden': open, 'block': !(open) }" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+            <path class="lg:hidden" fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+            <path class="hidden lg:block" d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+          </svg>
+          <!-- <i class="text-2xl bi bi-list"></i> -->
+        </button>
+
+        <!-- Search -->
+        <form class="hidden sm:inline-block md:hidden lg:inline-block mx-5">
+          <div class="flex flex-wrap items-stretch w-full relative">
+            <input type="text" class="shrink flex-grow max-w-full leading-5 relative text-sm py-2 uajskeiolksb rounded-s-sm text-gray-800 bg-gray-100 overflow-x-auto focus:outline-hidden border border-gray-100 focus:border-gray-200 focus:ring-0 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600" placeholder="Search…" aria-label="Search">
+            <div class="flex -me-px">
+              <button class="flex layhetgsjdcb py-2 uajskeiolksb -ms-1 rounded-e-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <!-- <i class="inline-block size-4 bi bi-search"></i> -->
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- menu -->
+        <ul class="flex ms-auto mt-2">
+          <!-- Customizer (Only for demo purpose) -->
+          <li x-data="{ open: false }" class="relative">
+            <a href="javascript:;" class="py-3 uajskeiolksb flex text-sm boalstehwqbj focus:outline-hidden" aria-controls="mobile-canvas" @click="open = !open">
+              <span class="sr-only">Customizer</span>
+              <svg x-description="Icon closed" x-state:on="Menu open" x-state:off="Menu closed" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+              </svg>
+              <!-- <i class="text-2xl bi bi-gear"></i> -->
+            </a>
+
+            <!-- Right Offcanvas -->
+            <div class="fixed w-full h-full inset-0 z-50" id="mobile-canvas" x-description="Mobile menu" x-show="open" style="display: none;">
+              <!-- bg open -->
+              <span class="fixed bg-gray-900 opacity-70 w-full h-full ajsklekajsnm top-0"></span>
+
+              <nav id="mobile-nav" class="flex ioajsklehsnm cklsoitaghrv end-0 w-72 fixed top-0 bg-white dark:bg-gray-800 h-full fioplahensmk z-40 scrollbars show"
+              x-show="open" @click.away="open=false"
+              x-description="Mobile menu" role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="navbartoggle"
+              x-transition:enter="transition-transform duration-300" x-transition:enter-start="ltr:translate-x-full rtl:-translate-x-full" x-transition:enter-end="translate-x-0"
+              x-transition:leave="transition-transform duration-300" x-transition:leave-start="translate-x-0"
+              x-transition:leave-end="ltr:translate-x-full rtl:-translate-x-full">
+                <div class="p-6 bg-indigo-500 text-gray-100 border-b border-gray-200 dark:border-gray-700">
+                  <div class="flex klsuaonrmcha vlaoethsnkma">
+                    <h3 class="text-md font-bold">Customizer</h3>
+                    <button @click="open = false" type="button" class="inline-block size-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block text-gray-100 bi bi-x-lg" viewBox="0 0 16 16" id="x-lg"><path d="M1.293 1.293a1 1 0 011.414 0L8 6.586l5.293-5.293a1 1 0 111.414 1.414L9.414 8l5.293 5.293a1 1 0 01-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 01-1.414-1.414L6.586 8 1.293 2.707a1 1 0 010-1.414z"></path></svg>
+                      <!-- <i class="bi bi-x-lg"></i> -->
+                    </Button>
+                  </div>
+                </div>
+
+                <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                  <h3>Theme Color</h3>
+                  <div class="relative flex flex-wrap layhetgsjdcb gap-2">
+                    <button data-color="default" title="default" class="inline-block p-3 bg-[#6366f1] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="red" title="red" class="inline-block p-3 bg-red-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="yellow" title="yellow" class="inline-block p-3 bg-yellow-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="green" title="green" class="inline-block p-3 bg-green-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="blue" title="blue" class="inline-block p-3 bg-blue-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="purple" title="purple" class="inline-block p-3 bg-purple-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="lime" title="lime" class="inline-block p-3 bg-lime-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="pink" title="pink" class="inline-block p-3 bg-pink-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="sky" title="sky" class="inline-block p-3 bg-sky-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="rosewood" title="rosewood" class="inline-block p-3 bg-[#9F2A2A] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="genoa" title="genoa" class="inline-block p-3 bg-[#166064] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="seance" title="seance" class="inline-block p-3 bg-[#7E2A9F] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="gold" title="gold" class="inline-block p-3 bg-[#B58429] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-color="orange" title="orange" class="inline-block p-3 bg-orange-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  </div>
+                </div>
+
+                <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                  <h3>Neutral Color</h3>
+                  <div class="relative flex layhetgsjdcb gap-2">
+                    <button data-neutral="default" title="default" class="inline-block p-3 bg-[#84848f] [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-neutral="zinc" title="zinc" class="inline-block p-3 bg-zinc-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-neutral="stone" title="stone" class="inline-block p-3 bg-stone-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-neutral="slate" title="slate" class="inline-block p-3 bg-slate-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-neutral="gray" title="gray" class="inline-block p-3 bg-gray-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                    <button data-neutral="neutral" title="neutral" class="inline-block p-3 bg-neutral-500 [&.active]:border [&.active]:border-gray-700 dark:[&.active]:border-gray-100 hover:opacity-90 boalstehwqbj cursor-pointer"></button>
+                  </div>
+                </div>
+
+                <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                  <h3>Light &amp; Dark</h3>
+                  <!-- light and dark mode -->
+                  <button data-type="theme" id="lightdark"
+                    class="theme-icon text-yellow-500 flex layhetgsjdcb yhansklopals size-8 boalstehwqbj bg-white dark:bg-gray-600 border border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun" viewBox="0 0 16 16">
+                      <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon" viewBox="0 0 16 16">
+                      <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
+                      <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                  <h3>Switch RTL</h3>
+                  <!-- switch -->
+                  <label for="switch-rtl" class="relative w-8 py-3">
+                    <input data-type="rtl" id="switch-rtl" type="checkbox" name="lightdarks" id="lightdarks" class="toggle-checkbox absolute block w-5 h-5 boalstehwqbj bg-white dark:bg-gray-700 border border-gray-500 appearance-none cursor-pointer"/>
+                    <span class="toggle-label block mklausjenrhtm h-5 boalstehwqbj bg-gray-300 dark:bg-gray-900 cursor-pointer"></span>
+                    </label>
+                </div>
+
+                <div class="dkslaoeyhnmj flex ioajsklehsnm gap-1.5">
+                  <h3>Refresh Chart Color</h3>
+                  <!-- reload -->
+                  <button id="reload"
+                    class="flex layhetgsjdcb yhansklopals size-8 boalstehwqbj bg-white dark:bg-gray-600 border border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                      <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="pt-6 dkslaoeyhnmj">
+                  <div x-data="{ open: true }" x-show="open" class="flex vlaoethsnkma layhetgsjdcb relative bg-yellow-100 text-yellow-900 p-3 rounded-lg mb-4">
+                    <div>
+                      How to apply? please read the documentation text
+                    </div>
+                    <button type="button" @click="open = false">
+                      <span class="text-2xl">×</span>
+                      <!-- <i class="bi bi-x-lg"></i> -->
+                    </button>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </li><!-- End Customizer (Only for demo purpose) -->
+
+          <!-- notification -->
+          <li x-data="{ open: false }" class="relative">
+            <a href="javascript:;" class="py-3 uajskeiolksb flex text-sm boalstehwqbj focus:outline-hidden" id="notify" @click="open = ! open">
+              <div class="relative inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-6 bi bi-bell" viewBox="0 0 16 16">
+                  <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+                </svg>
+                <!-- <i class="inline-block text-2xl size-6 bi bi-bell"></i> -->
+                <span class="flex yhansklopals absolute -top-2 -end-1  text-center bg-pink-500 px-1 text-white boalstehwqbj text-xs"><span class="align-self-center">1</span></span>
+              </div>
+            </a>
+
+            <div x-show="open" @click.outside="open = false"
+            x-transition:enter="transition-all duration-200 ease-out" x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition-all duration-200 ease-in" x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="w-72 absolute -end-16 md:end-0 rounded-sm top-full z-50 py-0.5 text-start bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-md" style="display: none;">
+              <div class="p-3 font-normal border-b border-gray-200 dark:border-gray-700">
+                <div class="relative">
+                  <div class="font-bold">Notifications</div>
+                  <div class="absolute top-0 end-0">
+                    <a href="#" class="inline-block me-2" title="Clear all">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                      </svg>
+                      <!-- <i class="inline-block size-4 bi bi-trash"></i> -->
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="max-h-60 overflow-y-auto scrollbars show">
+                <a class="relative" href="#">
+                  <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb border-b border-gray-200 dark:border-gray-700 dark:bg-gray-900/40 dark:hover:bg-gray-900/20 py-2 hover:bg-gray-100 bg-gray-50">
+                    <div class="shrink max-w-full px-2 w-1/4 text-center">
+                      <div class="flex yhansklopals mx-auto size-8 boalstehwqbj bg-indigo-500 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="self-center size-4 bi bi-calendar4-event" viewBox="0 0 16 16">
+                          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z"/>
+                          <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                        </svg>
+                        <!-- <i class="self-center size-4 bi bi-calendar4-event"></i> -->
+                      </div>
+                    </div>
+                    <div class="shrink max-w-full px-2 w-3/4">
+                      <div class="text-sm font-bold">Event will coming</div>
+                      <div class="text-gray-500 text-sm mt-1">Meeting with Mr.John Navas at:10.00Am</div>
+                      <div class="text-gray-500 text-sm mt-1">1h ago</div>
+                    </div>
+                  </div>
+                </a>
+                <a class="relative" href="#">
+                  <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb border-b border-gray-200 dark:border-gray-700 dark:hover:bg-gray-900/20 py-2 hover:bg-gray-100">
+                    <div class="shrink max-w-full px-2 w-1/4 text-center">
+                      <div class="flex yhansklopals mx-auto size-8 boalstehwqbj bg-indigo-500 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="self-center size-4 bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                          <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
+                        </svg>
+                        <!-- <i class="self-center size-4 bi bi-hand-thumbs-up"></i> -->
+                      </div>
+                    </div>
+                    <div class="shrink max-w-full px-2 w-3/4">
+                      <div class="text-gray-500 text-sm mt-1"><b class="text-gray-600 dark:text-gray-400">Daniel</b> like your post: <b class="text-gray-600 dark:text-gray-400">Hello World!</b></div>
+                      <div class="text-gray-500 text-sm mt-1">3h ago</div>
+                    </div>
+                  </div>
+                </a>
+                <a class="relative" href="#">
+                  <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb border-b border-gray-200 dark:border-gray-700 dark:hover:bg-gray-900/20 py-2 hover:bg-gray-100">
+                    <div class="shrink max-w-full px-2 w-1/4 text-center">
+                      <div class="flex yhansklopals mx-auto size-8 boalstehwqbj bg-indigo-500 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="self-center size-4 bi bi-hdd-stack" viewBox="0 0 16 16">
+                          <path d="M14 10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h12zM2 9a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2H2z"/>
+                          <path d="M5 11.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-2 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM14 3a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12zM2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
+                          <path d="M5 4.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-2 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+                        </svg>
+                        <!-- <i class="self-center size-4 bi bi-hdd-stack"></i> -->
+                      </div>
+                    </div>
+                    <div class="shrink max-w-full px-2 w-3/4">
+                      <div class="text-sm font-bold">Server maintenance</div>
+                      <div class="text-gray-500 text-sm mt-1">Server maintenance at:07.00Am</div>
+                      <div class="text-gray-500 text-sm mt-1">8h ago</div>
+                    </div>
+                  </div>
+                </a>
+                <a class="relative" href="#">
+                  <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb border-b border-gray-200 dark:border-gray-700 dark:hover:bg-gray-900/20 py-2 hover:bg-gray-100">
+                    <div class="shrink max-w-full px-2 w-1/4 text-center">
+                      <div class="flex yhansklopals mx-auto size-8 boalstehwqbj bg-indigo-500 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="self-center size-4 bi bi-chat-left" viewBox="0 0 16 16">
+                          <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        </svg>
+                        <!-- <i class="self-center size-4 bi bi-chat-left"></i> -->
+                      </div>
+                    </div>
+                    <div class="shrink max-w-full px-2 w-3/4">
+                      <div class="text-gray-500 text-sm mt-1"><b class="text-gray-600 dark:text-gray-400">Carlos</b> comment in your post: <b class="text-gray-600 dark:text-gray-400">Hello World!</b></div>
+                      <div class="text-gray-500 text-sm mt-1">1d ago</div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="p-3 text-center font-normal">
+                <a href="#" class="hover:underline">Show all Notifications</a>
+              </div>
+            </div>
+          </li>
+
+          <!-- profile -->
+          <li x-data="{ open: false }" class="relative">
+            <a href="javascript:;" class="px-3 flex text-sm boalstehwqbj focus:outline-hidden" id="user-menu-button" @click="open = ! open">
+              <div class="relative">
+                <img class="h-10 w-10 boalstehwqbj border border-gray-700 bg-gray-300 dark:bg-gray-600" src="{{ url_for('static', filename='img/avatar/user.png') }}" alt="User">
+                <span title="online" class="flex yhansklopals absolute -bottom-0.5 end-1 text-center bg-green-500 border border-white w-3 h-3 boalstehwqbj"></span>
+              </div>
+            </a>
+            <ul x-show="open" @click.outside="open = false"
+            x-transition:enter="transition-all duration-200 ease-out" x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition-all duration-200 ease-in" x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="origin-top-right absolute end-0 rounded-sm top-full z-50 py-0.5 text-start min-w-[12rem] bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-md" style="display: none;">
+              <li class="relative">
+                <div class="flex flex-wrap klsuaonrmcha -mx-4 px-3 py-4 layhetgsjdcb">
+                  <div class="shrink max-w-full uajskeiolksb w-1/3">
+                    <img src="{{ url_for('static', filename='img/avatar/user.png') }}" class="h-10 w-10 boalstehwqbj" alt="User">
+                  </div>
+                  <div class="shrink max-w-full uajskeiolksb w-2/3 ps-1">
+                    <div class="font-bold">
+                      <a href="#" class="text-gray-800 dark:text-gray-300 hover:text-indigo-500">
+                        {{ current_user.full_name or current_user.email.split('@')[0] if current_user.is_authenticated else 'Guest' }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="relative">
+                <hr class="border-t border-gray-200 dark:border-gray-700 my-0">
+              </li>
+              <li class="relative">
+                <a class="block w-full py-2 dkslaoeyhnmj clear-both whitespace-nowrap hover:text-indigo-500" href="javascript:;" onclick="document.querySelector('[aria-controls=mobile-canvas]').click()">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline me-2 size-4 bi bi-gear" viewBox="0 0 16 16">
+                    <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                    <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                  </svg>
+                  <!-- <i class="inline me-2 size-4 bi bi-gear"></i> --> Settings
+                </a>
+              </li>
+              <li class="relative">
+                <a class="block w-full py-2 dkslaoeyhnmj clear-both whitespace-nowrap hover:text-indigo-500" href="#">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline me-2 size-4 bi bi-question-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                  </svg>
+                  <!-- <i class="inline me-2 size-4 bi bi-question-circle"></i> --> Help
+                </a>
+              </li>
+              <li class="relative">
+                <hr class="border-t border-gray-200 dark:border-gray-700 my-0">
+              </li>
+              <li class="relative">
+                <a class="block w-full py-2 dkslaoeyhnmj clear-both whitespace-nowrap hover:text-indigo-500" href="{{ url_for('auth.login') }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline me-2 size-4 bi bi-box-arrow-in-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+                    <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                  </svg>
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <!-- End Navbar -->
+
+      <!-- desktop menu -->
+      <div x-bind:aria-expanded="open" :class="{ 'block lg:hidden': open, 'hidden lg:flex': !(open) }" class="lg:flex lg:klsuaonrmcha lg:flex-nowrap lg:layhetgsjdcb lg:vlaoethsnkma mt-0 dkslaoeyhnmj bg-gray-800 text-gray-400 dark:bg-gray-950" id="desktp-menu">
+        <!-- menu -->
+        <ul class="flex ioajsklehsnm lg:me-auto mt-3 lg:klsuaonrmcha lg:mt-0">
+
+          <!-- Dashboard -->
+          <li class="relative">
+            <a class="block py-3 lg:py-7 px-0 lg:uajskeiolksb hover:text-gray-300 focus:text-gray-300" href="{{ url_for('routes.index') }}">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 me-1 bi bi-house-door" viewBox="0 0 16 16">
+                <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5-.5v4H2.5z"/>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+
+          <!-- Patients -->
+          <li class="relative">
+            <a class="block py-3 lg:py-7 px-0 lg:uajskeiolksb hover:text-gray-300 focus:text-gray-300" href="{{ url_for('routes.patient_list') }}">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 me-1 bi bi-people" viewBox="0 0 16 16">
+                <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002A.274.274 0 0 1 15 13H7zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+              </svg>
+              Patients
+            </a>
+          </li>
+
+          <!-- Analysis -->
+          <li class="relative">
+            <a class="block py-3 lg:py-7 px-0 lg:uajskeiolksb hover:text-gray-300 focus:text-gray-300" href="{{ url_for('routes.task_list') }}">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 me-1 bi bi-cpu" viewBox="0 0 16 16">
+                <path d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0zm-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3h-7zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+              </svg>
+              Analysis
+            </a>
+          </li>
+
+          <!-- Results -->
+          <li class="relative">
+            <a class="block py-3 lg:py-7 px-0 lg:uajskeiolksb hover:text-gray-300 focus:text-gray-300" href="{{ url_for('routes.status') }}">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 me-1 bi bi-bar-chart" viewBox="0 0 16 16">
+                <path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zM1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/>
+              </svg>
+              Results
+            </a>
+          </li>
+
+          <!-- Help dropdown -->
+          <li class="relative" x-data="{ open: false }" @keydown.escape.stop="open = false" @click.away="open = false">
+            <a id="dropdown-help" class="block py-3 lg:py-7 px-0 lg:uajskeiolksb hover:text-gray-300 focus:text-gray-300" href="javascript:;" @click="open = !open" aria-haspopup="true" x-bind:aria-expanded="open" :class="{ 'text-gray-300': open }">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 me-1 bi bi-question-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+              </svg>
+              Help
+              <span class="inline-block ms-2 float-end mt-1.5 lg:float-none">
+                <svg class="transform transition duration-300" xmlns="http://www.w3.org/2000/svg" width=".8rem" height=".8rem" fill="currentColor" viewBox="0 0 512 512"><polyline points="112 184 256 328 400 184" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"/></svg>
+              </span>
+            </a>
+            <!-- dropdown menu -->
+            <ul class="block lg:absolute border-s-2 border-gray-400 lg:border-s-0 lg:border-t-2 lg:border-indigo-500 rounded-sm rounded-t-none top-full z-50 py-0.5 text-start lg:bg-white lg:shadow-md lg:text-gray-600 dark:bg-gray-800 dark:border-gray-700" style="min-width: 12rem;display:none;" x-description="Dropdown menu" x-show="open" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-help" x-transition:enter="transition duration-200" x-transition:enter-start="transform opacity-0 translate-y-4" x-transition:enter-end="transform opacity-100 translate-y-0" x-transition:leave="transition translate-y-4" x-transition:leave-start="transform opacity-100 translate-y-0" x-transition:leave-end="transform opacity-0 translate-y-4">
+              <li class="relative">
+                <a class="block w-full py-2 dkslaoeyhnmj clear-both whitespace-nowrap hover:text-gray-300 lg:hover:text-indigo-500 dark:text-gray-400" href="{{ url_for('routes.help_faq') }}">FAQ</a>
+              </li>
+              <li class="relative">
+                <a class="block w-full py-2 dkslaoeyhnmj clear-both whitespace-nowrap hover:text-gray-300 lg:hover:text-indigo-500 dark:text-gray-400" href="{{ url_for('routes.help_support') }}">Support</a>
+              </li>
+              <li class="relative">
+                <a class="block w-full py-2 dkslaoeyhnmj clear-both whitespace-nowrap hover:text-gray-300 lg:hover:text-indigo-500 dark:text-gray-400" href="{{ url_for('routes.help_logs') }}">Logs</a>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+
+      </div><!-- end desktop menu -->
+
+			<main>
+        {% block content %}
+        {% endblock %}
+      </main>
+
+      <footer class="bg-white dark:bg-gray-800 p-6 shadow-xs">
+        <div class="flex flex-wrap klsuaonrmcha">
+          <div class="shrink max-w-full w-full lg:w-1/2 text-center lg:text-start">
+            <ul class="ps-0 space-x-3">
+              <li class="inline-block">
+                <a class="hover:text-indigo-500" href="{{ url_for('routes.help_support') }}">Support</a>
+              </li>
+              <li class="inline-block">
+                <a class="hover:text-indigo-500" href="{{ url_for('routes.privacy') }}">Privacy</a>
+              </li>
+              <li class="inline-block">
+                <a class="hover:text-indigo-500" href="{{ url_for('routes.terms') }}">Terms of Service</a>
+              </li>
+            </ul>
+          </div>
+          <div class="shrink max-w-full w-full lg:w-1/2 text-center lg:text-end">
+            <p class="mb-0 mt-3 md:mt-0">
+              <a href="{{ url_for('routes.index') }}" class="hover:text-indigo-500">Exomiser App</a> | All right reserved
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!--start::Global javascript (used in all pages)-->
+  <script src="{{ url_for('static', filename='vendors/alpinejs/dist/cdn.min.js') }}"></script><!-- core js -->
+  <script src="{{ url_for('static', filename='vendors/flatpickr/dist/flatpickr.min.js') }}"></script><!-- input date -->
+  <script src="{{ url_for('static', filename='vendors/flatpickr/dist/plugins/rangePlugin.js') }}"></script><!-- input range date -->
+  <script src="{{ url_for('static', filename='vendors/yaireo/tagify/dist/tagify.js') }}"></script><!-- input tags -->
+  <script src="{{ url_for('static', filename='vendors/pristinejs/dist/pristine.min.js') }}"></script><!-- form validation -->
+  <script src="{{ url_for('static', filename='vendors/simple-datatables/dist/umd/simple-datatables.js') }}"></script><!--sort table-->
+  <!--end::Global javascript (used in all pages)-->
+
+  <!-- Minify Global javascript (for production purpose) -->
+  <!-- <script src="{{ url_for('static', filename='js/scripts.js') }}"></script> -->
+   <!--start::Demo javascript ( initialize global javascript )-->
+  <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+
+  <!-- Additional JavaScript -->
+  {% block extra_js %}
+  <script src="{{ url_for('static', filename='vendors/chart.js/dist/chart.umd.js') }}"></script><!-- charts -->
+  <!-- chart cofig -->
+  <script src="{{ url_for('static', filename='js/chart/cms.js') }}"></script>
+
+  <!--start::Vendor javascript (only on this page)-->
+  <script src="{{ url_for('static', filename='vendors/jsvectormap/dist/js/jsvectormap.min.js') }}"></script><!-- vector map -->
+  <script src="{{ url_for('static', filename='vendors/jsvectormap/dist/maps/world.js') }}"></script><!-- world vector map -->
+  {% endblock %}
+  <!--end::Vendor javascript (only on this page)-->
+  <!--start::Call vendor ( initialize vendor javascript )-->
+  <script src="{{ url_for('static', filename='js/vendor.js') }}"></script>
+
+  <!--start::Customizer js ( Only for demo purpose )-->
+  <script src="{{ url_for('static', filename='js/customizer.js') }}"></script>
+
+</body>
+
+</html>
+
