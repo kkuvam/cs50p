@@ -244,6 +244,7 @@ class Analysis(db.Model):
     completed_at = db.Column(db.DateTime, nullable=True)
     error_message = db.Column(db.Text, nullable=True)  # Error details if failed
     log_file_path = db.Column(db.String(500), nullable=True)  # Execution log path
+    log = db.Column(db.Text, nullable=True)  # Complete process output log for debugging
 
     # Relationships
     individual_id = db.Column(db.Integer, db.ForeignKey('individuals.id'), nullable=False)
@@ -295,6 +296,8 @@ class Analysis(db.Model):
             'started_at': self.started_at.isoformat() if self.started_at else None,
             'completed_at': self.completed_at.isoformat() if self.completed_at else None,
             'duration': str(self.duration) if self.duration else None,
+            'error_message': self.error_message,
+            'log': self.log,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
