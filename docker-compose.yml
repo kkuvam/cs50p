@@ -15,8 +15,8 @@ services:
       - ./app:/opt/app:ro
       # Persistent data volumes
       - ./instance:/opt/instance
-      - ./data:/opt/exomiser/data
-      - ./results:/opt/exomiser/results
+      - /Volumes/Extreme/Exomiser/data:/opt/exomiser/data
+      - ./ikdrc:/opt/exomiser/ikdrc # vcf, phenopacket, results
       # Optional: mount configuration
       - ./compose/application.properties:/opt/exomiser/application.properties:ro
     ports:
