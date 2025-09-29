@@ -27,6 +27,19 @@
     <p class="text-gray-600 dark:text-gray-400">Create a new individual record for genomic analysis</p>
   </div>
 
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-6">
+        {% for category, message in messages %}
+          <div class="{% if category == 'error' %}bg-red-100 border-red-400 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300{% else %}bg-green-100 border-green-400 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300{% endif %} border px-4 py-3 rounded relative mb-2" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <!-- Individual Add Form -->
   <form method="POST" enctype="multipart/form-data" class="space-y-8">
     <!-- Basic Information Card -->
@@ -41,10 +54,10 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label for="individual_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Individual ID <span class="text-red-500">*</span>
+          <label for="identity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Identity <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="individual_id" name="individual_id" required
+          <input type="text" id="identity" name="identity" required
                  placeholder="e.g., P0001"
                  class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>

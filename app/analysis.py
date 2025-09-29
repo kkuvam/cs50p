@@ -18,7 +18,7 @@ def analysis_list():
 def analysis_add():
     """Add new analysis"""
     # Get available individuals for dropdown
-    individuals = Individual.query.order_by(Individual.individual_id).all()
+    individuals = Individual.query.order_by(Individual.identity).all()
 
     if request.method == "POST":
         try:
@@ -28,7 +28,7 @@ def analysis_add():
             individual_id = request.form.get("individual_id", type=int)
             vcf_filename = request.form.get("vcf_filename", "").strip()
             genome_assembly = request.form.get("genome_assembly", "hg19")
-            analysis_mode = request.form.get("analysis_mode", "PASS_ONLY")
+            analysis_mode = request.form.get("analysis_mode", "FULL")
             frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5
 
@@ -87,7 +87,7 @@ def analysis_add():
 def analysis_edit(analysis_id):
     """Edit existing analysis"""
     analysis = Task.query.get_or_404(analysis_id)
-    individuals = Individual.query.order_by(Individual.individual_id).all()
+    individuals = Individual.query.order_by(Individual.identity).all()
 
     if request.method == "POST":
         try:
@@ -103,7 +103,7 @@ def analysis_edit(analysis_id):
             # Use lowercase genome assembly directly as enum
             genome_assembly = request.form.get("genome_assembly", "hg19")
             analysis.genome_assembly = GenomeAssembly(genome_assembly)
-            analysis.analysis_mode = request.form.get("analysis_mode", "PASS_ONLY")
+            analysis.analysis_mode = request.form.get("analysis_mode", "FULL")
             analysis.frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             analysis.pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5
 
