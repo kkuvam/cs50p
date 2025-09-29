@@ -1,8 +1,8 @@
 {% extends 'layout.html' %}
 
-{% block title %}Delete Patient | Exomiser App{% endblock %}
+{% block title %}Delete Individual | Exomiser App{% endblock %}
 
-{% block description %}Delete Patient Confirmation{% endblock %}
+{% block description %}Delete Individual Confirmation{% endblock %}
 
 {% block content %}
 <div class="mx-auto p-6 max-w-2xl">
@@ -11,20 +11,20 @@
     <nav class="flex mb-4" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
-          <a href="{{ url_for('patient.patient_list') }}" class="text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400">Patients</a>
+          <a href="{{ url_for('individual.individual_list') }}" class="text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400">Individuals</a>
         </li>
         <li>
           <div class="flex items-center">
             <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">Delete Patient</span>
+            <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">Delete Individual</span>
           </div>
         </li>
       </ol>
     </nav>
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Delete Patient</h1>
-    <p class="text-gray-600 dark:text-gray-400">Confirm patient record deletion</p>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Delete Individual</h1>
+    <p class="text-gray-600 dark:text-gray-400">Confirm individual record deletion</p>
   </div>
 
   <!-- Content Placeholder -->
@@ -34,7 +34,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
       </svg>
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Delete Confirmation</h3>
-      <p class="text-gray-500 dark:text-gray-400 mb-6">Patient deletion confirmation will be implemented here.</p>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">Individual deletion confirmation will be implemented here.</p>
 
       <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
         <div class="flex">
@@ -46,7 +46,7 @@
           <div class="ml-3">
             <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Warning</h3>
             <div class="mt-1 text-sm text-red-700 dark:text-red-300">
-              This action cannot be undone. All patient data and associated analysis results will be permanently deleted.
+              This action cannot be undone. All individual data and associated analysis results will be permanently deleted.
             </div>
           </div>
         </div>

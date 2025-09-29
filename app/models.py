@@ -42,8 +42,8 @@ class User(UserMixin, db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relationships - track what users created and updated
-    created_patients = db.relationship('Patient', foreign_keys='Patient.created_by', backref='creator', lazy=True)
-    updated_patients = db.relationship('Patient', foreign_keys='Patient.updated_by', backref='last_updater', lazy=True)
+    created_individuals = db.relationship('Individual', foreign_keys='Individual.created_by', backref='creator', lazy=True)
+    updated_individuals = db.relationship('Individual', foreign_keys='Individual.updated_by', backref='last_updater', lazy=True)
     created_tasks = db.relationship('Task', foreign_keys='Task.created_by', backref='creator', lazy=True)
     updated_tasks = db.relationship('Task', foreign_keys='Task.updated_by', backref='last_updater', lazy=True)
 
@@ -62,12 +62,12 @@ class User(UserMixin, db.Model):
     # flask-login expect methods provided by UserMixin (is_authenticated, get_id, etc)
 
 
-class Patient(db.Model):
+class Individual(db.Model):
     """
-    Patient model based on phenopacket form fields.
-    Stores patient information and phenotype data for genomic analysis.
+    Individual model based on phenopacket form fields.
+    Stores individual information and phenotype data for genomic analysis.
     """
-    __tablename__ = "patients"
+    __tablename__ = "individuals"
 
     id = db.Column(db.Integer, primary_key=True)
     individual_id = db.Column(db.String(50), nullable=False, index=True)  # e.g. P0001
@@ -93,19 +93,19 @@ class Patient(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relationships
-    tasks = db.relationship('Task', backref='patient', lazy=True, cascade='all, delete-orphan')
+    tasks = db.relationship('Task', backref='individual', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f"<Patient {self.individual_id}: {self.full_name or 'Unnamed'}>"
+        return f"<Individual {self.individual_id}: {self.full_name or 'Unnamed'}>"
 
     @property
     def hpo_count(self):
-        """Return count of HPO terms for this patient."""
+        """Return count of HPO terms for this individual."""
         return len(self.hpo_terms) if self.hpo_terms else 0
 
     def generate_phenopacket_yaml(self, creator="Exomiser Web Interface"):
         """
-        Generate phenopacket YAML content based on patient data.
+        Generate phenopacket YAML content based on individual data.
         This method replicates the JavaScript logic from phenopacket.html
         """
         import yaml
@@ -181,13 +181,13 @@ class Patient(db.Model):
 
     def update_phenopacket_yaml(self, creator="Exomiser Web Interface"):
         """
-        Generate and update the phenopacket_yaml field for this patient.
+        Generate and update the phenopacket_yaml field for this individual.
         """
         self.phenopacket_yaml = self.generate_phenopacket_yaml(creator)
         return self.phenopacket_yaml
 
     def to_dict(self):
-        """Convert patient to dictionary for API responses."""
+        """Convert individual to dictionary for API responses."""
         return {
             'id': self.id,
             'individual_id': self.individual_id,
@@ -208,7 +208,7 @@ class Patient(db.Model):
 class Task(db.Model):
     """
     Analysis Task model for genomic variant analysis workflows.
-    Represents an Exomiser analysis job with VCF file and patient data.
+    Represents an Exomiser analysis job with VCF file and individual data.
     """
     __tablename__ = "tasks"
 
@@ -244,7 +244,7 @@ class Task(db.Model):
     log_file_path = db.Column(db.String(500), nullable=True)  # Execution log path
 
     # Relationships
-    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
+    individual_id = db.Column(db.Integer, db.ForeignKey('individuals.id'), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     updated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -287,9 +287,9 @@ class Task(db.Model):
             'genome_assembly': self.genome_assembly.value if self.genome_assembly else None,
             'status': self.status.value,
             'progress_percent': self.progress_percent,
-            'patient_id': self.patient_id,
-            'patient_name': self.patient.full_name if self.patient else None,
-            'patient_individual_id': self.patient.individual_id if self.patient else None,
+            'individual_id': self.individual_id,
+            'individual_name': self.individual.full_name if self.individual else None,
+            'individual_individual_id': self.individual.individual_id if self.individual else None,
             'started_at': self.started_at.isoformat() if self.started_at else None,
             'completed_at': self.completed_at.isoformat() if self.completed_at else None,
             'duration': str(self.duration) if self.duration else None,

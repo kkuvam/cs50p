@@ -1,42 +1,41 @@
 {% extends 'layout.html' %}
 
-{% block title %}Add Patient | Exomiser App{% endblock %}
+{% block title %}Edit Individual | Exomiser App{% endblock %}
 
-{% block description %}Add New Patient Record{% endblock %}
+{% block description %}Edit Individual Record{% endblock %}
 
 {% block content %}
-<div class="mx-auto p-6 pt-6 max-w-4xl">
+<div class="mx-auto p-6 max-w-4xl">
   <!-- Header -->
   <div class="mb-8">
     <nav class="flex mb-4" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
-          <a href="{{ url_for('patient.patient_list') }}" class="text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400">Patients</a>
+          <a href="{{ url_for('individual.individual_list') }}" class="text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400">Individuals</a>
         </li>
         <li>
           <div class="flex items-center">
             <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">Add Patient</span>
+            <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">Edit {{ individual.individual_id }}</span>
           </div>
         </li>
       </ol>
     </nav>
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Add New Patient</h1>
-    <p class="text-gray-600 dark:text-gray-400">Create a new patient record for genomic analysis</p>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Edit Individual: {{ individual.individual_id }}</h1>
+    <p class="text-gray-600 dark:text-gray-400">Update individual record and information</p>
   </div>
 
-  <!-- Patient Add Form -->
-  <form method="POST" enctype="multipart/form-data" class="space-y-8 pt-6">
+  <!-- Edit Form -->
+  <form method="POST" enctype="multipart/form-data" class="space-y-8">
     <!-- Basic Information Card -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <div class="flex items-center mb-6">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Basic Information</h2>
-        <span class="ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Required</span>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Individual Information</h2>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -45,7 +44,7 @@
             Individual ID <span class="text-red-500">*</span>
           </label>
           <input type="text" id="individual_id" name="individual_id" required
-                 placeholder="e.g., P0001"
+                 value="{{ individual.individual_id }}"
                  class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
 
@@ -54,7 +53,7 @@
             Full Name <span class="text-red-500">*</span>
           </label>
           <input type="text" id="full_name" name="full_name" required
-                 placeholder="Patient's full name"
+                 value="{{ individual.full_name or '' }}"
                  class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
 
@@ -64,11 +63,9 @@
           </label>
           <select id="sex" name="sex" required
                   class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
-            <option value="">Select sex</option>
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-            <option value="OTHER">Other</option>
-            <option value="UNKNOWN">Unknown</option>
+            <option value="MALE" {% if individual.sex.value == 'MALE' %}selected{% endif %}>Male</option>
+            <option value="FEMALE" {% if individual.sex.value == 'FEMALE' %}selected{% endif %}>Female</option>
+            <option value="UNKNOWN" {% if individual.sex.value == 'UNKNOWN' %}selected{% endif %}>Unknown</option>
           </select>
         </div>
 
@@ -77,39 +74,27 @@
             Age (years) <span class="text-red-500">*</span>
           </label>
           <input type="number" id="age_years" name="age_years" required min="0" max="150"
-                 placeholder="Age in years"
+                 value="{{ individual.age_years }}"
                  class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
-      </div>
-    </div>
 
-    <!-- Medical Information Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-      <div class="flex items-center mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Medical Information</h2>
-        <span class="ml-2 px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Optional</span>
-      </div>
-
-      <div class="grid grid-cols-1 gap-6">
-        <div>
+        <div class="md:col-span-2">
           <label for="diagnosis" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Primary Diagnosis
+            Diagnosis
           </label>
           <input type="text" id="diagnosis" name="diagnosis"
-                 placeholder="Primary clinical diagnosis"
+                 value="{{ individual.diagnosis or '' }}"
+                 placeholder="Primary diagnosis or suspected condition"
                  class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
 
-        <div>
+        <div class="md:col-span-2">
           <label for="medical_history" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Medical History
           </label>
           <textarea id="medical_history" name="medical_history" rows="4"
                     placeholder="Relevant medical history, symptoms, or clinical notes"
-                    class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600"></textarea>
+                    class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">{{ individual.medical_history or '' }}</textarea>
         </div>
       </div>
     </div>
@@ -130,7 +115,7 @@
             Search HPO Terms <span class="text-red-500">*</span>
           </label>
           <select id="hpo-search" class="w-full"></select>
-          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Search and select Human Phenotype Ontology terms that describe the patient's phenotype</p>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Search and select Human Phenotype Ontology terms that describe the individual's phenotype</p>
         </div>
 
         <div>
@@ -148,7 +133,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
           </svg>
-          Remove Selected
+          Remove selected
         </button>
       </div>
     </div>
@@ -160,51 +145,90 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">VCF File Upload</h2>
-        <span class="ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Required</span>
+        <span class="ml-2 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Optional</span>
       </div>
 
       <div>
         <label for="vcf_file" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          VCF File <span class="text-red-500">*</span>
+          VCF File (Optional)
         </label>
 
+        <!-- Current VCF File Info -->
+        {% if individual.vcf_file_path %}
+        <div class="mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Current VCF file:</span>
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ individual.vcf_file_path.split('/')[-1] if individual.vcf_file_path else 'No file uploaded' }}</span>
+          </div>
+        </div>
+        {% endif %}
+
         <div class="mb-6">
-          <div id="vcfDropzone" class="dropzone single-dropzone mb-6">
-            <div class="dz-message" data-dz-message>
-              <div class="pre-upload flex ioajsklehsnm yhansklopals">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-auto text-gray-500 inline-block size-10 bi bi-cloud-arrow-up" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"></path>
-                  <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"></path>
-                </svg>
-                <div class="py-3"><span>Drag & drop VCF files here</span></div>
+          <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+            <div class="space-y-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <div>
+                <label for="vcf_file" class="cursor-pointer">
+                  <span class="mt-2 block text-sm font-medium text-gray-900 dark:text-white">
+                    Choose new VCF file or drag and drop
+                  </span>
+                  <span class="mt-1 block text-sm text-gray-500 dark:text-gray-400">
+                    .vcf or .vcf.gz files up to 100MB (optional - leave empty to keep current file)
+                  </span>
+                </label>
+                <input type="file" id="vcf_file" name="vcf_file" accept=".vcf,.vcf.gz"
+                       class="sr-only" onchange="displayFileName(this)">
               </div>
-              <div class="pre-upload text-center">
-                <button type="button" class="py-1.5 px-3 inline-block text-center rounded-sm leading-normal text-gray-800 bg-gray-100 border border-gray-100 hover:text-gray-900 hover:bg-gray-200 hover:ring-0 hover:border-gray-200 focus:bg-gray-200 focus:border-gray-200 focus:outline-hidden focus:ring-0 me-2 dark:bg-gray-300">Browse file</button>
+              <button type="button" onclick="document.getElementById('vcf_file').click()"
+                      class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-blue-500 border border-blue-500 hover:text-white hover:bg-blue-600 hover:ring-0 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600 focus:outline-hidden focus:ring-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.25rem" height="1.25rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Select New File
+              </button>
+            </div>
+            <div id="file-info" class="mt-4 hidden">
+              <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span id="file-name"></span>
               </div>
             </div>
           </div>
         </div>
 
-        <input type="file" id="vcf_file" name="vcf_file" accept=".vcf,.vcf.gz" required style="display: none;">
         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Upload a VCF (.vcf) file containing genomic variants
+          {% if individual.vcf_file_path %}
+          Upload a new VCF (.vcf) file to replace the current one. Leave empty to keep the existing file.
+          {% else %}
+          Upload a VCF (.vcf) file containing genomic variants. This field is optional.
+          {% endif %}
         </p>
       </div>
     </div>
 
-    <!-- Form Actions -->
+    <!-- Action Buttons -->
     <div class="flex justify-end space-x-6 pt-6 border-t border-gray-200 dark:border-gray-600">
-      <a href="{{ url_for('patient.patient_list') }}"
+      <a href="{{ url_for('individual.individual_list') }}"
          class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
         Cancel
       </a>
+
       <button type="submit"
               class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
-        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 16 16">
-          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
-        Create Patient
+        Update Individual
       </button>
     </div>
   </form>
@@ -218,6 +242,36 @@
 <script src="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/js/select2.min.js') }}"></script>
 
 <script>
+// Disable Dropzone auto-discovery to prevent it from taking over the whole form
+if (typeof Dropzone !== 'undefined') {
+    Dropzone.autoDiscover = false;
+}
+
+// Prevent any Dropzone from being applied to our form
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Dropzone !== 'undefined') {
+        Dropzone.autoDiscover = false;
+        // Remove any dropzone class that might have been added automatically
+        const forms = document.querySelectorAll('form[enctype="multipart/form-data"]');
+        forms.forEach(form => {
+            form.classList.remove('dropzone');
+        });
+    }
+});
+
+// Global function for file name display
+function displayFileName(input) {
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+
+    if (input.files && input.files[0]) {
+        fileName.textContent = input.files[0].name;
+        fileInfo.classList.remove('hidden');
+    } else {
+        fileInfo.classList.add('hidden');
+    }
+}
+
 $(document).ready(function() {
     // Initialize Select2 for HPO search with live API (copied from phenopacket.html)
     $('#hpo-search').select2({
@@ -249,8 +303,12 @@ $(document).ready(function() {
         templateSelection: () => ''   // keep bar empty after selection
     });
 
-    // Store selected HPO terms
-    let selectedHpoTerms = [];
+    // Store selected HPO terms - initialize with existing data
+    let selectedHpoTerms = {{ individual.hpo_terms | tojson }};
+
+    // Initialize chosen list with existing HPO terms
+    updateChosenList();
+    updateHiddenField();
 
     // Handle HPO term selection (adapted from phenopacket.html)
     $('#hpo-search').on('select2:select', function (e) {
@@ -330,37 +388,23 @@ $(document).ready(function() {
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 46px;
-    right: 16px;
+    right: 10px;
 }
 
 .select2-dropdown {
     border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
 }
 
-/* Dark mode support */
-.dark .select2-container--default .select2-selection--single {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #fff;
+/* Prevent Dropzone from taking over our form */
+form:not(.dropzone) {
+    border: none !important;
+    background: transparent !important;
 }
 
-.dark .select2-dropdown {
-    background-color: #374151;
-    border-color: #4b5563;
-}
-
-.dark .select2-search__field {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #fff;
-}
-
-.dark .select2-results__option {
-    color: #fff;
-}
-
-.dark .select2-results__option[aria-selected=true] {
-    background-color: #4f46e5;
+/* Ensure our custom file upload area doesn't get Dropzone styling */
+.border-dashed {
+    border-style: dashed !important;
 }
 </style>
 {% endblock %}

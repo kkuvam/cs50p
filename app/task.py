@@ -1,7 +1,7 @@
 # File: app/task.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import db, Patient, Task, TaskStatus, GenomeAssembly
+from models import db, Individual, Task, TaskStatus, GenomeAssembly
 
 task_bp = Blueprint("task", __name__)
 
@@ -17,15 +17,15 @@ def task_list():
 @login_required
 def task_add():
     """Add new analysis task"""
-    # Get available patients for dropdown
-    patients = Patient.query.order_by(Patient.individual_id).all()
+    # Get available individuals for dropdown
+    individuals = Individual.query.order_by(Individual.individual_id).all()
 
     if request.method == "POST":
         try:
             # Get form data
             name = request.form.get("name", "").strip()
             description = request.form.get("description", "").strip()
-            patient_id = request.form.get("patient_id", type=int)
+            individual_id = request.form.get("individual_id", type=int)
             vcf_filename = request.form.get("vcf_filename", "").strip()
             genome_assembly = request.form.get("genome_assembly", "hg19")
             analysis_mode = request.form.get("analysis_mode", "PASS_ONLY")
@@ -35,27 +35,27 @@ def task_add():
             # Validation
             if not name:
                 flash("Task name is required", "error")
-                return render_template("task/add.html", patients=patients, user=current_user)
+                return render_template("task/add.html", individuals=individuals, user=current_user)
 
-            if not patient_id:
-                flash("Patient selection is required", "error")
-                return render_template("task/add.html", patients=patients, user=current_user)
+            if not individual_id:
+                flash("Individual selection is required", "error")
+                return render_template("task/add.html", individuals=individuals, user=current_user)
 
             if not vcf_filename:
                 flash("VCF filename is required", "error")
-                return render_template("task/add.html", patients=patients, user=current_user)
+                return render_template("task/add.html", individuals=individuals, user=current_user)
 
-            # Verify patient exists
-            patient = Patient.query.get(patient_id)
-            if not patient:
-                flash("Selected patient not found", "error")
-                return render_template("task/add.html", patients=patients, user=current_user)
+            # Verify individual exists
+            individual = Individual.query.get(individual_id)
+            if not individual:
+                flash("Selected individual not found", "error")
+                return render_template("task/add.html", individuals=individuals, user=current_user)
 
             # Create task
             task = Task(
                 name=name,
                 description=description or None,
-                patient_id=patient_id,
+                individual_id=individual_id,
                 vcf_filename=vcf_filename,
                 genome_assembly=GenomeAssembly(genome_assembly),
                 analysis_mode=analysis_mode,
@@ -75,27 +75,27 @@ def task_add():
         except Exception as e:
             db.session.rollback()
             flash(f"Error creating task: {str(e)}", "error")
-            return render_template("task/add.html", patients=patients, user=current_user)
+            return render_template("task/add.html", individuals=individuals, user=current_user)
 
-    return render_template("task/add.html", patients=patients, user=current_user)
+    return render_template("task/add.html", individuals=individuals, user=current_user)
 
 @task_bp.route("/task/<int:task_id>/edit", methods=["GET", "POST"])
 @login_required
 def task_edit(task_id):
     """Edit existing analysis task"""
     task = Task.query.get_or_404(task_id)
-    patients = Patient.query.order_by(Patient.individual_id).all()
+    individuals = Individual.query.order_by(Individual.individual_id).all()
 
     if request.method == "POST":
         try:
             # Update fields (only allow editing if task is not running)
             if task.status in [TaskStatus.RUNNING]:
                 flash("Cannot edit running task", "error")
-                return render_template("task/edit.html", task=task, patients=patients, user=current_user)
+                return render_template("task/edit.html", task=task, individuals=individuals, user=current_user)
 
             task.name = request.form.get("name", "").strip()
             task.description = request.form.get("description", "").strip() or None
-            task.patient_id = request.form.get("patient_id", type=int)
+            task.individual_id = request.form.get("individual_id", type=int)
             task.vcf_filename = request.form.get("vcf_filename", "").strip()
             task.genome_assembly = GenomeAssembly(request.form.get("genome_assembly", "hg19"))
             task.analysis_mode = request.form.get("analysis_mode", "PASS_ONLY")
@@ -108,17 +108,17 @@ def task_edit(task_id):
             # Validation
             if not task.name:
                 flash("Task name is required", "error")
-                return render_template("task/edit.html", task=task, patients=patients, user=current_user)
+                return render_template("task/edit.html", task=task, individuals=individuals, user=current_user)
 
-            if not task.patient_id:
-                flash("Patient selection is required", "error")
-                return render_template("task/edit.html", task=task, patients=patients, user=current_user)
+            if not task.individual_id:
+                flash("Individual selection is required", "error")
+                return render_template("task/edit.html", task=task, individuals=individuals, user=current_user)
 
-            # Verify patient exists
-            patient = Patient.query.get(task.patient_id)
-            if not patient:
-                flash("Selected patient not found", "error")
-                return render_template("task/edit.html", task=task, patients=patients, user=current_user)
+            # Verify individual exists
+            individual = Individual.query.get(task.individual_id)
+            if not individual:
+                flash("Selected individual not found", "error")
+                return render_template("task/edit.html", task=task, individuals=individuals, user=current_user)
 
             # Reset status to pending if it was failed/cancelled (allow rerun)
             if task.status in [TaskStatus.FAILED, TaskStatus.CANCELLED]:
@@ -132,9 +132,9 @@ def task_edit(task_id):
         except Exception as e:
             db.session.rollback()
             flash(f"Error updating task: {str(e)}", "error")
-            return render_template("task/edit.html", task=task, patients=patients, user=current_user)
+            return render_template("task/edit.html", task=task, individuals=individuals, user=current_user)
 
-    return render_template("task/edit.html", task=task, patients=patients, user=current_user)
+    return render_template("task/edit.html", task=task, individuals=individuals, user=current_user)
 
 @task_bp.route("/task/<int:task_id>/delete", methods=["GET", "POST"])
 @login_required

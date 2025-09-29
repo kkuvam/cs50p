@@ -1,8 +1,8 @@
 {% extends 'layout.html' %}
 
-{% block title %}Patients | Exomiser App{% endblock %}
+{% block title %}Individuals | Exomiser App{% endblock %}
 
-{% block description %}Patient Management - List all patients{% endblock %}
+{% block description %}Individual Management - List all individuals{% endblock %}
 
 {% block content %}
 <div class="relative flex flex-wrap layhetgsjdcb -mx-4">
@@ -12,21 +12,21 @@
         <!-- Header -->
         <div class="flex flex-wrap layhetgsjdcb justify-between items-center -mx-4 mb-6 dkslaoeyhnmj pt-6">
           <div class="shrink max-w-full uajskeiolksb flex-1 px-4">
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-300 mb-2">Patients</h1>
-            <p class="text-gray-600 dark:text-gray-400">Manage patient records and genomic analysis data</p>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-300 mb-2">Individuals</h1>
+            <p class="text-gray-600 dark:text-gray-400">Manage individual records and genomic analysis data</p>
           </div>
           <div class="shrink max-w-full uajskeiolksb px-4">
-            <a href="{{ url_for('patient.patient_add') }}" class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+            <a href="{{ url_for('individual.individual_add') }}" class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
               <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              Add Patient
+              Add Individual
             </a>
           </div>
         </div>
 
         <!-- Content -->
-        {% if patients %}
+        {% if individuals %}
         <div class="w-full overflow-x-auto">
           <table class="table-sorter table-bordered w-full text-start text-gray-500 dark:text-gray-400">
             <thead>
@@ -42,26 +42,26 @@
               </tr>
             </thead>
         <tbody>
-          {% for patient in patients %}
+          {% for individual in individuals %}
           <tr>
-            <td>{{ patient.individual_id }}</td>
-            <td>{{ patient.full_name or '—' }}</td>
+            <td>{{ individual.individual_id }}</td>
+            <td>{{ individual.full_name or '—' }}</td>
             <td>
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                {% if patient.sex.name == 'MALE' %}bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200
-                {% elif patient.sex.name == 'FEMALE' %}bg-pink-100 text-pink-800 dark:bg-pink-800 dark:text-pink-200
+                {% if individual.sex.name == 'MALE' %}bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200
+                {% elif individual.sex.name == 'FEMALE' %}bg-pink-100 text-pink-800 dark:bg-pink-800 dark:text-pink-200
                 {% else %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300{% endif %}">
-                {{ patient.sex.value }}
+                {{ individual.sex.value }}
               </span>
             </td>
-            <td>{{ patient.age_years or '—' }}</td>
+            <td>{{ individual.age_years or '—' }}</td>
             <td>
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200">
-                {{ patient.hpo_count }} terms
+                {{ individual.hpo_count }} terms
               </span>
             </td>
             <td>
-              {% if patient.vcf_file_path %}
+              {% if individual.vcf_file_path %}
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-200">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -72,44 +72,34 @@
                 <span class="text-gray-400 dark:text-gray-500">No VCF</span>
               {% endif %}
             </td>
-            <td>{{ patient.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ individual.created_at.strftime('%Y-%m-%d') }}</td>
             <td>
               <div class="flex space-x-1">
-                <a href="{{ url_for('patient.patient_edit', patient_id=patient.id) }}"
+                <a href="{{ url_for('individual.individual_view', individual_id=individual.id) }}"
                    class="py-1 px-2 inline-flex layhetgsjdcb gap-1 rounded-sm leading-4 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0 text-xs"
-                   title="View Patient Details">
+                   title="View Individual Details">
                   <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="0.875rem" height="0.875rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                   View
                 </a>
-                <a href="{{ url_for('patient.patient_edit', patient_id=patient.id) }}"
+                <a href="{{ url_for('individual.individual_edit', individual_id=individual.id) }}"
                    class="py-1 px-2 inline-flex layhetgsjdcb gap-1 rounded-sm leading-4 text-gray-100 bg-blue-500 border border-blue-500 hover:text-white hover:bg-blue-600 hover:ring-0 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600 focus:outline-hidden focus:ring-0 text-xs"
-                   title="Edit Patient">
+                   title="Edit Individual">
                   <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="0.875rem" height="0.875rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                   Edit
                 </a>
-                <a href="{{ url_for('patient.patient_delete', patient_id=patient.id) }}"
+                <a href="{{ url_for('individual.individual_delete', individual_id=individual.id) }}"
                    class="py-1 px-2 inline-flex layhetgsjdcb gap-1 rounded-sm leading-4 text-gray-100 bg-red-500 border border-red-500 hover:text-white hover:bg-red-600 hover:ring-0 hover:border-red-600 focus:bg-red-600 focus:border-red-600 focus:outline-hidden focus:ring-0 text-xs"
-                   title="Delete Patient">
+                   title="Delete Individual">
                   <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="0.875rem" height="0.875rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                   Delete
                 </a>
-                {% if patient.phenopacket_yaml %}
-                <a href="#" onclick="viewPhenopacket({{ patient.id }})"
-                   class="py-1 px-2 inline-flex layhetgsjdcb gap-1 rounded-sm leading-4 text-gray-100 bg-green-500 border border-green-500 hover:text-white hover:bg-green-600 hover:ring-0 hover:border-green-600 focus:bg-green-600 focus:border-green-600 focus:outline-hidden focus:ring-0 text-xs"
-                   title="View Phenopacket YAML">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="0.875rem" height="0.875rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  YAML
-                </a>
-                {% endif %}
               </div>
             </td>
           </tr>
@@ -123,13 +113,13 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Patients Yet</h3>
-      <p class="text-gray-500 dark:text-gray-400 mb-4">Start by adding your first patient to begin genomic analysis.</p>
-      <a href="{{ url_for('patient.patient_add') }}" class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Individuals Yet</h3>
+      <p class="text-gray-500 dark:text-gray-400 mb-4">Start by adding your first individual to begin genomic analysis.</p>
+      <a href="{{ url_for('individual.individual_add') }}" class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
         <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
-        Add Your First Patient
+        Add Your First Individual
       </a>
     </div>
     {% endif %}
@@ -137,42 +127,4 @@
     </div>
   </div>
 </div>
-
-<!-- Phenopacket Modal -->
-<div id="phenopacketModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
-  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
-    <div class="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-96 overflow-hidden shadow-xl">
-      <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Generated Phenopacket YAML</h3>
-        <button onclick="closePhenopacketModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="p-6">
-        <pre id="phenopacketContent" class="bg-gray-100 dark:bg-gray-700 p-4 rounded text-sm overflow-auto max-h-64 text-left"></pre>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-function viewPhenopacket(patientId) {
-  fetch(`/patient/${patientId}/phenopacket`)
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('phenopacketContent').textContent = data.phenopacket_yaml;
-      document.getElementById('phenopacketModal').classList.remove('hidden');
-    })
-    .catch(error => {
-      console.error('Error fetching phenopacket:', error);
-      alert('Error loading phenopacket');
-    });
-}
-
-function closePhenopacketModal() {
-  document.getElementById('phenopacketModal').classList.add('hidden');
-}
-</script>
 {% endblock %}
