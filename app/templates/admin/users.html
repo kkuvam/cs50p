@@ -8,10 +8,20 @@
     <div class="w-full dkslaoeyhnmj mt-6">
       <div class="bg-white dark:bg-gray-800 dkslaoeyhnmj border border-gray-200 dark:border-gray-700">
         <!-- Header -->
-        <div class="flex flex-wrap layhetgsjdcb -mx-4 mb-6 dkslaoeyhnmj">
-          <div class="shrink max-w-full uajskeiolksb w-full px-4">
+        <div class="flex flex-wrap layhetgsjdcb justify-between items-center -mx-4 mb-6 dkslaoeyhnmj pt-6">
+          <div class="shrink max-w-full uajskeiolksb flex-1 px-4">
             <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-300 mb-2">User Management</h1>
             <p class="text-gray-600 dark:text-gray-400">Manage user accounts and activation status</p>
+          </div>
+          <div class="shrink max-w-full uajskeiolksb px-4">
+            <a href="{{ url_for('routes.admin_add_user') }}"
+               class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+              </svg>
+              Add User
+            </a>
           </div>
         </div>
 
@@ -30,26 +40,26 @@
 
         <!-- Users Table -->
         <div class="w-full overflow-x-auto">
-          <table id="usersTable" class="w-full text-start text-gray-500 dark:text-gray-400">
+          <table id="usersTable" class="table-sorter table-bordered w-full text-start text-gray-500 dark:text-gray-400">
             <thead>
               <tr class="bg-gray-200 dark:bg-gray-900/40">
-                <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
-                <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Full Name</th>
-                <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created</th>
-                <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Admin</th>
-                <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Created</th>
+                <th>Status</th>
+                <th>Admin</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {% for user in users %}
-              <tr class="border-t border-gray-200 dark:border-gray-700">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ user.id }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ user.email }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ user.full_name or '-' }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else '-' }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
+              <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.full_name or '-' }}</td>
+                <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else '-' }}</td>
+                <td>
                   {% if user.is_active %}
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200">
                       Active
@@ -60,7 +70,7 @@
                     </span>
                   {% endif %}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td>
                   {% if user.is_admin %}
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200">
                       Admin
@@ -71,57 +81,38 @@
                     </span>
                   {% endif %}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  {% if user.id != current_user.id %}
-                    <!-- Toggle Active Status -->
-                    <button onclick="toggleUserStatus({{ user.id }}, '{{ 'active' if not user.is_active else 'inactive' }}')"
-                            class="inline-flex layhetgsjdcb px-3 py-1 text-xs font-medium rounded-md
-                                   {% if user.is_active %}
-                                   bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-800 dark:text-red-200 dark:hover:bg-red-700
-                                   {% else %}
-                                   bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700
-                                   {% endif %}
-                                   border-0 focus:outline-hidden">
-                      {% if user.is_active %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-3 me-1 bi bi-person-x-fill" viewBox="0 0 16 16">
-                          <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"/>
-                        </svg>
-                        Deactivate
-                      {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-3 me-1 bi bi-person-check-fill" viewBox="0 0 16 16">
-                          <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                        Activate
-                      {% endif %}
-                    </button>
+                <td>
+                  <!-- Action buttons for all users -->
+                  <div class="flex items-center space-x-2">
+                    <!-- Edit Button -->
+                    <a href="{{ url_for('routes.admin_edit_user', user_id=user.id) }}"
+                       class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                      </svg>
+                      Edit
+                    </a>
 
-                    <!-- Toggle Admin Status -->
-                    <button onclick="toggleAdminStatus({{ user.id }}, '{{ 'admin' if not user.is_admin else 'user' }}')"
-                            class="inline-flex layhetgsjdcb px-3 py-1 ml-2 text-xs font-medium rounded-md
-                                   {% if user.is_admin %}
-                                   bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700
-                                   {% else %}
-                                   bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-200 dark:hover:bg-blue-700
-                                   {% endif %}
-                                   border-0 focus:outline-hidden">
-                      {% if user.is_admin %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-3 me-1 bi bi-person-dash-fill" viewBox="0 0 16 16">
-                          <path fill-rule="evenodd" d="M11 7.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
-                          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <!-- Reset Password Button -->
+                    <a href="{{ url_for('routes.admin_reset_password', user_id=user.id) }}"
+                       class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-orange-500 border border-orange-500 hover:text-white hover:bg-orange-600 hover:ring-0 hover:border-orange-600 focus:bg-orange-600 focus:border-orange-600 focus:outline-hidden focus:ring-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                      </svg>
+                      Reset Password
+                    </a>
+
+                    <!-- Delete Button (only for non-current users) -->
+                    {% if user.id != current_user.id %}
+                      <a href="{{ url_for('routes.admin_delete_user', user_id=user.id) }}"
+                         class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-red-500 border border-red-500 hover:text-white hover:bg-red-600 hover:ring-0 hover:border-red-600 focus:bg-red-600 focus:border-red-600 focus:outline-hidden focus:ring-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 16 16">
+                          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
                         </svg>
-                        Remove Admin
-                      {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-3 me-1 bi bi-person-plus-fill" viewBox="0 0 16 16">
-                          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                        </svg>
-                        Make Admin
-                      {% endif %}
-                    </button>
-                  {% else %}
-                    <span class="text-gray-400 dark:text-gray-500 text-xs">Current User</span>
-                  {% endif %}
+                        Delete
+                      </a>
+                    {% endif %}
+                  </div>
                 </td>
               </tr>
               {% endfor %}
@@ -148,61 +139,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// Toggle user active status
-function toggleUserStatus(userId, action) {
-    if (!confirm(`Are you sure you want to ${action === 'active' ? 'activate' : 'deactivate'} this user?`)) {
-        return;
-    }
-
-    fetch(`/admin/users/${userId}/toggle-status`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
-        },
-        body: JSON.stringify({ action: action })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload(); // Reload page to show updated status
-        } else {
-            alert('Error: ' + (data.message || 'Failed to update user status'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating user status');
-    });
-}
-
-// Toggle user admin status
-function toggleAdminStatus(userId, action) {
-    if (!confirm(`Are you sure you want to ${action === 'admin' ? 'grant admin privileges to' : 'remove admin privileges from'} this user?`)) {
-        return;
-    }
-
-    fetch(`/admin/users/${userId}/toggle-admin`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
-        },
-        body: JSON.stringify({ action: action })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload(); // Reload page to show updated status
-        } else {
-            alert('Error: ' + (data.message || 'Failed to update admin status'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating admin status');
-    });
-}
 </script>
 {% endblock %}
