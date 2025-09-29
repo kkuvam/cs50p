@@ -16,10 +16,10 @@ def clean_vcf_filename(original_filename):
     """
     if not original_filename:
         return original_filename
-    
+
     # Remove file extension first
     name_without_ext = os.path.splitext(original_filename)[0]
-    
+
     # Find everything before '_v1'
     match = re.match(r'^(.+?)_v\d+', name_without_ext)
     if match:
@@ -27,7 +27,7 @@ def clean_vcf_filename(original_filename):
     else:
         # If no '_v1' pattern found, use the original name without extension
         clean_name = name_without_ext
-    
+
     # Always add .vcf extension
     return f"{clean_name}.vcf"
 
@@ -46,7 +46,7 @@ def individual_add():
     if request.method == "POST":
         try:
             # Get form data
-            individual_id = request.form.get("individual_id", "").strip()
+            identity = request.form.get("identity", "").strip()
             full_name = request.form.get("full_name", "").strip()
             sex = request.form.get("sex", "UNKNOWN")
             age_years = request.form.get("age_years", type=int)
@@ -66,8 +66,8 @@ def individual_add():
 
             # Validation for required fields
             errors = []
-            if not individual_id:
-                errors.append("Individual ID is required")
+            if not identity:
+                errors.append("Identity is required")
             if not full_name:
                 errors.append("Full Name is required")
             if not age_years:
@@ -88,10 +88,10 @@ def individual_add():
             # At this point, we know vcf_file is not None and has a filename
             assert vcf_file is not None and vcf_file.filename is not None
 
-            # Check for duplicate individual_id across all users
-            existing = Individual.query.filter_by(individual_id=individual_id).first()
+            # Check for duplicate identity across all users
+            existing = Individual.query.filter_by(identity=identity).first()
             if existing:
-                flash(f"Individual with Individual ID '{individual_id}' already exists", "error")
+                flash(f"Individual with Identity '{identity}' already exists", "error")
                 return render_template("individual/add.html", user=current_user)
 
             # Process VCF file upload
@@ -100,7 +100,7 @@ def individual_add():
 
             # Generate unique filename
             file_extension = os.path.splitext(vcf_file.filename)[1]
-            unique_filename = f"{current_user.id}_{individual_id}_{uuid.uuid4().hex[:8]}{file_extension}"
+            unique_filename = f"{current_user.id}_{identity}_{uuid.uuid4().hex[:8]}{file_extension}"
             vcf_file_path = os.path.join(vcf_upload_dir, unique_filename)
 
             # Save the file
@@ -108,14 +108,14 @@ def individual_add():
 
             # Create individual with all required fields (phenopacket_yaml will be generated next)
             individual = Individual(
-                individual_id=individual_id,
+                identity=identity,
                 full_name=full_name,
                 sex=SexType(sex),
                 age_years=age_years,
                 medical_history=medical_history or None,
                 diagnosis=diagnosis or None,
                 hpo_terms=hpo_terms,
-                vcf_filename=vcf_file.filename,  # Store original filename
+                vcf_filename=clean_vcf_filename(vcf_file.filename),  # Store cleaned filename
                 vcf_file_path=vcf_file_path,
                 phenopacket_yaml=None,  # Will be generated next using update_phenopacket_yaml()
                 created_by=current_user.id,
@@ -128,7 +128,7 @@ def individual_add():
             db.session.add(individual)
             db.session.commit()
 
-            flash(f"Individual '{individual_id}' created successfully", "success")
+            flash(f"Individual '{identity}' created successfully", "success")
             return redirect(url_for("individual.individual_list"))
 
         except Exception as e:
@@ -154,7 +154,7 @@ def individual_edit(individual_id):
     if request.method == "POST":
         try:
             # Update fields
-            individual.individual_id = request.form.get("individual_id", "").strip()
+            individual.identity = request.form.get("identity", "").strip()
             individual.full_name = request.form.get("full_name", "").strip() or None
             individual.sex = SexType(request.form.get("sex", "UNKNOWN"))
             individual.age_years = request.form.get("age_years", type=int)
@@ -175,12 +175,12 @@ def individual_edit(individual_id):
             # Handle VCF file upload (optional)
             vcf_file = request.files.get("vcf_file")
             if vcf_file and vcf_file.filename:
-                # Store original filename
-                original_filename = vcf_file.filename
+                # Store cleaned filename
+                cleaned_filename = clean_vcf_filename(vcf_file.filename)
 
                 # Generate unique filename
                 file_extension = ".vcf.gz" if vcf_file.filename.endswith(".gz") else ".vcf"
-                unique_filename = f"{individual.individual_id}_{uuid.uuid4().hex[:8]}{file_extension}"
+                unique_filename = f"{individual.identity}_{uuid.uuid4().hex[:8]}{file_extension}"
 
                 # Save file
                 vcf_dir = "/opt/exomiser/ikdrc/vcf"
@@ -190,24 +190,22 @@ def individual_edit(individual_id):
 
                 # Update individual record
                 individual.vcf_file_path = file_path
-                individual.vcf_filename = original_filename
-
-            # Update audit trail
+                individual.vcf_filename = cleaned_filename            # Update audit trail
             individual.updated_by = current_user.id
 
             # Validation
-            if not individual.individual_id:
-                flash("Individual ID is required", "error")
+            if not individual.identity:
+                flash("Identity is required", "error")
                 return render_template("individual/edit.html", individual=individual, user=current_user)
 
-            # Check for duplicate individual_id (excluding current individual)
-            existing = Individual.query.filter_by(individual_id=individual.individual_id).filter(Individual.id != individual_id).first()
+            # Check for duplicate identity (excluding current individual)
+            existing = Individual.query.filter_by(identity=individual.identity).filter(Individual.id != individual_id).first()
             if existing:
-                flash(f"Another individual with Individual ID '{individual.individual_id}' already exists", "error")
+                flash(f"Another individual with Identity '{individual.identity}' already exists", "error")
                 return render_template("individual/edit.html", individual=individual, user=current_user)
 
             db.session.commit()
-            flash(f"Individual '{individual.individual_id}' updated successfully", "success")
+            flash(f"Individual '{individual.identity}' updated successfully", "success")
             return redirect(url_for("individual.individual_list"))
 
         except Exception as e:
@@ -225,17 +223,31 @@ def individual_delete(individual_id):
 
     if request.method == "POST":
         try:
+            # Check confirmation input
+            confirmation = request.form.get("confirmation", "").strip()
+            if confirmation != "DELETE":
+                flash("Please type 'DELETE' to confirm deletion", "error")
+                return render_template("individual/delete.html", individual=individual, user=current_user)
+
             # Check if individual has associated tasks
             task_count = Task.query.filter_by(individual_id=individual_id).count()
             if task_count > 0:
-                flash(f"Cannot delete individual '{individual.individual_id}' - {task_count} analysis task(s) are associated with this individual", "error")
+                flash(f"Cannot delete individual '{individual.identity}' - {task_count} analysis task(s) are associated with this individual", "error")
                 return render_template("individual/delete.html", individual=individual, user=current_user)
 
-            individual_id_val = individual.individual_id
+            # Delete VCF file if it exists
+            if individual.vcf_file_path and os.path.exists(individual.vcf_file_path):
+                try:
+                    os.remove(individual.vcf_file_path)
+                except Exception as e:
+                    # Log the error but don't fail the deletion
+                    print(f"Warning: Could not delete VCF file {individual.vcf_file_path}: {str(e)}")
+
+            identity_val = individual.identity
             db.session.delete(individual)
             db.session.commit()
 
-            flash(f"Individual '{individual_id_val}' deleted successfully", "success")
+            flash(f"Individual '{identity_val}' deleted successfully", "success")
             return redirect(url_for("individual.individual_list"))
 
         except Exception as e:
@@ -269,7 +281,7 @@ def individual_analysis(individual_id):
 
         db.session.commit()
 
-        flash(f"Analysis phenopacket generated successfully for {individual.individual_id}", "success")
+        flash(f"Analysis phenopacket generated successfully for {individual.identity}", "success")
 
         # Redirect to a results page or back to view
         return redirect(url_for('individual.individual_view', individual_id=individual_id))
@@ -294,7 +306,7 @@ def download_vcf(individual_id):
         # Get the original filename from the path
         filename = os.path.basename(individual.vcf_file_path)
         # Create a more user-friendly filename
-        download_filename = f"{individual.individual_id}_{filename}"
+        download_filename = f"{individual.identity}_{filename}"
 
         return send_file(
             individual.vcf_file_path,
@@ -305,3 +317,18 @@ def download_vcf(individual_id):
     except Exception as e:
         flash(f"Error downloading file: {str(e)}", "error")
         return redirect(url_for('individual.individual_view', individual_id=individual_id))
+
+
+@individual_bp.route("/api/individual/<int:individual_id>/vcf-info")
+@login_required
+def get_individual_vcf_info(individual_id):
+    """API endpoint to get individual's VCF filename for analysis form"""
+    try:
+        individual = Individual.query.get_or_404(individual_id)
+        return {
+            "vcf_filename": individual.vcf_filename,
+            "identity": individual.identity,
+            "has_vcf_file": bool(individual.vcf_file_path and os.path.exists(individual.vcf_file_path)) if individual.vcf_file_path else False
+        }
+    except Exception as e:
+        return {"error": str(e)}, 400

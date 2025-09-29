@@ -8,6 +8,17 @@
 <div class="mx-auto p-6 pt-6 max-w-4xl">
   <!-- Header -->
   <div class="mb-8">
+    <!-- Back Button -->
+    <div class="mb-4">
+      <a href="{{ url_for('analysis.analysis_list') }}" 
+         class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Analyses
+      </a>
+    </div>
+    
     <nav class="flex mb-4" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
@@ -48,7 +59,7 @@
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
               <option value="">Select Individual</option>
               {% for individual in individuals %}
-              <option value="{{ individual.id }}">{{ individual.individual_id }} - {{ individual.full_name }}</option>
+              <option value="{{ individual.id }}">{{ individual.identity }} - {{ individual.full_name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -76,11 +87,12 @@
 
           <div>
             <label for="genome_assembly" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Genome Assembly</label>
-            <select name="genome_assembly" id="genome_assembly"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
-              <option value="hg19">hg19/GRCh37</option>
+            <select name="genome_assembly" id="genome_assembly" disabled
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed">
+              <option value="hg19" selected>hg19/GRCh37</option>
               <option value="hg38">hg38/GRCh38</option>
             </select>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Currently fixed to hg19</p>
           </div>
         </div>
       </div>
@@ -92,11 +104,12 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label for="analysis_mode" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Analysis Mode</label>
-            <select name="analysis_mode" id="analysis_mode"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+            <select name="analysis_mode" id="analysis_mode" disabled
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed">
               <option value="PASS_ONLY">PASS Only</option>
-              <option value="FULL">Full Analysis</option>
+              <option value="FULL" selected>Full Analysis</option>
             </select>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Currently set to Full Analysis</p>
           </div>
 
           <div>
@@ -115,18 +128,62 @@
         </div>
       </div>
 
-      <!-- Actions -->
-      <div class="flex justify-end space-x-4">
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-6 pt-6 border-t border-gray-200 dark:border-gray-600">
         <a href="{{ url_for('analysis.analysis_list') }}"
-           class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+           class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0">
           Cancel
         </a>
         <button type="submit"
-                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 8l2 2 4-4" />
+          </svg>
           Create Analysis
         </button>
       </div>
     </form>
   </div>
 </div>
+
+<script>
+// Auto-populate VCF filename when individual is selected
+document.getElementById('individual_id').addEventListener('change', function() {
+  const individualSelect = this;
+  const vcfFilenameInput = document.getElementById('vcf_filename');
+
+  if (individualSelect.value) {
+    // Get the selected individual's data
+    const selectedOption = individualSelect.options[individualSelect.selectedIndex];
+    const individualText = selectedOption.text; // Format: "P0001 - John Doe"
+    const individualIdentity = individualText.split(' - ')[0]; // Extract "P0001"
+
+    // Make an AJAX request to get the individual's VCF filename
+    fetch(`/api/individual/${individualSelect.value}/vcf-info`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.vcf_filename) {
+          vcfFilenameInput.value = data.vcf_filename;
+        } else {
+          // Fallback: use identity-based filename if no VCF file exists
+          vcfFilenameInput.value = `${individualIdentity}_sample.vcf`;
+        }
+      })
+      .catch(error => {
+        console.log('Could not fetch VCF info, using fallback');
+        // Fallback: use identity-based filename
+        vcfFilenameInput.value = `${individualIdentity}_sample.vcf`;
+      });
+  } else {
+    vcfFilenameInput.value = '';
+  }
+});
+
+// Ensure disabled fields are submitted with form
+document.querySelector('form').addEventListener('submit', function() {
+  document.getElementById('genome_assembly').disabled = false;
+  document.getElementById('analysis_mode').disabled = false;
+});
+</script>
+
 {% endblock %}

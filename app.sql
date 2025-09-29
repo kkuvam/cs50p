@@ -20,7 +20,7 @@ CREATE UNIQUE INDEX ix_users_email ON users (email);
 -- Individuals table
 CREATE TABLE individuals (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    individual_id VARCHAR(50) NOT NULL,
+    identity VARCHAR(50) NOT NULL,
     full_name VARCHAR(120) NOT NULL,
     sex VARCHAR(10) NOT NULL DEFAULT 'UNKNOWN', -- MALE, FEMALE, OTHER, UNKNOWN
     age_years INTEGER NOT NULL,
@@ -40,8 +40,8 @@ CREATE TABLE individuals (
     FOREIGN KEY(updated_by) REFERENCES users (id)
 );
 
--- Create index on individual_id for faster individual lookups
-CREATE INDEX ix_individuals_individual_id ON individuals (individual_id);
+-- Create index on identity for faster individual lookups
+CREATE INDEX ix_individuals_identity ON individuals (identity);
 
 -- Tasks table
 CREATE TABLE tasks (
@@ -127,7 +127,7 @@ END;
 
 -- Insert a sample individual (created by admin user)
 INSERT INTO individuals (
-    individual_id,
+    identity,
     full_name,
     sex,
     age_years,

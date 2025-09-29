@@ -18,14 +18,14 @@
             <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-            <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">{{ individual.individual_id }}</span>
+            <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">{{ individual.identity }}</span>
           </div>
         </li>
       </ol>
     </nav>
     <div class="flex flex-wrap layhetgsjdcb justify-between items-center -mx-4 mb-6 dkslaoeyhnmj pt-6">
       <div class="shrink max-w-full uajskeiolksb flex-1 px-4">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Individual: {{ individual.individual_id }}</h1>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Individual: {{ individual.identity }}</h1>
         <p class="text-gray-600 dark:text-gray-400">{{ individual.full_name }}</p>
       </div>
       <div class="shrink max-w-full uajskeiolksb px-4">
@@ -39,6 +39,19 @@
       </div>
     </div>
   </div>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-6">
+        {% for category, message in messages %}
+          <div class="{% if category == 'error' %}bg-red-100 border-red-400 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300{% else %}bg-green-100 border-green-400 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300{% endif %} border px-4 py-3 rounded relative mb-2" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
   <div class="space-y-8">
     <!-- Basic Information Card -->
@@ -54,7 +67,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Individual ID</label>
           <div class="p-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
-            <span class="text-gray-900 dark:text-white font-mono">{{ individual.individual_id }}</span>
+            <span class="text-gray-900 dark:text-white font-mono">{{ individual.identity }}</span>
           </div>
         </div>
 
@@ -314,7 +327,7 @@
 // Function to generate YAML from individual data (similar to phenopacket.html)
 function generatePhenopacketYaml() {
   // Gather individual data from the page
-  const subjId = '{{ individual.individual_id }}';
+  const subjId = '{{ individual.identity }}';
   const creator = "{{ current_user.full_name or current_user.email }}";
   const sex = '{{ individual.sex.value }}' || 'UNKNOWN';
   const ageYears = {% if individual.age_years %}{{ individual.age_years }}{% else %}null{% endif %};

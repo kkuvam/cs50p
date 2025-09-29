@@ -70,7 +70,7 @@ class Individual(db.Model):
     __tablename__ = "individuals"
 
     id = db.Column(db.Integer, primary_key=True)
-    individual_id = db.Column(db.String(50), nullable=False, index=True)  # e.g. P0001
+    identity = db.Column(db.String(50), nullable=False, index=True)  # e.g. P0001
     full_name = db.Column(db.String(120), nullable=False)
     sex = db.Column(db.Enum(SexType), nullable=False, default=SexType.UNKNOWN)
     age_years = db.Column(db.Integer, nullable=False)  # Age in years
@@ -97,7 +97,7 @@ class Individual(db.Model):
     tasks = db.relationship('Task', backref='individual', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f"<Individual {self.individual_id}: {self.full_name or 'Unnamed'}>"
+        return f"<Individual {self.identity}: {self.full_name or 'Unnamed'}>"
 
     @property
     def hpo_count(self):
@@ -135,9 +135,9 @@ class Individual(db.Model):
         # Build the phenopacket object
         phenopacket_obj = {
             "phenopacket": {
-                "id": self.individual_id,
+                "id": self.identity,
                 "subject": {
-                    "id": self.individual_id,
+                    "id": self.identity,
                     "sex": sex_map.get(self.sex.value if self.sex else "UNKNOWN", "UNKNOWN_SEX")
                 },
                 "phenotypicFeatures": phenotypic_features,
@@ -191,7 +191,7 @@ class Individual(db.Model):
         """Convert individual to dictionary for API responses."""
         return {
             'id': self.id,
-            'individual_id': self.individual_id,
+            'identity': self.identity,
             'full_name': self.full_name,
             'sex': self.sex.value if self.sex else None,
             'age_years': self.age_years,
@@ -291,7 +291,7 @@ class Task(db.Model):
             'progress_percent': self.progress_percent,
             'individual_id': self.individual_id,
             'individual_name': self.individual.full_name if self.individual else None,
-            'individual_individual_id': self.individual.individual_id if self.individual else None,
+            'individual_identity': self.individual.identity if self.individual else None,
             'started_at': self.started_at.isoformat() if self.started_at else None,
             'completed_at': self.completed_at.isoformat() if self.completed_at else None,
             'duration': str(self.duration) if self.duration else None,
