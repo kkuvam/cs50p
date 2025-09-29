@@ -2,7 +2,7 @@
 import os
 from flask import Flask
 from flask_login import LoginManager
-from models import db, User, Individual, Task
+from models import db, User, Individual, Analysis
 from auth import auth_bp
 from routes import routes_bp
 from individual import individual_bp
