@@ -11,8 +11,8 @@ patient_bp = Blueprint("patient", __name__)
 @patient_bp.route("/patients")
 @login_required
 def patient_list():
-    """Patient list page - shows all patients for current user"""
-    patients = Patient.query.filter_by(user_id=current_user.id).order_by(Patient.created_at.desc()).all()
+    """Patient list page - shows all patients for all users"""
+    patients = Patient.query.order_by(Patient.created_at.desc()).all()
     return render_template("patient/patients.html", patients=patients, user=current_user)
 
 @patient_bp.route("/patient/add", methods=["GET", "POST"])
@@ -64,8 +64,8 @@ def patient_add():
             # At this point, we know vcf_file is not None and has a filename
             assert vcf_file is not None and vcf_file.filename is not None
 
-            # Check for duplicate individual_id for current user
-            existing = Patient.query.filter_by(user_id=current_user.id, individual_id=individual_id).first()
+            # Check for duplicate individual_id across all users
+            existing = Patient.query.filter_by(individual_id=individual_id).first()
             if existing:
                 flash(f"Patient with Individual ID '{individual_id}' already exists", "error")
                 return render_template("patient/add.html", user=current_user)
@@ -93,7 +93,8 @@ def patient_add():
                 hpo_terms=hpo_terms,
                 vcf_file_path=vcf_file_path,
                 phenopacket_yaml=None,  # Will be generated next using update_phenopacket_yaml()
-                user_id=current_user.id
+                created_by=current_user.id,
+                updated_by=current_user.id
             )
 
             # Generate YAML phenopacket using the patient's method
@@ -116,7 +117,7 @@ def patient_add():
 @login_required
 def patient_edit(patient_id):
     """Edit existing patient"""
-    patient = Patient.query.filter_by(id=patient_id, user_id=current_user.id).first_or_404()
+    patient = Patient.query.get_or_404(patient_id)
 
     if request.method == "POST":
         try:
@@ -139,13 +140,16 @@ def patient_edit(patient_id):
             else:
                 patient.hpo_terms = []
 
+            # Update audit trail
+            patient.updated_by = current_user.id
+
             # Validation
             if not patient.individual_id:
                 flash("Individual ID is required", "error")
                 return render_template("patient/edit.html", patient=patient, user=current_user)
 
             # Check for duplicate individual_id (excluding current patient)
-            existing = Patient.query.filter_by(user_id=current_user.id, individual_id=patient.individual_id).filter(Patient.id != patient_id).first()
+            existing = Patient.query.filter_by(individual_id=patient.individual_id).filter(Patient.id != patient_id).first()
             if existing:
                 flash(f"Another patient with Individual ID '{patient.individual_id}' already exists", "error")
                 return render_template("patient/edit.html", patient=patient, user=current_user)
@@ -165,7 +169,7 @@ def patient_edit(patient_id):
 @login_required
 def patient_delete(patient_id):
     """Delete patient with confirmation"""
-    patient = Patient.query.filter_by(id=patient_id, user_id=current_user.id).first_or_404()
+    patient = Patient.query.get_or_404(patient_id)
 
     if request.method == "POST":
         try:
@@ -193,7 +197,7 @@ def patient_delete(patient_id):
 @login_required
 def patient_phenopacket(patient_id):
     """Get patient phenopacket YAML via AJAX"""
-    patient = Patient.query.filter_by(id=patient_id, user_id=current_user.id).first()
+    patient = Patient.query.get(patient_id)
     if not patient:
         return jsonify({"error": "Patient not found"}), 404
 
@@ -208,7 +212,7 @@ def patient_phenopacket(patient_id):
 def regenerate_patient_phenopacket(patient_id):
     """Regenerate phenopacket YAML for a patient"""
     try:
-        patient = Patient.query.filter_by(id=patient_id, user_id=current_user.id).first()
+        patient = Patient.query.get(patient_id)
         if not patient:
             return jsonify({"success": False, "error": "Patient not found"}), 404
 

@@ -41,9 +41,11 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # Relationships
-    patients = db.relationship('Patient', backref='created_by', lazy=True, cascade='all, delete-orphan')
-    tasks = db.relationship('Task', backref='created_by', lazy=True, cascade='all, delete-orphan')
+    # Relationships - track what users created and updated
+    created_patients = db.relationship('Patient', foreign_keys='Patient.created_by', backref='creator', lazy=True)
+    updated_patients = db.relationship('Patient', foreign_keys='Patient.updated_by', backref='last_updater', lazy=True)
+    created_tasks = db.relationship('Task', foreign_keys='Task.created_by', backref='creator', lazy=True)
+    updated_tasks = db.relationship('Task', foreign_keys='Task.updated_by', backref='last_updater', lazy=True)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -84,8 +86,9 @@ class Patient(db.Model):
     vcf_file_path = db.Column(db.String(255), nullable=False)  # Path to uploaded VCF file in /opt/exomiser/ikdrc/vcf/
     phenopacket_yaml = db.Column(db.Text, nullable=True)  # Generated YAML phenopacket content (updated after creation)
 
-    # Creator and timestamps
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    # Audit trail - track who created and last updated
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    updated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
@@ -242,7 +245,8 @@ class Task(db.Model):
 
     # Relationships
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    updated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
