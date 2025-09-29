@@ -66,76 +66,177 @@ def admin_users():
     users = User.query.order_by(User.created_at.desc()).all()
     return render_template("admin/users.html", users=users, user=current_user)
 
-@routes_bp.route("/admin/users/<int:user_id>/toggle-status", methods=["POST"])
+@routes_bp.route("/admin/users/<int:user_id>/reset-password", methods=["GET", "POST"])
 @login_required
 @admin_required
-def toggle_user_status(user_id):
-    """Toggle user active status via AJAX"""
-    try:
-        user = User.query.get_or_404(user_id)
+def admin_reset_password(user_id):
+    """Reset user password"""
+    user_to_reset = User.query.get_or_404(user_id)
 
-        # Don't allow deactivating yourself
-        if user.id == current_user.id:
-            return jsonify({"success": False, "message": "Cannot modify your own account"})
+    if request.method == "POST":
+        try:
+            # Get form data
+            password = request.form.get("password")
+            confirm_password = request.form.get("confirm_password")
+            notify_user = bool(request.form.get("notify_user"))
 
-        data = request.get_json()
-        action = data.get("action")
+            # Validation
+            if not password:
+                flash("Password is required", "error")
+                return render_template("admin/reset_password.html", user_to_reset=user_to_reset)
 
-        if action == "active":
-            user.is_active = True
-            message = f"User {user.email} has been activated"
-        elif action == "inactive":
-            user.is_active = False
-            message = f"User {user.email} has been deactivated"
-        else:
-            return jsonify({"success": False, "message": "Invalid action"})
+            if password != confirm_password:
+                flash("Passwords do not match", "error")
+                return render_template("admin/reset_password.html", user_to_reset=user_to_reset)
 
-        db.session.commit()
+            if len(password) < 6:
+                flash("Password must be at least 6 characters long", "error")
+                return render_template("admin/reset_password.html", user_to_reset=user_to_reset)
 
-        return jsonify({
-            "success": True,
-            "message": message,
-            "user_id": user_id,
-            "is_active": user.is_active
-        })
+            # Update password
+            user_to_reset.set_password(password)
+            db.session.commit()
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"success": False, "message": str(e)})
+            # Log the action
+            action_by = "yourself" if user_to_reset.id == current_user.id else f"admin {current_user.email}"
+            flash(f"Password has been reset successfully for {user_to_reset.email} by {action_by}", "success")
 
-@routes_bp.route("/admin/users/<int:user_id>/toggle-admin", methods=["POST"])
+            # TODO: Implement email notification if notify_user is True and email system is configured
+            if notify_user:
+                flash("Note: Email notification feature is not yet implemented", "info")
+
+            return redirect(url_for("routes.admin_users"))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error resetting password: {str(e)}", "error")
+            return render_template("admin/reset_password.html", user_to_reset=user_to_reset)
+
+    return render_template("admin/reset_password.html", user_to_reset=user_to_reset)
+
+@routes_bp.route("/admin/users/add", methods=["GET", "POST"])
 @login_required
 @admin_required
-def toggle_admin_status(user_id):
-    """Toggle user admin status via AJAX"""
-    try:
-        user = User.query.get_or_404(user_id)
+def admin_add_user():
+    """Add a new user"""
+    if request.method == "POST":
+        try:
+            # Get form data
+            email = request.form.get("email", "").strip()
+            full_name = request.form.get("full_name", "").strip()
+            is_active = bool(request.form.get("is_active"))
+            is_admin = bool(request.form.get("is_admin"))
 
-        # Don't allow removing admin from yourself
-        if user.id == current_user.id:
-            return jsonify({"success": False, "message": "Cannot modify your own admin status"})
+            # Validation
+            if not email:
+                flash("Email is required", "error")
+                return render_template("admin/add_user.html")
 
-        data = request.get_json()
-        action = data.get("action")
+            # Check if email already exists
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                flash("A user with this email already exists", "error")
+                return render_template("admin/add_user.html")
 
-        if action == "admin":
-            user.is_admin = True
-            message = f"Admin privileges granted to {user.email}"
-        elif action == "user":
-            user.is_admin = False
-            message = f"Admin privileges removed from {user.email}"
-        else:
-            return jsonify({"success": False, "message": "Invalid action"})
+            # Create new user with temporary password
+            new_user = User()
+            new_user.email = email
+            new_user.full_name = full_name if full_name else None
+            new_user.is_active = is_active
+            new_user.is_admin = is_admin
+            # Set a temporary password that needs to be reset
+            new_user.set_password("temp_password_must_reset")
 
-        db.session.commit()
+            db.session.add(new_user)
+            db.session.commit()
 
-        return jsonify({
-            "success": True,
-            "message": message,
-            "user_id": user_id,
-            "is_admin": user.is_admin
-        })
+            flash(f"User {email} has been created successfully. Use 'Reset Password' to set their initial password.", "success")
+            return redirect(url_for("routes.admin_users"))
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"success": False, "message": str(e)})
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error creating user: {str(e)}", "error")
+            return render_template("admin/add_user.html")
+
+    return render_template("admin/add_user.html")
+
+@routes_bp.route("/admin/users/<int:user_id>/edit", methods=["GET", "POST"])
+@login_required
+@admin_required
+def admin_edit_user(user_id):
+    """Edit an existing user"""
+    user_to_edit = User.query.get_or_404(user_id)
+
+    if request.method == "POST":
+        try:
+            # Get form data
+            email = request.form.get("email", "").strip()
+            full_name = request.form.get("full_name", "").strip()
+            is_active = bool(request.form.get("is_active"))
+            is_admin = bool(request.form.get("is_admin"))
+
+            # Validation
+            if not email:
+                flash("Email is required", "error")
+                return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
+
+            # Check if email already exists (but not for the current user)
+            existing_user = User.query.filter(User.email == email, User.id != user_id).first()
+            if existing_user:
+                flash("A user with this email already exists", "error")
+                return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
+
+            # Update user data
+            user_to_edit.email = email
+            user_to_edit.full_name = full_name if full_name else None
+
+            # Only allow changing admin/active status if not the current user
+            if user_to_edit.id != current_user.id:
+                user_to_edit.is_active = is_active
+                user_to_edit.is_admin = is_admin
+
+            db.session.commit()
+
+            flash(f"User {email} has been updated successfully", "success")
+            return redirect(url_for("routes.admin_users"))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error updating user: {str(e)}", "error")
+            return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
+
+    return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
+
+@routes_bp.route("/admin/users/<int:user_id>/delete", methods=["GET", "POST"])
+@login_required
+@admin_required
+def admin_delete_user(user_id):
+    """Delete a user"""
+    user_to_delete = User.query.get_or_404(user_id)
+
+    # Prevent deleting yourself
+    if user_to_delete.id == current_user.id:
+        flash("You cannot delete your own account", "error")
+        return redirect(url_for("routes.admin_users"))
+
+    if request.method == "POST":
+        try:
+            # Verify confirmation
+            confirmation = request.form.get("confirmation", "").strip()
+            if confirmation != "DELETE":
+                flash("Invalid confirmation. Please type 'DELETE' to confirm.", "error")
+                return render_template("admin/delete_user.html", user_to_delete=user_to_delete)
+
+            email = user_to_delete.email
+            db.session.delete(user_to_delete)
+            db.session.commit()
+
+            flash(f"User {email} has been deleted successfully", "success")
+            return redirect(url_for("routes.admin_users"))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error deleting user: {str(e)}", "error")
+            return render_template("admin/delete_user.html", user_to_delete=user_to_delete)
+
+    return render_template("admin/delete_user.html", user_to_delete=user_to_delete)

@@ -26,28 +26,28 @@
         <p class="text-sm text-red-600">{{ error }}</p>
       {% else %}
         {% if files %}
-          <table class="w-full border-collapse">
+          <table class="table-sorter table-bordered w-full text-start text-gray-500 dark:text-gray-400">
             <thead>
-              <tr class="bg-gray-200">
-                <th class="border p-2 text-left">Name</th>
-                <th class="border p-2 text-left">Type</th>
-                <th class="border p-2 text-left">Size (bytes)</th>
-                <th class="border p-2 text-left">Modified</th>
+              <tr class="bg-gray-200 dark:bg-gray-900/40">
+                <th>Name</th>
+                <th>Type</th>
+                <th>Size (bytes)</th>
+                <th>Modified</th>
               </tr>
             </thead>
             <tbody>
               {% for file in files %}
                 <tr>
-                  <td class="border p-2">
+                  <td>
                     {% if file.is_dir %}
                       <a href="/browse?path={{ (current_path + '/' + file.name) | urlencode }}" class="text-blue-600 hover:underline">{{ file.name }}/</a>
                     {% else %}
                       <a href="/browse/{{ (current_path + '/' + file.name) | urlencode }}" class="text-blue-600 hover:underline">{{ file.name }}</a>
                     {% endif %}
                   </td>
-                  <td class="border p-2">{{ 'Directory' if file.is_dir else 'File' }}</td>
-                  <td class="border p-2">{{ file.size if not file.is_dir else '-' }}</td>
-                  <td class="border p-2">{{ file.modified | datetime }}</td>
+                  <td>{{ 'Directory' if file.is_dir else 'File' }}</td>
+                  <td>{{ file.size if not file.is_dir else '-' }}</td>
+                  <td>{{ file.modified | datetime }}</td>
                 </tr>
               {% endfor %}
             </tbody>

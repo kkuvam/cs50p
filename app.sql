@@ -88,7 +88,7 @@ INSERT INTO users (
     updated_at
 ) VALUES (
     'admin@exomiser.local',
-    'scrypt:32768:8:1$dcjsNCnF7R7g8sW7$381723960c119fb9aa564a38ddec6ed4ca04d77982c40bdf5d75ae3efc30d66b102d2b6a15eec41997b40ec33f03128080b3d0e618e5be44477ddf3f8bc31a66',
+    'pbkdf2:sha256:1000000$SUVqCFHToYApqo3F$c86388c7f66826a42738a0382b1580d75dc314e1c18772081c1e1da82cf91f2b',
     'System Administrator',
     1,
     1,
