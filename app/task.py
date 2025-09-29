@@ -9,8 +9,8 @@ task_bp = Blueprint("task", __name__)
 @task_bp.route("/tasks")
 @login_required
 def task_list():
-    """Analysis tasks page - shows all tasks for current user"""
-    tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.created_at.desc()).all()
+    """Analysis tasks page - shows all tasks for all users"""
+    tasks = Task.query.order_by(Task.created_at.desc()).all()
     return render_template("task/tasks.html", tasks=tasks, user=current_user)
 
 @task_bp.route("/task/add", methods=["GET", "POST"])
@@ -18,7 +18,7 @@ def task_list():
 def task_add():
     """Add new analysis task"""
     # Get available patients for dropdown
-    patients = Patient.query.filter_by(user_id=current_user.id).order_by(Patient.individual_id).all()
+    patients = Patient.query.order_by(Patient.individual_id).all()
 
     if request.method == "POST":
         try:
@@ -45,8 +45,8 @@ def task_add():
                 flash("VCF filename is required", "error")
                 return render_template("task/add.html", patients=patients, user=current_user)
 
-            # Verify patient belongs to current user
-            patient = Patient.query.filter_by(id=patient_id, user_id=current_user.id).first()
+            # Verify patient exists
+            patient = Patient.query.get(patient_id)
             if not patient:
                 flash("Selected patient not found", "error")
                 return render_template("task/add.html", patients=patients, user=current_user)
@@ -62,7 +62,8 @@ def task_add():
                 frequency_threshold=frequency_threshold,
                 pathogenicity_threshold=pathogenicity_threshold,
                 status=TaskStatus.PENDING,
-                user_id=current_user.id
+                created_by=current_user.id,
+                updated_by=current_user.id
             )
 
             db.session.add(task)
@@ -82,8 +83,8 @@ def task_add():
 @login_required
 def task_edit(task_id):
     """Edit existing analysis task"""
-    task = Task.query.filter_by(id=task_id, user_id=current_user.id).first_or_404()
-    patients = Patient.query.filter_by(user_id=current_user.id).order_by(Patient.individual_id).all()
+    task = Task.query.get_or_404(task_id)
+    patients = Patient.query.order_by(Patient.individual_id).all()
 
     if request.method == "POST":
         try:
@@ -101,6 +102,9 @@ def task_edit(task_id):
             task.frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             task.pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5
 
+            # Update audit trail
+            task.updated_by = current_user.id
+
             # Validation
             if not task.name:
                 flash("Task name is required", "error")
@@ -110,8 +114,8 @@ def task_edit(task_id):
                 flash("Patient selection is required", "error")
                 return render_template("task/edit.html", task=task, patients=patients, user=current_user)
 
-            # Verify patient belongs to current user
-            patient = Patient.query.filter_by(id=task.patient_id, user_id=current_user.id).first()
+            # Verify patient exists
+            patient = Patient.query.get(task.patient_id)
             if not patient:
                 flash("Selected patient not found", "error")
                 return render_template("task/edit.html", task=task, patients=patients, user=current_user)
@@ -136,7 +140,7 @@ def task_edit(task_id):
 @login_required
 def task_delete(task_id):
     """Delete analysis task with confirmation"""
-    task = Task.query.filter_by(id=task_id, user_id=current_user.id).first_or_404()
+    task = Task.query.get_or_404(task_id)
 
     if request.method == "POST":
         try:
@@ -163,5 +167,5 @@ def task_delete(task_id):
 @login_required
 def results():
     """Results page - shows analysis results and status"""
-    tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.updated_at.desc()).all()
+    tasks = Task.query.order_by(Task.updated_at.desc()).all()
     return render_template("task/results.html", tasks=tasks, user=current_user)
