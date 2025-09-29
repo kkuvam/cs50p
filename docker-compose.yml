@@ -28,7 +28,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-dev-secret-change-in-production}
       - DATABASE_URL=sqlite:////opt/instance/app.db
       # Java/Exomiser configuration
-      - JAVA_OPTS=-Xms1g -Xmx${MAX_MEMORY:-2g}
+      - JAVA_OPTS=-Xms2g -Xmx${MAX_MEMORY:-4g}
       - EXOMISER_DATA_DIR=/opt/exomiser/data
       - EXOMISER_RESULTS_DIR=/opt/exomiser/ikdrc/results
       # Production settings
@@ -47,7 +47,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 3g
+          memory: 6g
           cpus: '2.0'
         reservations:
           memory: 1g
