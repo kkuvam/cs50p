@@ -43,8 +43,8 @@ CREATE TABLE individuals (
 -- Create index on identity for faster individual lookups
 CREATE INDEX ix_individuals_identity ON individuals (identity);
 
--- Tasks table
-CREATE TABLE tasks (
+-- Analyses table
+CREATE TABLE analyses (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(120) NOT NULL,
     description TEXT,
@@ -65,6 +65,7 @@ CREATE TABLE tasks (
     completed_at DATETIME,
     error_message TEXT,
     log_file_path VARCHAR(500),
+    log TEXT, -- Complete process output log for debugging
     individual_id INTEGER NOT NULL,
     created_by INTEGER NOT NULL,
     updated_by INTEGER NOT NULL,

@@ -133,7 +133,7 @@ def analysis_edit(analysis_id):
                 flash("Selected individual not found", "error")
                 return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
 
-            # Reset status to pending if it was failed/cancelled (allow rerun)
+            # Reset status to pending if it was failed/cancelled (allow restart via edit)
             if analysis.status in [TaskStatus.FAILED, TaskStatus.CANCELLED]:
                 analysis.status = TaskStatus.PENDING
                 analysis.error_message = None
@@ -222,34 +222,6 @@ def analysis_results(analysis_id):
     # Redirect directly to the HTML content (no layout)
     return redirect(url_for("analysis.analysis_html", analysis_id=analysis_id))
 
-@analysis_bp.route("/analysis/<int:analysis_id>/rerun", methods=["POST"])
-@login_required
-def analysis_rerun(analysis_id):
-    """Rerun an existing analysis with the same parameters"""
-    analysis = Analysis.query.get_or_404(analysis_id)
-
-    try:
-        # Reset analysis status and clear previous results
-        analysis.status = TaskStatus.PENDING
-        analysis.started_at = None
-        analysis.completed_at = None
-        analysis.error_message = None
-        analysis.output_html = None
-        analysis.updated_by = current_user.id
-
-        db.session.commit()
-
-        # Start the analysis in background
-        thread = threading.Thread(target=run_exomiser_analysis, args=(analysis_id,))
-        thread.daemon = True
-        thread.start()
-
-        return jsonify({"success": True, "message": "Analysis restarted successfully"})
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"success": False, "error": str(e)}), 500
-
 @analysis_bp.route("/analysis/<int:analysis_id>/output")
 @login_required
 def analysis_output(analysis_id):
@@ -266,6 +238,19 @@ def analysis_output(analysis_id):
             "output": [],
             "line_count": 0
         })
+
+@analysis_bp.route("/analysis/<int:analysis_id>/status")
+@login_required
+def analysis_status(analysis_id):
+    """Get current analysis status for polling"""
+    analysis = Analysis.query.get_or_404(analysis_id)
+    return jsonify({
+        "success": True,
+        "status": analysis.status.value,
+        "started_at": analysis.started_at.isoformat() if analysis.started_at else None,
+        "completed_at": analysis.completed_at.isoformat() if analysis.completed_at else None,
+        "error_message": analysis.error_message
+    })
 
 @analysis_bp.route("/analysis/<int:analysis_id>/download")
 @login_required
@@ -324,9 +309,10 @@ def run_exomiser_analysis(analysis_id):
             # Initialize output storage for this analysis
             analysis_outputs[analysis_id] = []
 
-            # Update status to running
+            # Update status to running and clear previous log
             analysis.status = TaskStatus.RUNNING
             analysis.started_at = datetime.utcnow()
+            analysis.log = None  # Clear previous log
             db.session.commit()
 
             analysis_outputs[analysis_id].append("Starting Exomiser analysis...")
@@ -415,6 +401,10 @@ def run_exomiser_analysis(analysis_id):
                 analysis.error_message = f"Exomiser process failed with return code {return_code}"
                 analysis_outputs[analysis_id].append(f"Analysis failed with return code: {return_code}")
 
+            # Store complete log in database for debugging
+            if analysis_id in analysis_outputs:
+                analysis.log = "\n".join(analysis_outputs[analysis_id])
+
             db.session.commit()
 
             # Keep output in memory for a while after completion (30 minutes)
@@ -433,6 +423,15 @@ def run_exomiser_analysis(analysis_id):
             if analysis:
                 analysis.status = TaskStatus.FAILED
                 analysis.error_message = f"Error running analysis: {str(e)}"
+
+                # Store error log in database
+                if analysis_id in analysis_outputs:
+                    analysis_outputs[analysis_id].append(f"Error: {str(e)}")
+                    analysis_outputs[analysis_id].append("Analysis failed due to error")
+                    analysis.log = "\n".join(analysis_outputs[analysis_id])
+                else:
+                    analysis.log = f"Error: {str(e)}\nAnalysis failed due to error"
+
                 db.session.commit()
 
                 # Store error in output if storage exists
