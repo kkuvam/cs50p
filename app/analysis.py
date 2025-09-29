@@ -208,16 +208,15 @@ def analysis_run(analysis_id):
 @analysis_bp.route("/analysis/<int:analysis_id>/results")
 @login_required
 def analysis_results(analysis_id):
-    """View analysis results page"""
+    """Redirect to raw HTML results"""
     analysis = Analysis.query.get_or_404(analysis_id)
 
     if analysis.status != TaskStatus.COMPLETED:
         flash("Analysis not completed yet", "warning")
         return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
 
-    return render_template("analysis/viewer.html",
-                         analysis=analysis,
-                         user=current_user)
+    # Redirect directly to the HTML content (no layout)
+    return redirect(url_for("analysis.analysis_html", analysis_id=analysis_id))
 
 @analysis_bp.route("/analysis/<int:analysis_id>/download")
 @login_required
