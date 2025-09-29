@@ -35,8 +35,12 @@ RUN curl -L -o "exomiser-cli-${EXOMISER_VERSION}-distribution.zip" \
     chown -R exomiser:exomiser /opt/exomiser
 
 # Create application directories
-RUN mkdir -p /opt/app /opt/instance /opt/exomiser/data /opt/exomiser/results && \
+RUN mkdir -p /opt/app /opt/instance /opt/exomiser/data /opt/exomiser/ikdrc /opt/exomiser/ikdrc/vcf /opt/exomiser/ikdrc/results && \
     chown -R exomiser:exomiser /opt/app /opt/instance /opt/exomiser
+
+# Copy requirements first for better layer caching
+COPY --chown=exomiser:exomiser ./compose/application.properties /opt/exomiser/application.properties
+COPY --chown=exomiser:exomiser ./compose/analysis.yml /opt/exomiser/analysis.yml
 
 # Copy requirements first for better layer caching
 COPY --chown=exomiser:exomiser requirements.txt /opt/app/requirements.txt

@@ -5,31 +5,11 @@ from models import db, Individual, Analysis, SexType
 from datetime import datetime
 import os
 import uuid
-import re
+import time
 
 individual_bp = Blueprint("individual", __name__)
 
-def clean_vcf_filename(original_filename):
-    """
-    Clean VCF filename by extracting everything before '_v1' and adding .vcf extension
-    Example: 'PWES_25387814_SUG_VCF_v1_Non-Filtered_2025-09-23_04-22-30.vcf' -> 'PWES_25387814_SUG_VCF.vcf'
-    """
-    if not original_filename:
-        return original_filename
-
-    # Remove file extension first
-    name_without_ext = os.path.splitext(original_filename)[0]
-
-    # Find everything before '_v1'
-    match = re.match(r'^(.+?)_v\d+', name_without_ext)
-    if match:
-        clean_name = match.group(1)
-    else:
-        # If no '_v1' pattern found, use the original name without extension
-        clean_name = name_without_ext
-
-    # Always add .vcf extension
-    return f"{clean_name}.vcf"
+# Function removed - we now store original filenames without cleanup
 
 # ===== INDIVIDUAL CRUD ROUTES =====
 @individual_bp.route("/individuals")
@@ -98,10 +78,10 @@ def individual_add():
             vcf_upload_dir = "/opt/exomiser/ikdrc/vcf"
             os.makedirs(vcf_upload_dir, exist_ok=True)
 
-            # Generate unique filename
-            file_extension = os.path.splitext(vcf_file.filename)[1]
-            unique_filename = f"{current_user.id}_{identity}_{uuid.uuid4().hex[:8]}{file_extension}"
-            vcf_file_path = os.path.join(vcf_upload_dir, unique_filename)
+            # Create timestamped filename to avoid collisions: timestamp_originalfilename
+            timestamp = int(time.time())
+            timestamped_filename = f"{timestamp}_{vcf_file.filename}"
+            vcf_file_path = os.path.join(vcf_upload_dir, timestamped_filename)
 
             # Save the file
             vcf_file.save(vcf_file_path)
@@ -115,7 +95,7 @@ def individual_add():
                 medical_history=medical_history or None,
                 diagnosis=diagnosis or None,
                 hpo_terms=hpo_terms,
-                vcf_filename=clean_vcf_filename(vcf_file.filename),  # Store cleaned filename
+                vcf_filename=vcf_file.filename,  # Store original filename
                 vcf_file_path=vcf_file_path,
                 phenopacket_yaml=None,  # Will be generated next using update_phenopacket_yaml()
                 created_by=current_user.id,
@@ -175,22 +155,19 @@ def individual_edit(individual_id):
             # Handle VCF file upload (optional)
             vcf_file = request.files.get("vcf_file")
             if vcf_file and vcf_file.filename:
-                # Store cleaned filename
-                cleaned_filename = clean_vcf_filename(vcf_file.filename)
+                # Create timestamped filename to avoid collisions: timestamp_originalfilename
+                timestamp = int(time.time())
+                timestamped_filename = f"{timestamp}_{vcf_file.filename}"
 
-                # Generate unique filename
-                file_extension = ".vcf.gz" if vcf_file.filename.endswith(".gz") else ".vcf"
-                unique_filename = f"{individual.identity}_{uuid.uuid4().hex[:8]}{file_extension}"
-
-                # Save file
                 vcf_dir = "/opt/exomiser/ikdrc/vcf"
                 os.makedirs(vcf_dir, exist_ok=True)
-                file_path = os.path.join(vcf_dir, unique_filename)
+                file_path = os.path.join(vcf_dir, timestamped_filename)
+
                 vcf_file.save(file_path)
 
-                # Update individual record
+                # Update individual record with original filename (for display) and timestamped path (for storage)
                 individual.vcf_file_path = file_path
-                individual.vcf_filename = cleaned_filename            # Update audit trail
+                individual.vcf_filename = vcf_file.filename  # Keep original filename for display            # Update audit trail
             individual.updated_by = current_user.id
 
             # Validation
@@ -303,15 +280,13 @@ def download_vcf(individual_id):
         return redirect(url_for('individual.individual_view', individual_id=individual_id))
 
     try:
-        # Get the original filename from the path
-        filename = os.path.basename(individual.vcf_file_path)
-        # Create a more user-friendly filename
-        download_filename = f"{individual.identity}_{filename}"
+        # Use the original filename for download (without timestamp or identity prefix)
+        original_filename = individual.vcf_filename or os.path.basename(individual.vcf_file_path)
 
         return send_file(
             individual.vcf_file_path,
             as_attachment=True,
-            download_name=download_filename,
+            download_name=original_filename,
             mimetype='text/plain'
         )
     except Exception as e:

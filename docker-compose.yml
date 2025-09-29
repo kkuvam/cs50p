@@ -30,7 +30,7 @@ services:
       # Java/Exomiser configuration
       - JAVA_OPTS=-Xms1g -Xmx${MAX_MEMORY:-2g}
       - EXOMISER_DATA_DIR=/opt/exomiser/data
-      - EXOMISER_RESULTS_DIR=/opt/exomiser/results
+      - EXOMISER_RESULTS_DIR=/opt/exomiser/ikdrc/results
       # Production settings
       - PYTHONUNBUFFERED=1
       - GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}

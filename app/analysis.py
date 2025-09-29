@@ -1,7 +1,11 @@
 # File: app/analysis.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, jsonify
 from flask_login import login_required, current_user
 from models import db, Individual, Analysis, TaskStatus, GenomeAssembly
+import os
+import subprocess
+import threading
+from datetime import datetime
 
 analysis_bp = Blueprint("analysis", __name__)
 
@@ -168,12 +172,220 @@ def analysis_delete(analysis_id):
 
     return render_template("analysis/delete.html", analysis=analysis, user=current_user)
 
+@analysis_bp.route("/analysis/<int:analysis_id>/run", methods=["GET", "POST"])
+@login_required
+def analysis_run(analysis_id):
+    """Run analysis and show execution status"""
+    analysis = Analysis.query.get_or_404(analysis_id)
+
+    if request.method == "POST":
+        # Start the analysis job
+        if analysis.status in [TaskStatus.PENDING, TaskStatus.FAILED]:
+            try:
+                # Update status to running
+                analysis.status = TaskStatus.RUNNING
+                analysis.started_at = datetime.utcnow()
+                analysis.error_message = None
+                db.session.commit()
+
+                # Start background job
+                thread = threading.Thread(target=run_exomiser_analysis, args=(analysis_id,))
+                thread.daemon = True
+                thread.start()
+
+                flash("Analysis started successfully", "success")
+                return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
+
+            except Exception as e:
+                db.session.rollback()
+                flash(f"Error starting analysis: {str(e)}", "error")
+                return render_template("analysis/run.html", analysis=analysis, user=current_user)
+        else:
+            flash("Analysis is already running or completed", "warning")
+
+    return render_template("analysis/run.html", analysis=analysis, user=current_user)
+
+@analysis_bp.route("/analysis/<int:analysis_id>/results")
+@login_required
+def analysis_results(analysis_id):
+    """View analysis results page"""
+    analysis = Analysis.query.get_or_404(analysis_id)
+
+    if analysis.status != TaskStatus.COMPLETED:
+        flash("Analysis not completed yet", "warning")
+        return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
+
+    return render_template("analysis/viewer.html",
+                         analysis=analysis,
+                         user=current_user)
+
+@analysis_bp.route("/analysis/<int:analysis_id>/download")
+@login_required
+def analysis_download(analysis_id):
+    """Download analysis results file"""
+    analysis = Analysis.query.get_or_404(analysis_id)
+
+    if analysis.status != TaskStatus.COMPLETED:
+        flash("Analysis not completed yet", "warning")
+        return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
+
+    # Find the results file
+    results_dir = "/opt/exomiser/ikdrc/results"
+    results_file = None
+
+    # First check if we have the path stored in the database
+    if analysis.output_html and os.path.exists(analysis.output_html):
+        results_file = analysis.output_html
+    else:
+        # Look for HTML results file using individual identity or analysis ID
+        if os.path.exists(results_dir):
+            for filename in os.listdir(results_dir):
+                if filename.endswith(".html"):
+                    # Check if filename contains individual identity or analysis ID
+                    if (analysis.individual.identity in filename or
+                        str(analysis_id) in filename or
+                        filename.startswith(analysis.individual.identity)):
+                        results_file = os.path.join(results_dir, filename)
+                        break
+
+    if not results_file or not os.path.exists(results_file):
+        flash("Results file not found", "error")
+        return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
+
+    # Create download filename based on VCF filename format
+    # Use the individual's VCF filename as base and replace .vcf with .html
+    if analysis.individual.vcf_filename:
+        base_name = os.path.splitext(analysis.individual.vcf_filename)[0]
+        download_filename = f"{base_name}_analysis.html"
+    else:
+        download_filename = f"analysis_{analysis_id}_results.html"
+
+    return send_file(results_file, as_attachment=True,
+                    download_name=download_filename)
+
+def run_exomiser_analysis(analysis_id):
+    """Background function to run Exomiser analysis"""
+    from main import app  # Import here to avoid circular imports
+
+    try:
+        with app.app_context():  # Need app context for database operations
+            analysis = Analysis.query.get(analysis_id)
+            if not analysis:
+                return
+
+            # Generate phenopacket YAML for the individual
+            individual = analysis.individual
+            phenopacket_content = individual.generate_phenopacket_yaml(
+                creator="Exomiser Web Interface",
+                genome_assembly=analysis.genome_assembly.value,
+                vcf_filename=analysis.vcf_filename
+            )
+
+            # Save phenopacket to file in /opt/exomiser/ikdrc/phenopacket/
+            phenopacket_dir = "/opt/exomiser/ikdrc/phenopacket"
+            os.makedirs(phenopacket_dir, exist_ok=True)
+            phenopacket_file = os.path.join(phenopacket_dir, f"analysis_{analysis_id}.yml")
+
+            with open(phenopacket_file, 'w') as f:
+                f.write(phenopacket_content)
+
+            # Store the phenopacket path in the database for future reference
+            analysis.phenopacket_path = phenopacket_file
+
+            # Prepare Exomiser command following the instructions:
+            # java -Xmx4g -jar exomiser-cli-14.0.2.jar --analysis analysis.yml --sample phenopacket.yml
+            cmd = [
+                "java", "-Xmx4g", "-jar", "/opt/exomiser/exomiser-cli-14.1.0.jar",
+                "--analysis", "/opt/exomiser/analysis.yml",
+                "--sample", phenopacket_file
+            ]
+
+            # Set working directory to /opt/exomiser for proper relative paths
+            # Run Exomiser
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd="/opt/exomiser")  # 30 min timeout
+
+            # Update analysis status
+            if result.returncode == 0:
+                analysis.status = TaskStatus.COMPLETED
+                analysis.completed_at = datetime.utcnow()
+                analysis.error_message = None
+
+                # Set results directory path
+                analysis.results_directory = "/opt/exomiser/ikdrc/results"
+
+                # Try to find and set the output HTML file
+                results_dir = "/opt/exomiser/ikdrc/results"
+                if os.path.exists(results_dir):
+                    for filename in os.listdir(results_dir):
+                        if filename.endswith(".html") and individual.identity in filename:
+                            analysis.output_html = os.path.join(results_dir, filename)
+                            break
+            else:
+                analysis.status = TaskStatus.FAILED
+                # Store error message with original newlines for display
+                stderr_text = result.stderr if result.stderr else ''
+                stdout_text = result.stdout if result.stdout else ''
+                analysis.error_message = f"Exomiser failed:\n\nStderr:\n{stderr_text}\n\nStdout:\n{stdout_text}"
+
+            db.session.commit()
+
+    except subprocess.TimeoutExpired:
+        with app.app_context():
+            analysis = Analysis.query.get(analysis_id)
+            if analysis:
+                analysis.status = TaskStatus.FAILED
+                analysis.error_message = "Analysis timed out after 30 minutes"
+                db.session.commit()
+    except Exception as e:
+        with app.app_context():
+            analysis = Analysis.query.get(analysis_id)
+            if analysis:
+                analysis.status = TaskStatus.FAILED
+                analysis.error_message = f"Error running analysis: {str(e)}"
+                db.session.commit()
+
 @analysis_bp.route("/analysis/<int:analysis_id>/view")
 @login_required
 def analysis_view(analysis_id):
-    """View analysis details and results"""
+    """Redirect old view route to new run route"""
+    return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
+
+@analysis_bp.route("/analysis/<int:analysis_id>/html")
+@login_required
+def analysis_html(analysis_id):
+    """Serve the raw HTML content for iframe embedding"""
     analysis = Analysis.query.get_or_404(analysis_id)
-    return render_template("analysis/view.html", analysis=analysis, user=current_user)
+
+    if analysis.status != TaskStatus.COMPLETED:
+        return "<html><body><h2>Analysis not completed yet</h2></body></html>", 200
+
+    # Find the results file
+    results_dir = "/opt/exomiser/ikdrc/results"
+    results_file = None
+
+    # First check if we have the path stored in the database
+    if analysis.output_html and os.path.exists(analysis.output_html):
+        results_file = analysis.output_html
+    else:
+        # Look for HTML results file using individual identity or analysis ID
+        if os.path.exists(results_dir):
+            for filename in os.listdir(results_dir):
+                if filename.endswith(".html"):
+                    # Check if filename contains individual identity or analysis ID
+                    if (analysis.individual.identity in filename or
+                        str(analysis_id) in filename or
+                        filename.startswith(analysis.individual.identity)):
+                        results_file = os.path.join(results_dir, filename)
+                        break
+
+    if not results_file or not os.path.exists(results_file):
+        return "<html><body><h2>Results file not found</h2></body></html>", 404
+
+    # Read and return the HTML file content
+    with open(results_file, 'r', encoding='utf-8') as f:
+        html_content = f.read()
+
+    return html_content, 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 @analysis_bp.route("/results")
 @login_required
