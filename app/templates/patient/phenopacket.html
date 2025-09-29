@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Phenopacket Generator</title>
+  <title>Phenop      <button id="remove-btn" type="button"
+              class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-red-500 border border-red-500 hover:text-white hover:bg-red-600 hover:ring-0 hover:border-red-600 focus:bg-red-600 focus:border-red-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+        Remove selected
+      </button>t Generator</title>
 
   <!-- Tailwind CSS (Play CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -47,13 +53,13 @@
         <div>
           <label class="block text-sm font-medium mb-1" for="individual-id">Individual ID</label>
           <input id="individual-id" type="text" placeholder="e.g. P0001"
-                 class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring">
+                 class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
 
 
         <div>
           <label class="block text-sm font-medium mb-1" for="sex">Sex</label>
-          <select id="sex" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring">
+          <select id="sex" class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
             <option value="">– choose –</option>
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
@@ -110,7 +116,10 @@
       <h2 class="text-xl font-medium">4. Phenopacket YAML</h2>
 
       <button id="gen-yaml" type="button"
-              class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+              class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
         Generate YAML
       </button>
 
@@ -124,7 +133,10 @@
       <h2 class="text-xl font-medium">5. Download YAML</h2>
 
       <button id="download-yaml" type="button"
-              class="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700">
+              class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-emerald-500 border border-emerald-500 hover:text-white hover:bg-emerald-600 hover:ring-0 hover:border-emerald-600 focus:bg-emerald-600 focus:border-emerald-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
         Download phenopacket.yml
       </button>
     </section>

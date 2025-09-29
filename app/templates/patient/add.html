@@ -5,7 +5,7 @@
 {% block description %}Add New Patient Record{% endblock %}
 
 {% block content %}
-<div class="mx-auto p-6 max-w-4xl">
+<div class="mx-auto p-6 pt-6 max-w-4xl">
   <!-- Header -->
   <div class="mb-8">
     <nav class="flex mb-4" aria-label="Breadcrumb">
@@ -28,7 +28,7 @@
   </div>
 
   <!-- Patient Add Form -->
-  <form method="POST" enctype="multipart/form-data" class="space-y-8">
+  <form method="POST" enctype="multipart/form-data" class="space-y-8 pt-6">
     <!-- Basic Information Card -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <div class="flex items-center mb-6">
@@ -46,7 +46,7 @@
           </label>
           <input type="text" id="individual_id" name="individual_id" required
                  placeholder="e.g., P0001"
-                 class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                 class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
 
         <div>
@@ -55,7 +55,7 @@
           </label>
           <input type="text" id="full_name" name="full_name" required
                  placeholder="Patient's full name"
-                 class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                 class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
 
         <div>
@@ -63,7 +63,7 @@
             Sex <span class="text-red-500">*</span>
           </label>
           <select id="sex" name="sex" required
-                  class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                  class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
             <option value="">Select sex</option>
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
@@ -78,7 +78,7 @@
           </label>
           <input type="number" id="age_years" name="age_years" required min="0" max="150"
                  placeholder="Age in years"
-                 class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                 class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
       </div>
     </div>
@@ -100,7 +100,7 @@
           </label>
           <input type="text" id="diagnosis" name="diagnosis"
                  placeholder="Primary clinical diagnosis"
-                 class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                 class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
         </div>
 
         <div>
@@ -109,7 +109,7 @@
           </label>
           <textarea id="medical_history" name="medical_history" rows="4"
                     placeholder="Relevant medical history, symptoms, or clinical notes"
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white"></textarea>
+                    class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600"></textarea>
         </div>
       </div>
     </div>
@@ -138,13 +138,16 @@
             Selected HPO Terms
           </label>
           <select id="chosen-list" name="hpo_ids[]" multiple
-                  class="w-full h-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white">
+                  class="w-full h-48 leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
           </select>
           <input type="hidden" name="hpo_terms" id="hpo_terms">
         </div>
 
         <button type="button" id="remove-btn"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-red-500 border border-red-500 hover:text-white hover:bg-red-600 hover:ring-0 hover:border-red-600 focus:bg-red-600 focus:border-red-600 focus:outline-hidden focus:ring-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
           Remove Selected
         </button>
       </div>
@@ -164,31 +167,43 @@
         <label for="vcf_file" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           VCF File <span class="text-red-500">*</span>
         </label>
-        <input type="file" id="vcf_file" name="vcf_file" accept=".vcf,.vcf.gz" required
-               class="block w-full text-sm text-gray-500 dark:text-gray-400
-                      file:mr-4 file:py-3 file:px-6
-                      file:rounded-lg file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-indigo-50 file:text-indigo-700
-                      hover:file:bg-indigo-100
-                      dark:file:bg-indigo-900 dark:file:text-indigo-300
-                      border border-gray-300 dark:border-gray-600 rounded-lg
-                      focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-                      dark:bg-gray-700">
+
+        <div class="mb-6">
+          <div id="vcfDropzone" class="dropzone single-dropzone mb-6">
+            <div class="dz-message" data-dz-message>
+              <div class="pre-upload flex ioajsklehsnm yhansklopals">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-auto text-gray-500 inline-block size-10 bi bi-cloud-arrow-up" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"></path>
+                  <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"></path>
+                </svg>
+                <div class="py-3"><span>Drag & drop VCF files here</span></div>
+              </div>
+              <div class="pre-upload text-center">
+                <button type="button" class="py-1.5 px-3 inline-block text-center rounded-sm leading-normal text-gray-800 bg-gray-100 border border-gray-100 hover:text-gray-900 hover:bg-gray-200 hover:ring-0 hover:border-gray-200 focus:bg-gray-200 focus:border-gray-200 focus:outline-hidden focus:ring-0 me-2 dark:bg-gray-300">Browse file</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input type="file" id="vcf_file" name="vcf_file" accept=".vcf,.vcf.gz" required style="display: none;">
         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Upload a VCF (.vcf) or compressed VCF (.vcf.gz) file containing genomic variants
+          Upload a VCF (.vcf) file containing genomic variants
         </p>
       </div>
     </div>
 
     <!-- Form Actions -->
-    <div class="flex justify-end space-x-4 pt-6">
+    <div class="flex justify-end space-x-6 pt-6 border-t border-gray-200 dark:border-gray-600">
       <a href="{{ url_for('patient.patient_list') }}"
-         class="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+         class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0">
         Cancel
       </a>
       <button type="submit"
-              class="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+              class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
         Create Patient
       </button>
     </div>
@@ -196,55 +211,56 @@
 </div>
 
 <!-- Select2 CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/css/select2.min.css') }}"/>
 
 <!-- jQuery and Select2 JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/js/select2.min.js') }}"></script>
 
 <script>
 $(document).ready(function() {
-    // Mock HPO terms data (in real app, this would come from an API)
-    const hpoTerms = [
-        { id: "HP:0001250", label: "Seizure" },
-        { id: "HP:0001263", label: "Global developmental delay" },
-        { id: "HP:0000252", label: "Microcephaly" },
-        { id: "HP:0000256", label: "Macrocephaly" },
-        { id: "HP:0001249", label: "Intellectual disability" },
-        { id: "HP:0000365", label: "Hearing impairment" },
-        { id: "HP:0000508", label: "Ptosis" },
-        { id: "HP:0001363", label: "Craniosynostosis" },
-        { id: "HP:0002119", label: "Ventriculomegaly" },
-        { id: "HP:0000347", label: "Micrognathia" },
-        { id: "HP:0000316", label: "Hypertelorism" },
-        { id: "HP:0000407", label: "Sensorineural hearing impairment" },
-        { id: "HP:0001518", label: "Small for gestational age" },
-        { id: "HP:0004322", label: "Short stature" },
-        { id: "HP:0000639", label: "Nystagmus" },
-        { id: "HP:0001251", label: "Ataxia" },
-        { id: "HP:0001252", label: "Muscular hypotonia" },
-        { id: "HP:0002910", label: "Elevated hepatic transaminase" },
-        { id: "HP:0000286", label: "Epicanthus" },
-        { id: "HP:0000348", label: "High forehead" }
-    ];
-
-    // Initialize Select2 for HPO search
+    // Initialize Select2 for HPO search with live API (copied from phenopacket.html)
     $('#hpo-search').select2({
-        placeholder: 'Search for HPO terms...',
-        allowClear: true,
-        data: hpoTerms.map(term => ({
-            id: term.id + '|' + term.label,
-            text: term.id + ' - ' + term.label
-        })),
-        width: '100%'
+        placeholder: 'Type at least two characters…',
+        minimumInputLength: 2,
+        width: '100%',
+        ajax: {
+            url: 'https://ontology.jax.org/api/hp/search',
+            dataType: 'json',
+            delay: 250,
+            data: params => ({ q: params.term, limit: -1 }),
+            processResults: data => {
+                const hits = Array.isArray(data) ? data : (data.terms || data.results || []);
+                return {
+                    results: hits.map(t => {
+                        const iri = t.id || t.curie || t.iri || t.identifier;
+                        let id = iri;
+                        const m = iri.match(/HP[_:]?(\d{7})/);
+                        if (m) id = 'HP:' + m[1];
+                        const label = t.label || t.term || t.name;
+                        const desc = t.definition || t.def || t.description || t.desc || '';
+                        const short = desc.length > 90 ? desc.slice(0, 87) + '…' : desc;
+                        return { id, text: `${id}: ${label} – ${short}` };
+                    })
+                };
+            },
+            cache: true
+        },
+        templateSelection: () => ''   // keep bar empty after selection
     });
 
     // Store selected HPO terms
     let selectedHpoTerms = [];
 
-    // Handle HPO term selection
+    // Handle HPO term selection (adapted from phenopacket.html)
     $('#hpo-search').on('select2:select', function (e) {
-        const [id, label] = e.params.data.id.split('|');
+        const data = e.params.data;
+        const id = data.id;
+        const text = data.text;
+
+        // Extract label from the formatted text (format: "HP:XXXXXXX: Label – Description")
+        const labelMatch = text.match(/^HP:\d+:\s*([^–]+)/);
+        const label = labelMatch ? labelMatch[1].trim() : text;
 
         // Check if already selected
         if (!selectedHpoTerms.find(term => term.id === id)) {
