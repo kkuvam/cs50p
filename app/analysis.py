@@ -1,7 +1,7 @@
 # File: app/analysis.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import db, Individual, Task, TaskStatus, GenomeAssembly
+from models import db, Individual, Analysis, TaskStatus, GenomeAssembly
 
 analysis_bp = Blueprint("analysis", __name__)
 
@@ -10,7 +10,7 @@ analysis_bp = Blueprint("analysis", __name__)
 @login_required
 def analysis_list():
     """Analysis list page - shows all analyses for all users"""
-    analyses = Task.query.order_by(Task.created_at.desc()).all()
+    analyses = Analysis.query.order_by(Analysis.created_at.desc()).all()
     return render_template("analysis/analyses.html", analyses=analyses, user=current_user)
 
 @analysis_bp.route("/analysis/add", methods=["GET", "POST"])
@@ -55,16 +55,16 @@ def analysis_add():
                 return render_template("analysis/add.html", individuals=individuals, user=current_user)
 
             # Create analysis (using Task model for now)
-            analysis = Task(
+            # Create new analysis
+            analysis = Analysis(
                 name=name,
-                description=description or None,
+                description=description,
                 individual_id=individual_id,
                 vcf_filename=vcf_filename,
                 genome_assembly=genome_assembly_enum,
                 analysis_mode=analysis_mode,
                 frequency_threshold=frequency_threshold,
                 pathogenicity_threshold=pathogenicity_threshold,
-                status=TaskStatus.PENDING,
                 created_by=current_user.id,
                 updated_by=current_user.id
             )
@@ -86,7 +86,7 @@ def analysis_add():
 @login_required
 def analysis_edit(analysis_id):
     """Edit existing analysis"""
-    analysis = Task.query.get_or_404(analysis_id)
+    analysis = Analysis.query.get_or_404(analysis_id)
     individuals = Individual.query.order_by(Individual.identity).all()
 
     if request.method == "POST":
@@ -145,7 +145,7 @@ def analysis_edit(analysis_id):
 @login_required
 def analysis_delete(analysis_id):
     """Delete analysis with confirmation"""
-    analysis = Task.query.get_or_404(analysis_id)
+    analysis = Analysis.query.get_or_404(analysis_id)
 
     if request.method == "POST":
         try:
@@ -172,12 +172,12 @@ def analysis_delete(analysis_id):
 @login_required
 def analysis_view(analysis_id):
     """View analysis details and results"""
-    analysis = Task.query.get_or_404(analysis_id)
+    analysis = Analysis.query.get_or_404(analysis_id)
     return render_template("analysis/view.html", analysis=analysis, user=current_user)
 
 @analysis_bp.route("/results")
 @login_required
 def results():
     """Results page - shows analysis results and status"""
-    analyses = Task.query.order_by(Task.updated_at.desc()).all()
+    analyses = Analysis.query.order_by(Analysis.updated_at.desc()).all()
     return render_template("analysis/results.html", analyses=analyses, user=current_user)

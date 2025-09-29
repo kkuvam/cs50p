@@ -1,7 +1,7 @@
 # File: app/individual.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, abort
 from flask_login import login_required, current_user
-from models import db, Individual, Task, SexType
+from models import db, Individual, Analysis, SexType
 from datetime import datetime
 import os
 import uuid
@@ -229,10 +229,10 @@ def individual_delete(individual_id):
                 flash("Please type 'DELETE' to confirm deletion", "error")
                 return render_template("individual/delete.html", individual=individual, user=current_user)
 
-            # Check if individual has associated tasks
-            task_count = Task.query.filter_by(individual_id=individual_id).count()
-            if task_count > 0:
-                flash(f"Cannot delete individual '{individual.identity}' - {task_count} analysis task(s) are associated with this individual", "error")
+            # Check if individual has associated analyses
+            analysis_count = Analysis.query.filter_by(individual_id=individual_id).count()
+            if analysis_count > 0:
+                flash(f"Cannot delete individual '{individual.identity}' - {analysis_count} analysis record(s) are associated with this individual", "error")
                 return render_template("individual/delete.html", individual=individual, user=current_user)
 
             # Delete VCF file if it exists

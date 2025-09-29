@@ -44,8 +44,8 @@ class User(UserMixin, db.Model):
     # Relationships - track what users created and updated
     created_individuals = db.relationship('Individual', foreign_keys='Individual.created_by', backref='creator', lazy=True)
     updated_individuals = db.relationship('Individual', foreign_keys='Individual.updated_by', backref='last_updater', lazy=True)
-    created_tasks = db.relationship('Task', foreign_keys='Task.created_by', backref='creator', lazy=True)
-    updated_tasks = db.relationship('Task', foreign_keys='Task.updated_by', backref='last_updater', lazy=True)
+    created_analyses = db.relationship('Analysis', foreign_keys='Analysis.created_by', backref='creator', lazy=True)
+    updated_analyses = db.relationship('Analysis', foreign_keys='Analysis.updated_by', backref='last_updater', lazy=True)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -94,7 +94,8 @@ class Individual(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relationships
-    tasks = db.relationship('Task', backref='individual', lazy=True, cascade='all, delete-orphan')
+    # Analysis relationship
+    analyses = db.relationship('Analysis', backref='individual', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Individual {self.identity}: {self.full_name or 'Unnamed'}>"
@@ -207,16 +208,16 @@ class Individual(db.Model):
         }
 
 
-class Task(db.Model):
+class Analysis(db.Model):
     """
-    Analysis Task model for genomic variant analysis workflows.
+    Analysis model for genomic variant analysis workflows.
     Represents an Exomiser analysis job with VCF file and individual data.
     """
-    __tablename__ = "tasks"
+    __tablename__ = "analyses"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)  # User-friendly task name
-    description = db.Column(db.Text, nullable=True)   # Task description
+    name = db.Column(db.String(120), nullable=False)  # User-friendly analysis name
+    description = db.Column(db.Text, nullable=True)   # Analysis description
 
     # Analysis configuration
     vcf_filename = db.Column(db.String(255), nullable=False)  # Original VCF filename
@@ -228,7 +229,7 @@ class Task(db.Model):
     frequency_threshold = db.Column(db.Float, default=1.0)  # Max allele frequency
     pathogenicity_threshold = db.Column(db.Float, default=0.5)  # Min pathogenicity score
 
-    # Task execution
+    # Analysis execution
     status = db.Column(db.Enum(TaskStatus), nullable=False, default=TaskStatus.PENDING)
     progress_percent = db.Column(db.Integer, default=0)  # 0-100
 
@@ -253,11 +254,11 @@ class Task(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     def __repr__(self):
-        return f"<Task {self.name}: {self.status.value}>"
+        return f"<Analysis {self.name}: {self.status.value}>"
 
     @property
     def duration(self):
-        """Calculate task execution duration."""
+        """Calculate analysis execution duration."""
         if self.started_at and self.completed_at:
             return self.completed_at - self.started_at
         elif self.started_at:
@@ -266,21 +267,21 @@ class Task(db.Model):
 
     @property
     def is_running(self):
-        """Check if task is currently running."""
+        """Check if analysis is currently running."""
         return self.status == TaskStatus.RUNNING
 
     @property
     def is_completed(self):
-        """Check if task completed successfully."""
+        """Check if analysis completed successfully."""
         return self.status == TaskStatus.COMPLETED
 
     @property
     def is_failed(self):
-        """Check if task failed."""
+        """Check if analysis failed."""
         return self.status == TaskStatus.FAILED
 
     def to_dict(self):
-        """Convert task to dictionary for API responses."""
+        """Convert analysis to dictionary for API responses."""
         return {
             'id': self.id,
             'name': self.name,
