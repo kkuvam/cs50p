@@ -1,0 +1,125 @@
+{% extends 'layout.html' %}
+
+{% block title %}Delete Analysis | Exomiser App{% endblock %}
+
+{% block description %}Delete Analysis{% endblock %}
+
+{% block content %}
+<div class="mx-auto p-6 pt-6 max-w-2xl">
+  <!-- Header -->
+  <div class="mb-8">
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a href="{{ url_for('analysis.analysis_list') }}" class="text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400">Analyses</a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">Delete {{ analysis.name }}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Delete Analysis</h1>
+    <p class="text-gray-600 dark:text-gray-400">Permanently remove this analysis</p>
+  </div>
+
+  <!-- Confirmation Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+    <!-- Warning Icon -->
+    <div class="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-red-100 rounded-full dark:bg-red-900">
+      <svg class="w-8 h-8 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+      </svg>
+    </div>
+
+    <!-- Warning Message -->
+    <div class="text-center mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Are you sure?</h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">
+        This action will permanently delete the analysis <strong>"{{ analysis.name }}"</strong> and all associated data.
+      </p>
+      <p class="text-sm text-red-600 dark:text-red-400">
+        This action cannot be undone.
+      </p>
+    </div>
+
+    <!-- Analysis Information -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-8">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Analysis Details</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <span class="font-medium text-gray-700 dark:text-gray-300">Name:</span>
+          <span class="text-gray-900 dark:text-white ml-2">{{ analysis.name }}</span>
+        </div>
+        <div>
+          <span class="font-medium text-gray-700 dark:text-gray-300">Status:</span>
+          <span class="ml-2">
+            {% if analysis.status.value == 'PENDING' %}
+            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
+            {% elif analysis.status.value == 'RUNNING' %}
+            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Running</span>
+            {% elif analysis.status.value == 'COMPLETED' %}
+            <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Completed</span>
+            {% elif analysis.status.value == 'FAILED' %}
+            <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Failed</span>
+            {% endif %}
+          </span>
+        </div>
+        <div>
+          <span class="font-medium text-gray-700 dark:text-gray-300">Individual:</span>
+          <span class="text-gray-900 dark:text-white ml-2">{{ analysis.individual.individual_id }}</span>
+        </div>
+        <div>
+          <span class="font-medium text-gray-700 dark:text-gray-300">Created:</span>
+          <span class="text-gray-900 dark:text-white ml-2">{{ analysis.created_at.strftime('%Y-%m-%d') }}</span>
+        </div>
+        {% if analysis.description %}
+        <div class="md:col-span-2">
+          <span class="font-medium text-gray-700 dark:text-gray-300">Description:</span>
+          <span class="text-gray-900 dark:text-white ml-2">{{ analysis.description }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Running Analysis Warning -->
+    {% if analysis.status.value == 'RUNNING' %}
+    <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-yellow-700 dark:text-yellow-300">
+            This analysis is currently running. Deleting it may cause unexpected behavior.
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <form method="POST" action="{{ url_for('analysis.analysis_delete', analysis_id=analysis.id) }}">
+      <div class="flex justify-end space-x-4">
+        <a href="{{ url_for('analysis.analysis_view', analysis_id=analysis.id) }}"
+           class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+          Cancel
+        </a>
+        <button type="submit"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Delete Analysis
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

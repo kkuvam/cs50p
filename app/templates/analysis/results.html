@@ -1,0 +1,183 @@
+{% extends 'layout.html' %}
+
+{% block title %}Analysis Results | Exomiser App{% endblock %}
+
+{% block description %}View Analysis Results{% endblock %}
+
+{% block content %}
+<div class="relative flex flex-wrap layhetgsjdcb -mx-4">
+  <div class="shrink max-w-full uajskeiolksb w-full overflow-hidden">
+    <div class="w-full dkslaoeyhnmj mt-6">
+      <div class="bg-white dark:bg-gray-800 dkslaoeyhnmj border border-gray-200 dark:border-gray-700">
+        <!-- Header -->
+        <div class="flex flex-wrap layhetgsjdcb justify-between items-center -mx-4 mb-6 dkslaoeyhnmj pt-6">
+          <div class="shrink max-w-full uajskeiolksb flex-1 px-4">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-300 mb-2">Analysis Results</h1>
+            <p class="text-gray-600 dark:text-gray-400">View and manage analysis results and outputs</p>
+          </div>
+        </div>
+
+        <!-- Results Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 px-6">
+          <!-- Total Analyses -->
+          <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-blue-100">Total Analyses</p>
+                <p class="text-2xl font-bold">{{ analyses|length }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Completed -->
+          <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-green-100">Completed</p>
+                <p class="text-2xl font-bold">{{ analyses|selectattr('status.value', 'equalto', 'COMPLETED')|list|length }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Running -->
+          <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-6 text-white">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-yellow-100">Running</p>
+                <p class="text-2xl font-bold">{{ analyses|selectattr('status.value', 'equalto', 'RUNNING')|list|length }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Failed -->
+          <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-red-100">Failed</p>
+                <p class="text-2xl font-bold">{{ analyses|selectattr('status.value', 'equalto', 'FAILED')|list|length }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Table -->
+        {% if analyses %}
+        <div class="overflow-x-auto px-6">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" class="px-6 py-3">Analysis</th>
+                <th scope="col" class="px-6 py-3">Individual</th>
+                <th scope="col" class="px-6 py-3">Status</th>
+                <th scope="col" class="px-6 py-3">Progress</th>
+                <th scope="col" class="px-6 py-3">Completed</th>
+                <th scope="col" class="px-6 py-3">Results</th>
+                <th scope="col" class="px-6 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for analysis in analyses %}
+              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td class="px-6 py-4">
+                  <div class="font-medium text-gray-900 dark:text-white">{{ analysis.name }}</div>
+                  {% if analysis.description %}
+                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ analysis.description[:50] }}{% if analysis.description|length > 50 %}...{% endif %}</div>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-gray-900 dark:text-white">{{ analysis.individual.individual_id }}</div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ analysis.individual.full_name }}</div>
+                </td>
+                <td class="px-6 py-4">
+                  {% if analysis.status.value == 'PENDING' %}
+                  <span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
+                  {% elif analysis.status.value == 'RUNNING' %}
+                  <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Running</span>
+                  {% elif analysis.status.value == 'COMPLETED' %}
+                  <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Completed</span>
+                  {% elif analysis.status.value == 'FAILED' %}
+                  <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Failed</span>
+                  {% else %}
+                  <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-900 dark:text-gray-300">{{ analysis.status.value }}</span>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                  <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ analysis.progress_percent or 0 }}%"></div>
+                  </div>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ analysis.progress_percent or 0 }}%</span>
+                </td>
+                <td class="px-6 py-4 text-gray-900 dark:text-white">
+                  {{ analysis.completed_at.strftime('%Y-%m-%d %H:%M') if analysis.completed_at else '-' }}
+                </td>
+                <td class="px-6 py-4">
+                  {% if analysis.status.value == 'COMPLETED' %}
+                    {% if analysis.output_html %}
+                    <a href="#" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 text-sm mr-2">HTML</a>
+                    {% endif %}
+                    {% if analysis.output_tsv %}
+                    <a href="#" class="text-green-600 hover:text-green-800 dark:text-green-400 text-sm mr-2">TSV</a>
+                    {% endif %}
+                    {% if analysis.output_vcf %}
+                    <a href="#" class="text-purple-600 hover:text-purple-800 dark:text-purple-400 text-sm">VCF</a>
+                    {% endif %}
+                  {% else %}
+                  <span class="text-gray-400 text-sm">No results</span>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex space-x-2">
+                    <a href="{{ url_for('analysis.analysis_view', analysis_id=analysis.id) }}"
+                       class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View</a>
+                    {% if analysis.status.value == 'COMPLETED' and analysis.error_message %}
+                    <a href="#" class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Logs</a>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12 px-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Analysis Results</h3>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">No analyses have been completed yet.</p>
+          <a href="{{ url_for('analysis.analysis_add') }}"
+             class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Create Analysis
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

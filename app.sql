@@ -17,8 +17,8 @@ CREATE TABLE users (
 -- Create index on email for faster lookups
 CREATE UNIQUE INDEX ix_users_email ON users (email);
 
--- Patients table
-CREATE TABLE patients (
+-- Individuals table
+CREATE TABLE individuals (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     individual_id VARCHAR(50) NOT NULL,
     full_name VARCHAR(120) NOT NULL,
@@ -39,8 +39,8 @@ CREATE TABLE patients (
     FOREIGN KEY(updated_by) REFERENCES users (id)
 );
 
--- Create index on individual_id for faster patient lookups
-CREATE INDEX ix_patients_individual_id ON patients (individual_id);
+-- Create index on individual_id for faster individual lookups
+CREATE INDEX ix_individuals_individual_id ON individuals (individual_id);
 
 -- Tasks table
 CREATE TABLE tasks (
@@ -64,14 +64,14 @@ CREATE TABLE tasks (
     completed_at DATETIME,
     error_message TEXT,
     log_file_path VARCHAR(500),
-    patient_id INTEGER NOT NULL,
+    individual_id INTEGER NOT NULL,
     created_by INTEGER NOT NULL,
     updated_by INTEGER NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     -- Foreign key constraints
-    FOREIGN KEY(patient_id) REFERENCES patients (id),
+    FOREIGN KEY(individual_id) REFERENCES individuals (id),
     FOREIGN KEY(created_by) REFERENCES users (id),
     FOREIGN KEY(updated_by) REFERENCES users (id)
 );
@@ -106,12 +106,12 @@ BEGIN
     UPDATE users SET updated_at = datetime('now') WHERE id = NEW.id;
 END;
 
--- Trigger for patients table
-CREATE TRIGGER update_patients_updated_at
-    AFTER UPDATE ON patients
+-- Trigger for individuals table
+CREATE TRIGGER update_individuals_updated_at
+    AFTER UPDATE ON individuals
     FOR EACH ROW
 BEGIN
-    UPDATE patients SET updated_at = datetime('now') WHERE id = NEW.id;
+    UPDATE individuals SET updated_at = datetime('now') WHERE id = NEW.id;
 END;
 
 -- Trigger for tasks table
@@ -124,8 +124,8 @@ END;
 
 -- Sample data (optional - remove if not needed)
 
--- Insert a sample patient (created by admin user)
-INSERT INTO patients (
+-- Insert a sample individual (created by admin user)
+INSERT INTO individuals (
     individual_id,
     full_name,
     sex,
@@ -143,7 +143,7 @@ INSERT INTO patients (
     'John Doe',
     'MALE',
     35,
-    'Patient with seizure disorder',
+    'Individual with seizure disorder',
     'Epilepsy',
     '[{"id": "HP:0001250", "label": "Seizures"}]',
     '/opt/exomiser/ikdrc/vcf/P0001_sample.vcf',
@@ -164,14 +164,14 @@ INSERT INTO tasks (
     pathogenicity_threshold,
     status,
     progress_percent,
-    patient_id,
+    individual_id,
     created_by,
     updated_by,
     created_at,
     updated_at
 ) VALUES (
     'P0001 Epilepsy Analysis',
-    'Genomic analysis for epilepsy patient P0001',
+    'Genomic analysis for epilepsy individual P0001',
     'P0001_sample.vcf',
     'hg38',
     'PASS_ONLY',
@@ -179,7 +179,7 @@ INSERT INTO tasks (
     0.7,
     'PENDING',
     0,
-    1,  -- patient P0001
+    1,  -- individual P0001
     1,  -- created by admin
     1,  -- updated by admin
     datetime('now'),

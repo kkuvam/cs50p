@@ -2,11 +2,12 @@
 import os
 from flask import Flask
 from flask_login import LoginManager
-from models import db, User, Patient, Task
+from models import db, User, Individual, Task
 from auth import auth_bp
 from routes import routes_bp
-from patient import patient_bp
+from individual import individual_bp
 from task import task_bp
+from analysis import analysis_bp
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config.update(
@@ -33,8 +34,9 @@ def load_user(user_id):
 # register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(routes_bp)
-app.register_blueprint(patient_bp)
+app.register_blueprint(individual_bp)
 app.register_blueprint(task_bp)
+app.register_blueprint(analysis_bp)
 
 
 if __name__ == "__main__":

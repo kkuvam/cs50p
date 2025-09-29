@@ -26,7 +26,7 @@
             <div class="flex items-center justify-between mb-4">
               <div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ task.name }}</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Patient: {{ task.patient.full_name or task.patient.individual_id }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Individual: {{ task.individual.full_name or task.individual.individual_id }}</p>
               </div>
               <div class="flex items-center space-x-3">
                 <!-- Status Badge -->
