@@ -5,9 +5,13 @@ from models import db, Individual, Analysis, TaskStatus, GenomeAssembly
 import os
 import subprocess
 import threading
+import time
 from datetime import datetime
 
 analysis_bp = Blueprint("analysis", __name__)
+
+# Global dictionary to store real-time output for analyses
+analysis_outputs = {}
 
 # ===== ANALYSIS CRUD ROUTES =====
 @analysis_bp.route("/analyses")
@@ -218,6 +222,51 @@ def analysis_results(analysis_id):
     # Redirect directly to the HTML content (no layout)
     return redirect(url_for("analysis.analysis_html", analysis_id=analysis_id))
 
+@analysis_bp.route("/analysis/<int:analysis_id>/rerun", methods=["POST"])
+@login_required
+def analysis_rerun(analysis_id):
+    """Rerun an existing analysis with the same parameters"""
+    analysis = Analysis.query.get_or_404(analysis_id)
+
+    try:
+        # Reset analysis status and clear previous results
+        analysis.status = TaskStatus.PENDING
+        analysis.started_at = None
+        analysis.completed_at = None
+        analysis.error_message = None
+        analysis.output_html = None
+        analysis.updated_by = current_user.id
+
+        db.session.commit()
+
+        # Start the analysis in background
+        thread = threading.Thread(target=run_exomiser_analysis, args=(analysis_id,))
+        thread.daemon = True
+        thread.start()
+
+        return jsonify({"success": True, "message": "Analysis restarted successfully"})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@analysis_bp.route("/analysis/<int:analysis_id>/output")
+@login_required
+def analysis_output(analysis_id):
+    """Get current analysis output for polling"""
+    if analysis_id in analysis_outputs:
+        return jsonify({
+            "success": True,
+            "output": analysis_outputs[analysis_id],
+            "line_count": len(analysis_outputs[analysis_id])
+        })
+    else:
+        return jsonify({
+            "success": True,
+            "output": [],
+            "line_count": 0
+        })
+
 @analysis_bp.route("/analysis/<int:analysis_id>/download")
 @login_required
 def analysis_download(analysis_id):
@@ -263,7 +312,7 @@ def analysis_download(analysis_id):
                     download_name=download_filename)
 
 def run_exomiser_analysis(analysis_id):
-    """Background function to run Exomiser analysis"""
+    """Background function to run Exomiser analysis with simple output storage"""
     from main import app  # Import here to avoid circular imports
 
     try:
@@ -271,6 +320,16 @@ def run_exomiser_analysis(analysis_id):
             analysis = Analysis.query.get(analysis_id)
             if not analysis:
                 return
+
+            # Initialize output storage for this analysis
+            analysis_outputs[analysis_id] = []
+
+            # Update status to running
+            analysis.status = TaskStatus.RUNNING
+            analysis.started_at = datetime.utcnow()
+            db.session.commit()
+
+            analysis_outputs[analysis_id].append("Starting Exomiser analysis...")
 
             # Generate phenopacket YAML for the individual
             individual = analysis.individual
@@ -290,24 +349,55 @@ def run_exomiser_analysis(analysis_id):
 
             # Store the phenopacket path in the database for future reference
             analysis.phenopacket_path = phenopacket_file
+            db.session.commit()
+
+            analysis_outputs[analysis_id].append(f"Generated phenopacket: {phenopacket_file}")
 
             # Prepare Exomiser command following the instructions:
-            # java -Xmx4g -jar exomiser-cli-14.0.2.jar --analysis analysis.yml --sample phenopacket.yml
             cmd = [
                 "java", "-Xmx4g", "-jar", "/opt/exomiser/exomiser-cli-14.1.0.jar",
                 "--analysis", "/opt/exomiser/analysis.yml",
                 "--sample", phenopacket_file
             ]
 
-            # Set working directory to /opt/exomiser for proper relative paths
-            # Run Exomiser
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd="/opt/exomiser")  # 30 min timeout
+            analysis_outputs[analysis_id].append(f"Running command: {' '.join(cmd)}")
 
-            # Update analysis status
-            if result.returncode == 0:
+            # Start subprocess with real-time output capture
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,  # Merge stderr into stdout
+                universal_newlines=True,
+                bufsize=1,  # Line buffered
+                cwd="/opt/exomiser"
+            )
+
+            # Capture output line by line
+            while True:
+                if process.stdout:
+                    output = process.stdout.readline()
+                    if output == '' and process.poll() is not None:
+                        break
+                    if output:
+                        line = output.strip()
+                        if line:  # Only store non-empty lines
+                            analysis_outputs[analysis_id].append(line)
+                else:
+                    # If no stdout, just wait for process to complete
+                    if process.poll() is not None:
+                        break
+                    time.sleep(0.1)
+
+            # Wait for process to complete
+            return_code = process.poll()
+
+            # Update analysis status based on return code
+            if return_code == 0:
                 analysis.status = TaskStatus.COMPLETED
                 analysis.completed_at = datetime.utcnow()
                 analysis.error_message = None
+
+                analysis_outputs[analysis_id].append("Analysis completed successfully!")
 
                 # Set results directory path
                 analysis.results_directory = "/opt/exomiser/ikdrc/results"
@@ -318,23 +408,25 @@ def run_exomiser_analysis(analysis_id):
                     for filename in os.listdir(results_dir):
                         if filename.endswith(".html") and individual.identity in filename:
                             analysis.output_html = os.path.join(results_dir, filename)
+                            analysis_outputs[analysis_id].append(f"Results saved to: {filename}")
                             break
             else:
                 analysis.status = TaskStatus.FAILED
-                # Store error message with original newlines for display
-                stderr_text = result.stderr if result.stderr else ''
-                stdout_text = result.stdout if result.stdout else ''
-                analysis.error_message = f"Exomiser failed:\n\nStderr:\n{stderr_text}\n\nStdout:\n{stdout_text}"
+                analysis.error_message = f"Exomiser process failed with return code {return_code}"
+                analysis_outputs[analysis_id].append(f"Analysis failed with return code: {return_code}")
 
             db.session.commit()
 
-    except subprocess.TimeoutExpired:
-        with app.app_context():
-            analysis = Analysis.query.get(analysis_id)
-            if analysis:
-                analysis.status = TaskStatus.FAILED
-                analysis.error_message = "Analysis timed out after 30 minutes"
-                db.session.commit()
+            # Keep output in memory for a while after completion (30 minutes)
+            def cleanup_output():
+                time.sleep(1800)  # 30 minutes
+                if analysis_id in analysis_outputs:
+                    del analysis_outputs[analysis_id]
+
+            cleanup_thread = threading.Thread(target=cleanup_output)
+            cleanup_thread.daemon = True
+            cleanup_thread.start()
+
     except Exception as e:
         with app.app_context():
             analysis = Analysis.query.get(analysis_id)
@@ -342,6 +434,11 @@ def run_exomiser_analysis(analysis_id):
                 analysis.status = TaskStatus.FAILED
                 analysis.error_message = f"Error running analysis: {str(e)}"
                 db.session.commit()
+
+                # Store error in output if storage exists
+                if analysis_id in analysis_outputs:
+                    analysis_outputs[analysis_id].append(f"Error: {str(e)}")
+                    analysis_outputs[analysis_id].append("Analysis failed due to error")
 
 @analysis_bp.route("/analysis/<int:analysis_id>/view")
 @login_required
@@ -352,7 +449,7 @@ def analysis_view(analysis_id):
 @analysis_bp.route("/analysis/<int:analysis_id>/html")
 @login_required
 def analysis_html(analysis_id):
-    """Serve the raw HTML content for iframe embedding"""
+    """Serve the raw HTML content directly"""
     analysis = Analysis.query.get_or_404(analysis_id)
 
     if analysis.status != TaskStatus.COMPLETED:

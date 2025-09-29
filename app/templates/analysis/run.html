@@ -2,14 +2,7 @@
 
 {% block title %}Run Analysis | Exomiser App{% endblock %}
 
-{% block description %}Execute Geno        <button onclick="viewResults()"
-                class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-blue-500 border border-blue-500 hover:text-white hover:bg-blue-600 hover:ring-0 hover:border-blue-600 focus:bg-blue-600 focus:border-blue-600 focus:outline-hidden focus:ring-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.25rem" height="1.25rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          View Results
-        </button>ysis{% endblock %}
+{% block description %}Execute genomic analysis with Exomiser CLI{% endblock %}
 
 {% block content %}
 <div class="mx-auto p-6 pt-6 max-w-6xl">
@@ -30,14 +23,14 @@
         </li>
       </ol>
     </nav>
-    <div class="flex flex-wrap layhetgsjdcb justify-between items-center -mx-4 mb-6 dkslaoeyhnmj pt-6">
-      <div class="shrink max-w-full uajskeiolksb flex-1 px-4">
+    <div class="flex flex-wrap justify-between items-center -mx-4 mb-6 pt-6">
+      <div class="shrink max-w-full flex-1 px-4">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Run Analysis: {{ analysis.name }}</h1>
         <p class="text-gray-600 dark:text-gray-400">{{ analysis.description or 'Execute genomic analysis with Exomiser CLI' }}</p>
       </div>
-      <div class="shrink max-w-full uajskeiolksb px-4 flex gap-2">
+      <div class="shrink max-w-full px-4 flex gap-2">
         <a href="{{ url_for('analysis.analysis_list') }}"
-           class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0">
+           class="py-2 px-3 inline-flex items-center gap-2 mb-3 rounded-sm leading-5 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.25rem" height="1.25rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -47,7 +40,7 @@
         {% if analysis.status.value == 'PENDING' or analysis.status.value == 'FAILED' %}
         <form method="POST" action="{{ url_for('analysis.analysis_run', analysis_id=analysis.id) }}" class="inline">
           <button type="submit"
-                  class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
+                  class="py-2 px-3 inline-flex items-center gap-2 mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.25rem" height="1.25rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -97,51 +90,55 @@
   {% endif %}
 
   {% if analysis.status.value == 'COMPLETED' %}
-  <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
-    <div class="flex">
-      <div class="flex-shrink-0">
-        <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-        </svg>
-      </div>
-      <div class="ml-3">
-        <p class="text-sm text-green-700">
-          Analysis completed successfully! Results are available below.
-        </p>
-      </div>
-    </div>
-  </div>
-
   <!-- Results Section -->
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-    <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Analysis Results</h2>
-      </div>
-      <div class="flex gap-2">
-        <a href="#" id="download-html"
-           class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-green-500 border border-green-500 hover:text-white hover:bg-green-600 hover:ring-0 hover:border-green-600 focus:bg-green-600 focus:border-green-600 focus:outline-hidden focus:ring-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.25rem" height="1.25rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Download HTML Report
-        </a>
-        <button onclick="viewResults()"
-                class="py-2 px-3 inline-flex items-center gap-2 rounded-sm leading-5 text-white bg-blue-600 border border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:bg-blue-700 focus:border-blue-700 focus:outline-none focus:ring-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          View Results
-        </button>
-      </div>
+    <div class="flex items-center mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Analysis Results</h2>
     </div>
+
+    <!-- Buttons Row -->
+    <div class="flex flex-wrap gap-3 mb-6">
+      <a href="#" id="download-html"
+         class="py-2 px-3 inline-flex items-center gap-2 rounded-sm leading-5 text-gray-100 bg-green-500 border border-green-500 hover:text-white hover:bg-green-600 hover:ring-0 hover:border-green-600 focus:bg-green-600 focus:border-green-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="1rem" height="1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Download HTML Report
+      </a>
+      <button onclick="viewResults()"
+              class="py-2 px-3 inline-flex items-center gap-2 rounded-sm leading-5 text-gray-100 bg-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600 hover:ring-0 hover:border-gray-600 focus:bg-gray-600 focus:border-gray-600 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        View Results
+      </button>
+      <button onclick="rerunAnalysis()"
+              class="py-2 px-3 inline-flex items-center gap-2 rounded-sm leading-5 text-gray-900 bg-yellow-400 border border-yellow-400 hover:text-gray-900 hover:bg-yellow-500 hover:ring-0 hover:border-yellow-500 focus:bg-yellow-500 focus:border-yellow-500 focus:outline-hidden focus:ring-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Rerun Analysis
+      </button>
+    </div>
+
+    {% if analysis.status.value != 'COMPLETED' %}
     <div id="results-preview" class="text-gray-600 dark:text-gray-400">
       Results will be displayed here once the analysis completes...
     </div>
+    {% else %}
+    <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <p class="text-green-700 dark:text-green-300 font-medium">Analysis completed successfully! Use the buttons above to view or download the results.</p>
+      </div>
+    </div>
+    {% endif %}
   </div>
   {% endif %}
 
@@ -304,35 +301,50 @@
 </div>
 
 <script>
-// Auto-refresh page when running to update status
+<script>
+// Simple polling for analysis output instead of streaming
 {% if analysis.status.value == 'RUNNING' %}
-  setTimeout(function() {
-    window.location.reload();
-  }, 5000); // Refresh every 5 seconds
-
-  // Simulate live output (in real implementation, this would come from WebSocket or polling)
   const outputElement = document.getElementById('analysis-output');
-  if (outputElement) {
-    const messages = [
-      'Starting Exomiser analysis...',
-      'Loading genome assembly {{ analysis.genome_assembly.value }}...',
-      'Processing VCF file: {{ analysis.vcf_filename }}...',
-      'Applying frequency filter: {{ analysis.frequency_threshold }}...',
-      'Applying pathogenicity threshold: {{ analysis.pathogenicity_threshold }}...',
-      'Running phenotype analysis...',
-      'Generating variant prioritization...',
-      'Creating HTML report...'
-    ];
+  let lastLineCount = 0;
 
-    let currentMessage = 0;
-    setInterval(function() {
-      if (currentMessage < messages.length) {
-        outputElement.innerHTML += '<div class="text-green-400">[' + new Date().toLocaleTimeString() + '] ' + messages[currentMessage] + '</div>';
-        currentMessage++;
-        outputElement.scrollTop = outputElement.scrollHeight;
-      }
-    }, 2000);
+  if (outputElement) {
+    // Clear initial content
+    outputElement.innerHTML = '<div class="text-green-400">[' + new Date().toLocaleTimeString() + '] Starting analysis...</div>';
   }
+
+  function pollAnalysisOutput() {
+    fetch('{{ url_for("analysis.analysis_output", analysis_id=analysis.id) }}')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && outputElement) {
+          // Only update if we have new lines
+          if (data.line_count > lastLineCount) {
+            // Clear and rebuild output with all lines
+            outputElement.innerHTML = '';
+            data.output.forEach(line => {
+              const timestamp = new Date().toLocaleTimeString();
+              outputElement.innerHTML += '<div class="text-green-400">[' + timestamp + '] ' + line + '</div>';
+            });
+
+            // Auto-scroll to bottom
+            outputElement.scrollTop = outputElement.scrollHeight;
+            lastLineCount = data.line_count;
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error polling output:', error);
+      });
+  }
+
+  // Poll every 2 seconds
+  const pollInterval = setInterval(pollAnalysisOutput, 2000);
+
+  // Also refresh the entire page every 10 seconds to update status
+  setTimeout(function() {
+    clearInterval(pollInterval);
+    window.location.reload();
+  }, 10000);
 {% endif %}
 
 // Function to view results
@@ -340,6 +352,32 @@ function viewResults() {
   // In real implementation, this would open the results file
   const resultsUrl = '{{ url_for("analysis.analysis_results", analysis_id=analysis.id) }}';
   window.open(resultsUrl, '_blank');
+}
+
+// Function to rerun analysis
+function rerunAnalysis() {
+  if (confirm('Are you sure you want to rerun this analysis? This will overwrite the current results.')) {
+    // Reset the analysis status and restart
+    fetch('{{ url_for("analysis.analysis_rerun", analysis_id=analysis.id) }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Reload the page to show the restarted analysis
+        window.location.reload();
+      } else {
+        alert('Error rerunning analysis: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error rerunning analysis');
+    });
+  }
 }
 
 // Function to download HTML report
