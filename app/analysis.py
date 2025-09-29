@@ -32,8 +32,8 @@ def analysis_add():
             frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5
 
-            # Map lowercase genome assembly to enum
-            genome_assembly_enum = GenomeAssembly.HG19 if genome_assembly == "hg19" else GenomeAssembly.HG38
+            # Use lowercase genome assembly directly as enum
+            genome_assembly_enum = GenomeAssembly(genome_assembly)
 
             # Validation
             if not name:
@@ -100,9 +100,9 @@ def analysis_edit(analysis_id):
             analysis.description = request.form.get("description", "").strip() or None
             analysis.individual_id = request.form.get("individual_id", type=int)
             analysis.vcf_filename = request.form.get("vcf_filename", "").strip()
-            # Map lowercase genome assembly to enum
+            # Use lowercase genome assembly directly as enum
             genome_assembly = request.form.get("genome_assembly", "hg19")
-            analysis.genome_assembly = GenomeAssembly.HG19 if genome_assembly == "hg19" else GenomeAssembly.HG38
+            analysis.genome_assembly = GenomeAssembly(genome_assembly)
             analysis.analysis_mode = request.form.get("analysis_mode", "PASS_ONLY")
             analysis.frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             analysis.pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5

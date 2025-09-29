@@ -176,7 +176,7 @@
             </svg>
             <div class="flex-1">
               <h4 class="text-sm font-medium text-green-800 dark:text-green-200">VCF File Uploaded</h4>
-              <p class="text-sm text-green-700 dark:text-green-300">{{ individual.vcf_file_path.split('/')[-1] if individual.vcf_file_path else 'Unknown file' }}</p>
+              <p class="text-sm text-green-700 dark:text-green-300">{{ individual.vcf_filename if individual.vcf_filename else (individual.vcf_file_path.split('/')[-1] if individual.vcf_file_path else 'Unknown file') }}</p>
             </div>
             <div class="flex space-x-2">
               <a href="{{ url_for('individual.download_vcf', individual_id=individual.id) }}"
@@ -318,7 +318,7 @@ function generatePhenopacketYaml() {
   const creator = "{{ current_user.full_name or current_user.email }}";
   const sex = '{{ individual.sex.value }}' || 'UNKNOWN';
   const ageYears = {% if individual.age_years %}{{ individual.age_years }}{% else %}null{% endif %};
-  const vcfUri = '{{ individual.vcf_file_path.split("/")[-1] if individual.vcf_file_path else "" }}';
+  const vcfUri = '{{ individual.vcf_filename if individual.vcf_filename else (individual.vcf_file_path.split("/")[-1] if individual.vcf_file_path else "") }}';
 
   // Get HPO terms
   const hpoTerms = [

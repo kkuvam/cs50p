@@ -22,8 +22,8 @@ class TaskStatus(Enum):
     CANCELLED = "CANCELLED"
 
 class GenomeAssembly(Enum):
-    HG19 = "hg19"
-    HG38 = "hg38"
+    hg19 = "hg19"
+    hg38 = "hg38"
 
 class User(UserMixin, db.Model):
     """
@@ -83,6 +83,7 @@ class Individual(db.Model):
     hpo_terms = db.Column(db.JSON, nullable=False)  # [{"id": "HP:0001250", "label": "Seizures"}, ...]
 
     # File storage paths
+    vcf_filename = db.Column(db.String(255), nullable=True)  # Original VCF filename at upload
     vcf_file_path = db.Column(db.String(255), nullable=False)  # Path to uploaded VCF file in /opt/exomiser/ikdrc/vcf/
     phenopacket_yaml = db.Column(db.Text, nullable=True)  # Generated YAML phenopacket content (updated after creation)
 
@@ -198,6 +199,7 @@ class Individual(db.Model):
             'diagnosis': self.diagnosis,
             'hpo_terms': self.hpo_terms,
             'hpo_count': self.hpo_count,
+            'vcf_filename': self.vcf_filename,
             'vcf_file_path': self.vcf_file_path,
             'phenopacket_yaml': self.phenopacket_yaml,
             'created_at': self.created_at.isoformat(),
@@ -219,7 +221,7 @@ class Task(db.Model):
     # Analysis configuration
     vcf_filename = db.Column(db.String(255), nullable=False)  # Original VCF filename
     vcf_file_path = db.Column(db.String(500), nullable=True)  # Server file path
-    genome_assembly = db.Column(db.Enum(GenomeAssembly), nullable=False, default=GenomeAssembly.HG19)
+    genome_assembly = db.Column(db.Enum(GenomeAssembly), nullable=False, default=GenomeAssembly.hg19)
 
     # Analysis parameters
     analysis_mode = db.Column(db.String(50), default='PASS_ONLY')  # PASS_ONLY, FULL, etc.

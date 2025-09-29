@@ -161,7 +161,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Current VCF file:</span>
-            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ individual.vcf_file_path.split('/')[-1] if individual.vcf_file_path else 'No file uploaded' }}</span>
+            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ individual.vcf_filename if individual.vcf_filename else (individual.vcf_file_path.split('/')[-1] if individual.vcf_file_path else 'No file uploaded') }}</span>
           </div>
         </div>
         {% endif %}

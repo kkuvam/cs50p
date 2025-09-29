@@ -6,7 +6,6 @@ from models import db, User, Individual, Task
 from auth import auth_bp
 from routes import routes_bp
 from individual import individual_bp
-from task import task_bp
 from analysis import analysis_bp
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -35,7 +34,6 @@ def load_user(user_id):
 app.register_blueprint(auth_bp)
 app.register_blueprint(routes_bp)
 app.register_blueprint(individual_bp)
-app.register_blueprint(task_bp)
 app.register_blueprint(analysis_bp)
 
 

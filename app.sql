@@ -28,6 +28,7 @@ CREATE TABLE individuals (
     diagnosis VARCHAR(255),
     hpo_terms TEXT NOT NULL, -- JSON array stored as TEXT
     vcf_file_path VARCHAR(255) NOT NULL,
+    vcf_filename VARCHAR(255), -- Original filename at upload time
     phenopacket_yaml TEXT,
     created_by INTEGER NOT NULL,
     updated_by INTEGER NOT NULL,
@@ -134,6 +135,7 @@ INSERT INTO individuals (
     diagnosis,
     hpo_terms,
     vcf_file_path,
+    vcf_filename,
     created_by,
     updated_by,
     created_at,
@@ -147,6 +149,7 @@ INSERT INTO individuals (
     'Epilepsy',
     '[{"id": "HP:0001250", "label": "Seizures"}]',
     '/opt/exomiser/ikdrc/vcf/P0001_sample.vcf',
+    'P0001_sample.vcf',
     1,  -- created by admin
     1,  -- updated by admin
     datetime('now'),
