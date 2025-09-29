@@ -105,10 +105,15 @@ class Individual(db.Model):
         """Return count of HPO terms for this individual."""
         return len(self.hpo_terms) if self.hpo_terms else 0
 
-    def generate_phenopacket_yaml(self, creator="Exomiser Web Interface"):
+    def generate_phenopacket_yaml(self, creator="Exomiser Web Interface", genome_assembly="hg19", vcf_filename=None):
         """
         Generate phenopacket YAML content based on individual data.
         This method replicates the JavaScript logic from phenopacket.html
+
+        Args:
+            creator: Creator attribution string
+            genome_assembly: Genome assembly version (hg19/hg38)
+            vcf_filename: VCF filename to include in phenopacket
         """
         import yaml
         from datetime import datetime
@@ -133,48 +138,44 @@ class Individual(db.Model):
                         }
                     })
 
-        # Build the phenopacket object
+        # Build the phenopacket object (following the exact format from exomiser-instructions.md)
         phenopacket_obj = {
-            "phenopacket": {
+            "id": self.identity,
+            "subject": {
                 "id": self.identity,
-                "subject": {
-                    "id": self.identity,
-                    "sex": sex_map.get(self.sex.value if self.sex else "UNKNOWN", "UNKNOWN_SEX")
-                },
-                "phenotypicFeatures": phenotypic_features,
-                "metaData": {
-                    "created": datetime.utcnow().isoformat() + "Z",
-                    "createdBy": creator,
-                    "resources": [
-                        {
-                            "id": "hp",
-                            "name": "human phenotype ontology",
-                            "url": "http://purl.obolibrary.org/obo/hp.owl",
-                            "version": "hp/releases/latest",
-                            "namespacePrefix": "HP",
-                            "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
-                        }
-                    ],
-                    "phenopacketSchemaVersion": "1.0"
-                }
+                "sex": sex_map.get(self.sex.value if self.sex else "UNKNOWN", "UNKNOWN_SEX")
+            },
+            "phenotypicFeatures": phenotypic_features,
+            "metaData": {
+                "created": datetime.utcnow().isoformat() + "Z",
+                "createdBy": creator,
+                "resources": [
+                    {
+                        "id": "hp",
+                        "name": "human phenotype ontology",
+                        "url": "http://purl.obolibrary.org/obo/hp.owl",
+                        "version": "hp/releases/latest",
+                        "namespacePrefix": "HP",
+                        "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
+                    }
+                ],
+                "phenopacketSchemaVersion": "1.0"
             }
         }
 
         # Add age if available
         if self.age_years:
-            phenopacket_obj["phenopacket"]["subject"]["age"] = {
+            phenopacket_obj["subject"]["age"] = {
                 "age": f"{self.age_years}Y"
             }
 
-        # Add VCF file information if available
+        # Add VCF file information if available - use actual file path from vcf_file_path
         if self.vcf_file_path:
-            import os
-            vcf_filename = os.path.basename(self.vcf_file_path)
-            phenopacket_obj["phenopacket"]["htsFiles"] = [
+            phenopacket_obj["htsFiles"] = [
                 {
-                    "uri": f"ikdrc/vcf/{vcf_filename}",
+                    "uri": self.vcf_file_path,  # Use full path which includes timestamp
                     "htsFormat": "VCF",
-                    "genomeAssembly": "hg19"
+                    "genomeAssembly": genome_assembly
                 }
             ]
 
@@ -236,8 +237,6 @@ class Analysis(db.Model):
     # Results and outputs
     results_directory = db.Column(db.String(500), nullable=True)  # Path to results folder
     output_html = db.Column(db.String(500), nullable=True)  # HTML report path
-    output_tsv = db.Column(db.String(500), nullable=True)   # TSV results path
-    output_vcf = db.Column(db.String(500), nullable=True)   # Filtered VCF path
     phenopacket_path = db.Column(db.String(500), nullable=True)  # Generated phenopacket YAML
 
     # Execution details
