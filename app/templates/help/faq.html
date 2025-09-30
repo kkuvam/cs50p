@@ -7,7 +7,7 @@
   <div class="shrink max-w-full uajskeiolksb w-full overflow-hidden">
     <div class="w-full dkslaoeyhnmj mt-8">
       <div class="bg-white dark:bg-gray-800 dkslaoeyhnmj border border-gray-200 dark:border-gray-700">
-        <div class="flex items-center mb-6 dkslaoeyhnmj">
+        <div class="flex items-center mb-6 dkslaoeyhnmj p-6">
           <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-blue-600 dark:text-blue-400 mr-3" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
             <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
@@ -15,7 +15,7 @@
           <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-300">Frequently Asked Questions</h1>
         </div>
 
-        <div class="space-y-6 dkslaoeyhnmj">
+        <div class="space-y-6 dkslaoeyhnmj px-6 pb-6">
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">What is Exomiser?</h2>
             <p class="text-gray-600 dark:text-gray-400">Exomiser is a Java program that finds potential disease-causing variants from whole-exome or whole-genome sequencing data.</p>
@@ -28,7 +28,7 @@
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">How long does analysis take?</h2>
-            <p class="text-gray-600 dark:text-gray-400">Analysis time varies depending on the size of your VCF file and the complexity of the analysis. Most analyses complete within 30 minutes to several hours.</p>
+            <p class="text-gray-600 dark:text-gray-400">Analysis time varies depending on the size of your VCF file and the complexity of the analysis. Most analyses complete within 30 minutes.</p>
           </div>
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
@@ -36,23 +36,62 @@
             <p class="text-gray-600 dark:text-gray-400">HPO (Human Phenotype Ontology) terms are standardized descriptions of phenotypic abnormalities encountered in human disease. They help Exomiser prioritize variants based on clinical phenotypes.</p>
           </div>
 
-          <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-3">Need more help?</h3>
-            <p class="text-blue-700 dark:text-blue-300 mb-3">Can't find what you're looking for? Check our other help resources:</p>
-            <div class="flex gap-4">
-              <a href="{{ url_for('routes.help_support') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Contact Support</a>
-              <a href="{{ url_for('routes.help_logs') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">View Logs</a>
-            </div>
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">How do I create an individual record?</h2>
+            <p class="text-gray-600 dark:text-gray-400">To create an individual record, navigate to the Individuals section and click "Add Individual". You'll need to provide basic information (name, age, sex), upload a VCF file, and add relevant HPO phenotype terms that describe the clinical features.</p>
           </div>
 
-          <div class="mt-8">
-            <a href="{{ url_for('routes.index') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-2" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-              </svg>
-              Back to Dashboard
-            </a>
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">What genome assemblies are supported?</h2>
+            <p class="text-gray-600 dark:text-gray-400">The application supports both hg19 (GRCh37) and hg38 (GRCh38) genome assemblies. Make sure your VCF file coordinates match the selected genome assembly for accurate analysis.</p>
           </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">How do I start an analysis?</h2>
+            <p class="text-gray-600 dark:text-gray-400">Once you have created an individual record with a VCF file and HPO terms, go to the Analysis section and click "New Analysis". Select the individual, configure analysis parameters (frequency threshold, pathogenicity threshold), and start the analysis.</p>
+          </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">Can I monitor analysis progress in real-time?</h2>
+            <p class="text-gray-600 dark:text-gray-400">Yes! The application provides real-time progress monitoring. You can see the analysis status (PENDING, RUNNING, COMPLETED, FAILED) and view live output logs during execution. The progress is updated automatically without refreshing the page.</p>
+          </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">What analysis modes are available?</h2>
+            <p class="text-gray-600 dark:text-gray-400">The default analysis mode is PASS_ONLY, which analyzes only variants that passed quality filters in your VCF file. You can also configure frequency thresholds (maximum allele frequency) and pathogenicity thresholds (minimum pathogenicity score) to customize the analysis.</p>
+          </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">How do I view analysis results?</h2>
+            <p class="text-gray-600 dark:text-gray-400">Once analysis is completed, you can view the results by clicking on the analysis in your dashboard. Exomiser generates a comprehensive HTML report with prioritized variants, gene rankings, and detailed annotations that you can download or view directly in the browser.</p>
+          </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">What should I do if my analysis fails?</h2>
+            <p class="text-gray-600 dark:text-gray-400">If an analysis fails, check the error message and log output for details. Common issues include invalid VCF format, incompatible genome assembly, or insufficient system resources. Ensure your VCF file is properly formatted and matches the selected genome assembly.</p>
+          </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">Can I edit individual records after creation?</h2>
+            <p class="text-gray-600 dark:text-gray-400">Yes, you can edit individual records to update information such as medical history, diagnosis, or add/remove HPO terms. However, the VCF file cannot be changed once uploaded. If you need to use a different VCF file, create a new individual record.</p>
+          </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">How much memory does Exomiser require?</h2>
+            <p class="text-gray-600 dark:text-gray-400">Exomiser is configured to use up to 4GB of memory (Java heap space). Large VCF files or whole-genome analyses may require more resources and take longer to complete. The system includes memory monitoring to track resource usage during analysis.</p>
+          </div>
+
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">What is a phenopacket?</h2>
+            <p class="text-gray-600 dark:text-gray-400">A phenopacket is a standardized format for sharing phenotypic and clinical data. The application automatically generates phenopacket YAML files from your individual records, containing the subject information, HPO terms, and metadata that Exomiser uses for analysis.</p>
+          </div>
+
+          <div class="pb-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">Is my data secure and private?</h2>
+            <p class="text-gray-600 dark:text-gray-400">Yes, the application includes user authentication and authorization. Only registered users can access the system, and each user can only view and manage their own individual records and analyses. All uploaded files and generated results are stored securely with proper access controls.</p>
+          </div>
+
+
         </div>
       </div>
     </div>

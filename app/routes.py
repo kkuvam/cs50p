@@ -30,11 +30,11 @@ def help_support():
     """Support page - contact and support information"""
     return render_template("help/support.html", user=current_user)
 
-@routes_bp.route("/help/logs")
+@routes_bp.route("/help/docs")
 @login_required
-def help_logs():
-    """Logs page - system and analysis logs"""
-    return render_template("help/logs.html", user=current_user)
+def help_docs():
+    """Documentation page - user guides and system documentation"""
+    return render_template("help/docs.html", user=current_user)
 
 @routes_bp.route("/privacy")
 def privacy():
