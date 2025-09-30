@@ -1,0 +1,478 @@
+{% extends "layout.html" %}
+
+{% block title %}User Manual - Exomiser Documentation{% endblock %}
+
+{% block content %}
+<div class="mx-auto py-2 sm:px-2">
+    <div class="flex flex-wrap">
+        <div class="w-full">
+            <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+                <!-- Header -->
+                <div class="flex items-center mb-6 p-6">
+                    <div class="p-3 bg-purple-100 dark:bg-purple-900/40 rounded-lg mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-purple-600 dark:text-purple-400" viewBox="0 0 16 16">
+                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">User Manual</h1>
+                        <p class="text-gray-600 dark:text-gray-400">Comprehensive guide to all Exomiser features and functionality</p>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="prose max-w-none dark:prose-invert px-6 pb-6">
+                    <!-- Navigation breadcrumb -->
+                    <nav class="flex mb-8" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                            <li class="inline-flex items-center">
+                                <a href="{{ url_for('routes.docs') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Documentation</a>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">User Manual</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <!-- Table of Contents -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Table of Contents</h2>
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">User Management</h3>
+                                    <ul class="space-y-1 text-sm">
+                                        <li><a href="#user-accounts" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">User Accounts</a></li>
+                                        <li><a href="#authentication" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Authentication</a></li>
+                                        <li><a href="#user-roles" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">User Roles & Permissions</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Individual Management</h3>
+                                    <ul class="space-y-1 text-sm">
+                                        <li><a href="#individual-records" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Individual Records</a></li>
+                                        <li><a href="#vcf-management" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">VCF File Management</a></li>
+                                        <li><a href="#phenotype-data" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Phenotype Data</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Analysis</h3>
+                                    <ul class="space-y-1 text-sm">
+                                        <li><a href="#analysis-configuration" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Analysis Configuration</a></li>
+                                        <li><a href="#batch-processing" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Batch Processing</a></li>
+                                        <li><a href="#monitoring" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Monitoring & Results</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Advanced Features</h3>
+                                    <ul class="space-y-1 text-sm">
+                                        <li><a href="#custom-configurations" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Custom Configurations</a></li>
+                                        <li><a href="#integration" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">System Integration</a></li>
+                                        <li><a href="#data-export" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Data Export</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- User Management -->
+                    <section id="user-accounts" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">User Management</h2>
+
+                        <div class="mb-6">
+                            <h3 id="authentication" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Authentication System</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                The Exomiser platform uses a secure authentication system with the following features:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li><strong>Password Security:</strong> Passwords are hashed using industry-standard algorithms</li>
+                                <li><strong>Session Management:</strong> Secure session handling with automatic timeouts</li>
+                                <li><strong>Account Approval:</strong> New accounts require administrator approval</li>
+                                <li><strong>Password Changes:</strong> Users can change passwords through the profile menu</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 id="user-roles" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">User Roles & Permissions</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+                                    <thead class="bg-gray-100 dark:bg-gray-600">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Role</th>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Permissions</th>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Access Level</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                                        <tr>
+                                            <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">Regular User</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Create/manage own individuals and analyses</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Own data only</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">Administrator</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">User management, system configuration</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Full system access</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Individual Management -->
+                    <section id="individual-records" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Individual Management</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Individual Record Structure</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Each individual record contains comprehensive information for genomic analysis:
+                            </p>
+
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-4">
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Required Fields</h4>
+                                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">
+                                    <li><strong>Identity:</strong> Unique identifier (alphanumeric, max 50 characters)</li>
+                                    <li><strong>Full Name:</strong> Individual's name (max 120 characters)</li>
+                                    <li><strong>Sex:</strong> Biological sex (Male, Female, Other, Unknown)</li>
+                                    <li><strong>Age:</strong> Age in years (integer)</li>
+                                    <li><strong>VCF File:</strong> Genomic variant data file</li>
+                                    <li><strong>HPO Terms:</strong> At least one phenotype term</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                                <h4 class="font-semibold text-blue-800 dark:text-blue-300 mb-3">Optional Fields</h4>
+                                <ul class="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-1">
+                                    <li><strong>Medical History:</strong> Clinical notes and background</li>
+                                    <li><strong>Diagnosis:</strong> Primary or suspected diagnosis</li>
+                                    <li><strong>Additional Notes:</strong> Any relevant information</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 id="vcf-management" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">VCF File Management</h3>
+
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">File Storage</h4>
+                                <p class="text-gray-700 dark:text-gray-300 mb-3">
+                                    VCF files are stored securely with the following naming convention:
+                                </p>
+                                <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+                                    /opt/exomiser/ikdrc/vcf/{timestamp}_{original_filename}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Supported Formats</h4>
+                                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1 ml-4">
+                                    <li>Standard VCF format (v4.0+)</li>
+                                    <li>Compressed VCF files (.vcf.gz)</li>
+                                    <li>Both hg19/GRCh37 and hg38/GRCh38 coordinates</li>
+                                    <li>Single-sample and multi-sample VCF files</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                                <h4 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">⚠️ File Limitations</h4>
+                                <ul class="list-disc list-inside text-yellow-700 dark:text-yellow-300 space-y-1">
+                                    <li>Maximum file size: 500MB</li>
+                                    <li>VCF files cannot be replaced once uploaded</li>
+                                    <li>File format validation occurs during upload</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 id="phenotype-data" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Phenotype Data Management</h3>
+
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">HPO Term Structure</h4>
+                                <p class="text-gray-700 dark:text-gray-300 mb-3">
+                                    HPO terms are stored as JSON arrays containing ID and label pairs:
+                                </p>
+                                <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+[<br>
+&nbsp;&nbsp;{"id": "HP:0001250", "label": "Seizures"},<br>
+&nbsp;&nbsp;{"id": "HP:0001263", "label": "Global developmental delay"}<br>
+]
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Best Practices</h4>
+                                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                    <li><strong>Specificity:</strong> Use the most specific HPO terms available</li>
+                                    <li><strong>Completeness:</strong> Include all relevant phenotypes</li>
+                                    <li><strong>Accuracy:</strong> Verify HPO IDs and labels</li>
+                                    <li><strong>Updates:</strong> HPO terms can be modified after creation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Analysis Configuration -->
+                    <section id="analysis-configuration" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Analysis Configuration</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Analysis Parameters</h3>
+
+                            <div class="overflow-x-auto mb-6">
+                                <table class="min-w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+                                    <thead class="bg-gray-100 dark:bg-gray-600">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Parameter</th>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Default Value</th>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                                        <tr>
+                                            <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">Analysis Mode</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">PASS_ONLY</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Analyze only variants that passed quality filters</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">Frequency Threshold</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">1.0</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Maximum allele frequency for variant inclusion</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">Pathogenicity Threshold</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">0.5</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Minimum pathogenicity score for reporting</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">Genome Assembly</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">hg19</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Reference genome version</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Execution Environment</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Analyses run in a controlled Docker environment with the following specifications:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li><strong>Java Runtime:</strong> OpenJDK 21</li>
+                                <li><strong>Memory Allocation:</strong> 4GB heap space (-Xmx4g)</li>
+                                <li><strong>Exomiser Version:</strong> CLI 14.1.0</li>
+                                <li><strong>Database:</strong> Latest annotation databases</li>
+                                <li><strong>Monitoring:</strong> Resource usage tracking</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Batch Processing -->
+                    <section id="batch-processing" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Batch Processing</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Multiple Analysis Management</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                While the current interface focuses on individual analyses, you can efficiently manage multiple analyses:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li><strong>Sequential Processing:</strong> Queue multiple analyses</li>
+                                <li><strong>Resource Management:</strong> System automatically manages memory usage</li>
+                                <li><strong>Status Tracking:</strong> Monitor all analyses from the dashboard</li>
+                                <li><strong>Result Organization:</strong> Systematic file organization</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Workflow Optimization</h3>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Prepare all individual records first</li>
+                                <li>Validate VCF files and HPO terms</li>
+                                <li>Create analyses with descriptive names</li>
+                                <li>Monitor system resources during execution</li>
+                                <li>Review results systematically</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <!-- Monitoring -->
+                    <section id="monitoring" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Monitoring & Results</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Real-time Monitoring</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                The platform provides comprehensive monitoring capabilities:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li><strong>Status Updates:</strong> Real-time analysis status (PENDING → RUNNING → COMPLETED)</li>
+                                <li><strong>Live Logs:</strong> Streaming output from Exomiser execution</li>
+                                <li><strong>Progress Indicators:</strong> Visual progress updates</li>
+                                <li><strong>Resource Usage:</strong> Memory and CPU monitoring</li>
+                                <li><strong>Error Detection:</strong> Automatic error identification and reporting</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Result Management</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Analysis results are organized and stored systematically:
+                            </p>
+                            <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+/opt/exomiser/ikdrc/results/<br>
+├── {analysis_name}_exomiser.html<br>
+├── phenopacket/<br>
+│   └── analysis_{id}.yml<br>
+└── logs/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── analysis_{id}.log
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Custom Configurations -->
+                    <section id="custom-configurations" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Custom Configurations</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Analysis Configuration File</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                The system uses a centralized analysis configuration file located at:
+                            </p>
+                            <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+/opt/exomiser/analysis.yml
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Key Configuration Options</h4>
+                                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                    <li><strong>Inheritance Modes:</strong> Autosomal dominant, recessive, X-linked</li>
+                                    <li><strong>Frequency Sources:</strong> Population databases (gnomAD, ExAC, etc.)</li>
+                                    <li><strong>Pathogenicity Predictors:</strong> CADD, REVEL, MutationTaster</li>
+                                    <li><strong>Gene Prioritization:</strong> Phenotype-based ranking algorithms</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Phenopacket Generation</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                The system automatically generates GA4GH Phenopacket-compliant YAML files:
+                            </p>
+                            <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+id: P0001<br>
+subject:<br>
+&nbsp;&nbsp;id: P0001<br>
+&nbsp;&nbsp;sex: MALE<br>
+phenotypicFeatures:<br>
+&nbsp;&nbsp;- type:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: "HP:0001250"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: "Seizures"<br>
+metaData:<br>
+&nbsp;&nbsp;created: "2025-09-30T10:00:00Z"
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- System Integration -->
+                    <section id="integration" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">System Integration</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Docker Infrastructure</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                The platform runs in a containerized environment with the following components:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li><strong>Web Application:</strong> Flask-based interface</li>
+                                <li><strong>Database:</strong> SQLite for metadata storage</li>
+                                <li><strong>File Storage:</strong> Persistent volume mounts</li>
+                                <li><strong>Exomiser CLI:</strong> Integrated analysis engine</li>
+                                <li><strong>Monitoring:</strong> Resource tracking scripts</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Volume Mounts</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+                                    <thead class="bg-gray-100 dark:bg-gray-600">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Host Path</th>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Container Path</th>
+                                            <th class="px-4 py-2 text-left text-gray-900 dark:text-white">Purpose</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">./instance</td>
+                                            <td class="px-4 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">/opt/instance</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Database storage</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">./ikdrc</td>
+                                            <td class="px-4 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">/opt/exomiser/ikdrc</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Data files and results</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">./app</td>
+                                            <td class="px-4 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">/opt/app</td>
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">Application code</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Data Export -->
+                    <section id="data-export" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Data Export and Backup</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Export Options</h3>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li><strong>HTML Reports:</strong> Complete analysis results with interactive features</li>
+                                <li><strong>Phenopacket Files:</strong> Standardized YAML format for data sharing</li>
+                                <li><strong>Log Files:</strong> Detailed execution logs for debugging</li>
+                                <li><strong>Individual Records:</strong> JSON export of metadata</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Database Backup</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Regular database backups are recommended for data protection:
+                            </p>
+                            <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+# Backup database<br>
+cp instance/app.db instance/app.db.backup_$(date +%Y%m%d_%H%M%S)<br><br>
+# Verify backup<br>
+sqlite3 instance/app.db.backup_* ".schema"
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">💡 Best Practices</h4>
+                            <ul class="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-1">
+                                <li>Regular database backups before major changes</li>
+                                <li>Export critical analysis results locally</li>
+                                <li>Document analysis parameters for reproducibility</li>
+                                <li>Maintain version control for configuration files</li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

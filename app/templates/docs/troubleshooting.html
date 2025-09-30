@@ -1,0 +1,515 @@
+{% extends "layout.html" %}
+
+{% block title %}Troubleshooting - Exomiser Documentation{% endblock %}
+
+{% block content %}
+<div class="mx-auto py-2 sm:px-2">
+    <div class="flex flex-wrap">
+        <div class="w-full">
+            <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+                <!-- Header -->
+                <div class="flex items-center mb-6 p-6">
+                    <div class="p-3 bg-red-100 dark:bg-red-900/40 rounded-lg mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-red-600 dark:text-red-400" viewBox="0 0 16 16">
+                            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Troubleshooting</h1>
+                        <p class="text-gray-600 dark:text-gray-400">Common issues, error messages, and solutions</p>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="prose max-w-none dark:prose-invert px-6 pb-6">
+                    <!-- Navigation breadcrumb -->
+                    <nav class="flex mb-8" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                            <li class="inline-flex items-center">
+                                <a href="{{ url_for('routes.docs') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Documentation</a>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">Troubleshooting</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <!-- Quick Help -->
+                    <section class="mb-8">
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
+                            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">🚨 Need Immediate Help?</h2>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">Quick Actions</h3>
+                                    <ul class="space-y-1 text-blue-700 dark:text-blue-300">
+                                        <li><a href="#common-errors" class="hover:underline">→ Common Error Messages</a></li>
+                                        <li><a href="#upload-issues" class="hover:underline">→ File Upload Problems</a></li>
+                                        <li><a href="#analysis-failures" class="hover:underline">→ Analysis Failures</a></li>
+                                        <li><a href="#performance-issues" class="hover:underline">→ Performance Problems</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">Get Support</h3>
+                                    <ul class="space-y-1 text-blue-700 dark:text-blue-300">
+                                        <li><a href="{{ url_for('routes.help_faq') }}" class="hover:underline">→ Check FAQ First</a></li>
+                                        <li><a href="{{ url_for('routes.help_support') }}" class="hover:underline">→ Contact Support</a></li>
+                                        <li><a href="{{ url_for('routes.docs_manual') }}" class="hover:underline">→ User Manual</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Authentication Issues -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Authentication & Access Issues</h2>
+
+                        <div class="space-y-6">
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ "Account not yet approved"</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Cannot login, receiving message about account approval.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>New accounts require administrator approval for security</li>
+                                        <li>Wait for email notification of approval</li>
+                                        <li>Contact system administrator if approval is delayed</li>
+                                        <li>Verify you registered with the correct email address</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ "Invalid credentials"</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Cannot login with email and password.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Double-check email address spelling</li>
+                                        <li>Verify password (case-sensitive)</li>
+                                        <li>Clear browser cache and cookies</li>
+                                        <li>Try private/incognito browsing mode</li>
+                                        <li>Contact administrator for password reset</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ Session expired</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Automatically logged out during work.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Login again to restore session</li>
+                                        <li>Save work frequently to prevent data loss</li>
+                                        <li>Session timeout is a security feature</li>
+                                        <li>Consider opening multiple browser tabs for long analyses</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- File Upload Issues -->
+                    <section id="upload-issues" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">File Upload Issues</h2>
+
+                        <div class="space-y-6">
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ "File too large"</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">VCF file exceeds 500MB size limit.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Compress VCF file using gzip: <code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">gzip file.vcf</code></li>
+                                        <li>Filter VCF to include only PASS variants</li>
+                                        <li>Remove unnecessary annotation fields</li>
+                                        <li>Consider whole-exome vs whole-genome data</li>
+                                        <li>Split large VCF files by chromosome if needed</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ "Invalid VCF format"</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">File format validation failed during upload.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Verify file has .vcf or .vcf.gz extension</li>
+                                        <li>Check VCF header starts with ##fileformat=VCFv4.0 or higher</li>
+                                        <li>Validate VCF using vcf-tools: <code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">vcf-validator file.vcf</code></li>
+                                        <li>Ensure chromosome names match reference (chr1 vs 1)</li>
+                                        <li>Check for proper tab separation in data lines</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ Upload stalls or fails</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">File upload progress stops or times out.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Check internet connection stability</li>
+                                        <li>Try smaller file or compress first</li>
+                                        <li>Refresh page and attempt upload again</li>
+                                        <li>Use different browser or disable browser extensions</li>
+                                        <li>Upload during off-peak hours for better bandwidth</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Analysis Failures -->
+                    <section id="analysis-failures" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Analysis Failures</h2>
+
+                        <div class="space-y-6">
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ "Out of memory error"</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Analysis fails with Java heap space error.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Wait for other analyses to complete</li>
+                                        <li>Try analysis during off-peak hours</li>
+                                        <li>Use smaller VCF files or filter variants</li>
+                                        <li>Reduce frequency threshold to limit variants</li>
+                                        <li>Contact administrator about memory allocation</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ "Genome assembly mismatch"</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">VCF coordinates don't match selected genome assembly.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Verify VCF file genome assembly (check header)</li>
+                                        <li>Select correct assembly in analysis settings</li>
+                                        <li>Convert coordinates using liftover tools if needed</li>
+                                        <li>Ensure consistent chromosome naming (chr1 vs 1)</li>
+                                        <li>Regenerate VCF with correct reference if necessary</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ "No variants found"</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Analysis completes but reports no analyzable variants.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Check if VCF contains PASS variants</li>
+                                        <li>Increase frequency threshold (try 0.05 or 0.1)</li>
+                                        <li>Verify VCF has proper variant calls</li>
+                                        <li>Check analysis mode settings (try FULL instead of PASS_ONLY)</li>
+                                        <li>Ensure VCF has annotation fields required by Exomiser</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">❌ Analysis stuck in "RUNNING" status</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Analysis shows running status for unusually long time.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Check live logs for progress indicators</li>
+                                        <li>Large VCF files can take several hours</li>
+                                        <li>Monitor system resources with provided scripts</li>
+                                        <li>Wait for natural completion or timeout</li>
+                                        <li>Contact administrator if stuck for >6 hours</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Performance Issues -->
+                    <section id="performance-issues" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Performance Issues</h2>
+
+                        <div class="space-y-6">
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-2">⚠️ Slow page loading</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Web interface loads slowly or becomes unresponsive.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Clear browser cache and refresh page</li>
+                                        <li>Disable browser extensions temporarily</li>
+                                        <li>Try different browser (Chrome recommended)</li>
+                                        <li>Check internet connection speed</li>
+                                        <li>Wait during peak usage times</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-2">⚠️ Analysis taking too long</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Analysis runs longer than expected.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Check file size - larger files take longer</li>
+                                        <li>Monitor resource usage with system tools</li>
+                                        <li>Expect 30 minutes to 3 hours for typical analyses</li>
+                                        <li>Filter VCF files to reduce variant count</li>
+                                        <li>Schedule large analyses during off-peak hours</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-2">⚠️ Resource monitoring</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Monitoring Commands:</strong>
+                                </div>
+                                <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-3">
+# Monitor analysis resource usage<br>
+./monitor_analysis.sh [analysis_id]<br><br>
+# Check system resources<br>
+docker stats exomiser-ui<br><br>
+# View live logs<br>
+docker logs exomiser-ui -f
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Common Error Messages -->
+                    <section id="common-errors" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Common Error Messages</h2>
+
+                        <div class="space-y-4">
+                            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+                                <h3 class="font-semibold text-red-800 dark:text-red-300 mb-2">BuildError: Could not build url for endpoint</h3>
+                                <p class="text-red-700 dark:text-red-300 mb-2">
+                                    <strong>Cause:</strong> Missing route definition or incorrect route name.
+                                </p>
+                                <p class="text-red-700 dark:text-red-300">
+                                    <strong>Solution:</strong> Check URL patterns in browser address bar, refresh page, or contact administrator.
+                                </p>
+                            </div>
+
+                            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+                                <h3 class="font-semibold text-red-800 dark:text-red-300 mb-2">FileNotFoundError: [Errno 2] No such file or directory</h3>
+                                <p class="text-red-700 dark:text-red-300 mb-2">
+                                    <strong>Cause:</strong> VCF file or analysis results missing from expected location.
+                                </p>
+                                <p class="text-red-700 dark:text-red-300">
+                                    <strong>Solution:</strong> Re-upload VCF file, check file paths, or restart analysis.
+                                </p>
+                            </div>
+
+                            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+                                <h3 class="font-semibold text-red-800 dark:text-red-300 mb-2">java.lang.OutOfMemoryError: Java heap space</h3>
+                                <p class="text-red-700 dark:text-red-300 mb-2">
+                                    <strong>Cause:</strong> Insufficient memory allocated for analysis.
+                                </p>
+                                <p class="text-red-700 dark:text-red-300">
+                                    <strong>Solution:</strong> Use smaller VCF files, wait for other analyses to complete, or contact administrator.
+                                </p>
+                            </div>
+
+                            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+                                <h3 class="font-semibold text-red-800 dark:text-red-300 mb-2">Invalid HPO term format</h3>
+                                <p class="text-red-700 dark:text-red-300 mb-2">
+                                    <strong>Cause:</strong> HPO term doesn't match required HP:XXXXXXX format.
+                                </p>
+                                <p class="text-red-700 dark:text-red-300">
+                                    <strong>Solution:</strong> Verify HPO terms using official HPO browser, ensure correct format.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Data and File Issues -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Data & File Issues</h2>
+
+                        <div class="space-y-6">
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-2">⚠️ Cannot edit individual after creation</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Need to change VCF file or major individual details.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>VCF files cannot be changed after upload (by design)</li>
+                                        <li>Create new individual record with correct VCF file</li>
+                                        <li>HPO terms and clinical information can be updated</li>
+                                        <li>Delete old individual if no longer needed</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-2">⚠️ Missing analysis results</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Analysis shows completed but no results available.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Check analysis logs for error messages</li>
+                                        <li>Verify result files exist in results directory</li>
+                                        <li>Re-run analysis if results are corrupted</li>
+                                        <li>Contact administrator if files are missing</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                <h3 class="text-lg font-semibold text-orange-600 dark:text-orange-400 mb-2">⚠️ Phenopacket generation errors</h3>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Problem:</strong>
+                                    <p class="text-gray-700 dark:text-gray-300">Cannot generate phenopacket YAML from individual data.</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong class="text-gray-900 dark:text-white">Solution:</strong>
+                                    <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 ml-4 space-y-1">
+                                        <li>Verify all HPO terms are properly formatted</li>
+                                        <li>Check for special characters in individual data</li>
+                                        <li>Ensure required fields are completed</li>
+                                        <li>Try updating individual record to regenerate</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- System Administration -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">System Administration</h2>
+
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-6">
+                            <h3 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-3">🔧 For System Administrators</h3>
+
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">Database Issues</h4>
+                                <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-3">
+# Check database integrity<br>
+python check_db.py<br><br>
+# Backup database<br>
+cp instance/app.db instance/app.db.backup_$(date +%Y%m%d)<br><br>
+# Reset development database<br>
+rm instance/app.db && docker-compose restart
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">Container Management</h4>
+                                <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-3">
+# View container logs<br>
+docker logs exomiser-ui -f<br><br>
+# Restart services<br>
+docker-compose down && docker-compose up -d<br><br>
+# Check resource usage<br>
+docker stats
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">User Management</h4>
+                                <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm">
+# Create admin user<br>
+docker exec -it exomiser-ui python create_admin.py<br><br>
+# Access admin interface<br>
+# Login as admin -> User dropdown -> Admin Users
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Getting Additional Help -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Getting Additional Help</h2>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                                <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-3">📚 Documentation Resources</h3>
+                                <ul class="space-y-2 text-blue-700 dark:text-blue-300">
+                                    <li><a href="{{ url_for('routes.help_faq') }}" class="hover:underline">→ Frequently Asked Questions</a></li>
+                                    <li><a href="{{ url_for('routes.docs_getting_started') }}" class="hover:underline">→ Getting Started Guide</a></li>
+                                    <li><a href="{{ url_for('routes.docs_manual') }}" class="hover:underline">→ Complete User Manual</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                                <h3 class="font-semibold text-green-800 dark:text-green-300 mb-3">💬 Support Channels</h3>
+                                <ul class="space-y-2 text-green-700 dark:text-green-300">
+                                    <li><a href="{{ url_for('routes.help_support') }}" class="hover:underline">→ Contact Technical Support</a></li>
+                                    <li>→ Email: Technical issues and questions</li>
+                                    <li>→ Include error messages and logs</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-3">📋 When Contacting Support, Include:</h3>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">
+                                <li>Exact error message (copy and paste)</li>
+                                <li>Steps that led to the problem</li>
+                                <li>Browser type and version</li>
+                                <li>File types and sizes being used</li>
+                                <li>Screenshot of the issue (if applicable)</li>
+                                <li>Analysis ID or individual ID (if relevant)</li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
