@@ -1,512 +1,645 @@
 {% extends "layout.html" %}
 
 {% block content %}
-        <div class="mx-auto p-2">
-          <!-- row -->
-          <div class="flex flex-wrap klsuaonrmcha">
-            <div class="shrink max-w-full uajskeiolksb w-full">
-              <p class="text-xl font-bold mt-3 mb-5">CMS</p>
-            </div>
-          </div>
-          <div class="flex flex-wrap klsuaonrmcha">
-            <div class="shrink max-w-full w-full order-2 md:order-1 xl:w-2/3">
-              <div class="flex flex-wrap klsuaonrmcha">
-                <div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb">
-                      <div class="shrink max-w-full w-1/2">
-                        <h5 class="text-gray-500 mb-1">Total view</h5>
-                        <h3 class="text-lg font-bold mb-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="inline-block me-2 -mt-1 bi bi-eye" viewBox="0 0 16 16">
-                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
-                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
-                          </svg> 143.210
-                        </h3>
-                        <p class="text-sm text-green-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 bi bi-arrow-up-short" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"></path>
-                          </svg>
-                          46.2%
-                        </p>
-                      </div>
-                      <div class="shrink max-w-full w-1/2">
-                        <canvas class="max-w-full" id="LineAreaSm"></canvas>
-                      </div>
+        <div class="mx-auto py-2 sm:px-2">
+					<!-- row -->
+					<div class="flex flex-wrap klsuaonrmcha">
+						<div class="shrink max-w-full uajskeiolksb w-full">
+					    <p class="text-xl font-bold mt-3 mb-5">Ecommerce</p>
+					  </div>
+          	<div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 lg:w-1/4 mb-6">
+          		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full">
+							  <div class="pt-6 dkslaoeyhnmj text-sm font-semibold">
+							  	Total Analyses
+							  </div>
+							  <div class="flex klsuaonrmcha vlaoethsnkma dkslaoeyhnmj py-4">
+							  	<div class="self-center size-14 boalstehwqbj text-blue-500 bg-blue-100 dark:bg-blue-900/40 relative text-center">
+								  	<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="absolute top-1/2 start-1/2 transform -translate-y-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 size-8 bi bi-clipboard-data" viewBox="0 0 16 16">
+										  <path d="M4 11a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0v-1zm6-4a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V7zM7 9a1 1 0 0 1 2 0v3a1 1 0 1 1-2 0V9z"/>
+										  <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+										  <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+										</svg>
+									</div>
+							    <h2 class="self-center text-3xl">28</h2>
+							  </div>
+							  <div class="dkslaoeyhnmj pb-6"></div>
+							</div>
+						</div>
+						<div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 lg:w-1/4 mb-6">
+          		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full">
+							  <div class="pt-6 dkslaoeyhnmj text-sm font-semibold">
+							  	Active Individuals
+							  </div>
+							  <div class="flex klsuaonrmcha vlaoethsnkma dkslaoeyhnmj py-4">
+							  	<div class="self-center size-14 boalstehwqbj text-green-500 bg-green-100 dark:bg-green-900/40 relative text-center">
+								  	<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="absolute top-1/2 start-1/2 transform -translate-y-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 size-8 bi bi-person-check" viewBox="0 0 16 16">
+										  <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+										  <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+										</svg>
+									</div>
+							    <h2 class="self-center text-3xl">15</h2>
+							  </div>
+							  <div class="dkslaoeyhnmj pb-6"></div>
+							</div>
+						</div>
+						<div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 lg:w-1/4 mb-6">
+          		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full">
+							  <div class="pt-6 dkslaoeyhnmj text-sm font-semibold">
+							  	Success Rate
+							  </div>
+							  <div class="flex klsuaonrmcha vlaoethsnkma dkslaoeyhnmj py-4">
+							  	<div class="self-center size-14 boalstehwqbj text-emerald-500 bg-emerald-100 dark:bg-emerald-900/40 relative text-center">
+								  	<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="absolute top-1/2 start-1/2 transform -translate-y-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 size-8 bi bi-check-circle" viewBox="0 0 16 16">
+										  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+										  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+										</svg>
+									</div>
+							    <h2 class="self-center text-3xl">94%</h2>
+							  </div>
+							  <div class="dkslaoeyhnmj pb-6"></div>
+							</div>
+						</div>
+						<div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 lg:w-1/4 mb-6">
+          		<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full">
+							  <div class="pt-6 dkslaoeyhnmj text-sm font-semibold">
+							  	Avg Processing
+							  </div>
+							  <div class="flex klsuaonrmcha vlaoethsnkma dkslaoeyhnmj py-4">
+							  	<div class="self-center size-14 boalstehwqbj text-purple-500 bg-purple-100 dark:bg-purple-900/40 relative text-center">
+								  	<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="absolute top-1/2 start-1/2 transform -translate-y-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 size-8 bi bi-clock" viewBox="0 0 16 16">
+										  <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+										  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+										</svg>
+									</div>
+							    <h2 class="self-center text-3xl">45min</h2>
+							  </div>
+							  <div class="dkslaoeyhnmj pb-6"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- row -->
+					<div class="flex flex-wrap klsuaonrmcha">
+          	<div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2 mb-6">
+              <!-- Analysis Status -->
+              <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
+	              <div class="relative">
+                  <div class="flex ioajsklehsnm mb-6">
+                    <h4 class="text-base font-bold">Analysis Status</h4>
+                    <span class="text-gray-500 text-sm">Status of analysis process</span>
+                  </div>
+
+                  <!-- Chart Container -->
+                  <div class="flex justify-center items-center w-full mb-6">
+                    <!-- Centered Pie Chart (25% larger) -->
+                    <div class="relative w-50 h-50 mx-auto">
+                      <canvas id="AnalysisStatusChart" class="max-w-full max-h-full"></canvas>
                     </div>
                   </div>
-                </div>
-                <div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb">
-                      <div class="shrink max-w-full w-1/2">
-                        <h5 class="text-gray-500 mb-1">Total likes</h5>
-                        <h3 class="text-lg font-bold mb-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="inline-block me-2 -mt-1 bi bi-hand-thumbs-up" viewBox="0 0 16 16">
-                            <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
-                          </svg> 24.310
-                        </h3>
-                        <p class="text-sm text-green-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 bi bi-arrow-up-short" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"></path>
-                          </svg>
-                          16.2%
-                        </p>
-                      </div>
-                      <div class="shrink max-w-full w-1/2">
-                        <canvas class="max-w-full" id="BarChartSm"></canvas>
-                      </div>
+
+                  <!-- Total Summary -->
+                  <div class="text-center">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      Total Analyses: <span class="font-semibold">28</span>
                     </div>
                   </div>
-                </div>
-                <div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb">
-                      <div class="shrink max-w-full w-1/2">
-                        <h5 class="text-gray-500 mb-1">Total Comments</h5>
-                        <h3 class="text-lg font-bold mb-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="inline-block me-2 -mt-1 bi bi-chat-left-text" viewBox="0 0 16 16">
-                            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-                            <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
-                          </svg> 54.350
-                        </h3>
-                        <p class="text-sm text-green-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 bi bi-arrow-up-short" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z"></path>
-                          </svg>
-                          11.2%
-                        </p>
-                      </div>
-                      <div class="shrink max-w-full w-1/2">
-                        <canvas class="max-w-full" id="BarComments"></canvas>
-                      </div>
-                    </div>
+	              </div>
+							</div>
+
+							<!-- Analysis Results Table -->
+							<div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
+	              <div class="relative">
+                  <div class="flex ioajsklehsnm mb-6">
+                    <h4 class="text-base font-bold">Analysis Results</h4>
+                    <span class="text-gray-500 text-sm">Last 5 successful runs</span>
                   </div>
-                </div>
-                <div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex flex-wrap klsuaonrmcha layhetgsjdcb">
-                      <div class="shrink max-w-full w-1/2">
-                        <h5 class="text-gray-500 mb-1">Total Share</h5>
-                        <h3 class="text-lg font-bold mb-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="inline-block me-2 -mt-1 bi bi-share" viewBox="0 0 16 16">
-                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
-                          </svg> 9.110
-                        </h3>
-                        <p class="text-sm text-pink-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="inline-block size-4 bi bi-arrow-down-short" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"></path>
-                          </svg>
-                          6.2%
-                        </p>
-                      </div>
-                      <div class="shrink max-w-full w-1/2">
-                        <canvas class="max-w-full" id="BarShare"></canvas>
-                      </div>
-                    </div>
+
+                  <!-- Table Content -->
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                          <th scope="col" class="px-3 py-2 text-left">Patient ID</th>
+                          <th scope="col" class="px-3 py-2 text-left">Patient Name</th>
+                          <th scope="col" class="px-3 py-2 text-left">Results</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25391</td>
+                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">John Smith</td>
+                          <td class="px-3 py-2">
+                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                              View Report
+                            </a>
+                          </td>
+                        </tr>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25387</td>
+                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Sarah Johnson</td>
+                          <td class="px-3 py-2">
+                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                              View Report
+                            </a>
+                          </td>
+                        </tr>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25334</td>
+                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Michael Brown</td>
+                          <td class="px-3 py-2">
+                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                              View Report
+                            </a>
+                          </td>
+                        </tr>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25298</td>
+                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Emily Davis</td>
+                          <td class="px-3 py-2">
+                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                              View Report
+                            </a>
+                          </td>
+                        </tr>
+                        <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25276</td>
+                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Robert Wilson</td>
+                          <td class="px-3 py-2">
+                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                              View Report
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-                </div>
+	              </div>
+							</div>
+						</div>
+						<div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2 mb-6">
+          		<!-- System Monitoring -->
+          		<div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full">
+          			<div class="flex klsuaonrmcha vlaoethsnkma pb-6">
+								  <div class="flex ioajsklehsnm">
+		                <h3 class="text-base font-bold">System Monitoring</h3>
+		                <span class="text-gray-500 text-sm">Real-time Resource Usage</span>
+		              </div>
+		            </div>
+	              <!-- Gauge Charts Grid -->
+	              <div class="grid grid-cols-2 gap-x-4 gap-y-4">
+	                <!-- CPU Usage Gauge -->
+	                <div class="flex justify-center items-center">
+	                  <div class="relative w-30 h-30">
+	                    <canvas id="CPUGaugeChart" class="max-w-full max-h-full"></canvas>
+	                  </div>
+	                </div>
 
-                <div class="shrink max-w-full uajskeiolksb w-full mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex klsuaonrmcha vlaoethsnkma pb-6">
-                      <div class="flex ioajsklehsnm">
-                        <h3 class="text-base font-bold">Visitor traffic</h3>
-                      </div>
-                      <div x-data="{ open: false }" class="relative">
-                        <button @click="open = ! open" class="text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-200 focus:outline-hidden hover:outline-hidden">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-6 bi bi-three-dots" viewBox="0 0 16 16">
-                            <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path>
-                          </svg>
-                        </button>
-                        <div x-show="open" @click.away="open = false" class="origin-top-right absolute end-0 rounded-sm rounded-t-non bg-white dark:bg-gray-800 z-10 border border-gray-200 dark:border-gray-700" style="min-width: 12rem; display: none;">
-                          <a class="block px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-gray-900/20 dark:focus:bg-gray-900" href="#">Daily</a>
-                          <a class="block px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-gray-900/20 dark:focus:bg-gray-900" href="#">Weekly</a>
-                          <a class="block px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-gray-900/20 dark:focus:bg-gray-900" href="#">Monthly</a>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="relative">
-                      <canvas class="max-w-full" id="PageView"></canvas>
-                    </div>
-                  </div>
-                </div>
+	                <!-- Memory Usage Gauge -->
+	                <div class="flex justify-center items-center">
+	                  <div class="relative w-30 h-30">
+	                    <canvas id="MemoryGaugeChart" class="max-w-full max-h-full"></canvas>
+	                  </div>
+	                </div>
 
-                <div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex ioajsklehsnm pb-6">
-                      <h3 class="text-base font-bold">Most search</h3>
-                    </div>
-                    <div class="relative w-full text-sm">
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">Tailwind Css</a>
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">Exomiser App</a>
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">Js</a>
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">CSS</a>
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">HTML</a>
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">UI UX</a>
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">Web Design</a>
-                      <a class="inline-block py-1.5 px-3 me-2 mb-3 border bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/90 dark:border-gray-700" href="#">Alpine js</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex ioajsklehsnm pb-6">
-                      <h3 class="text-base font-bold">Visitor by Country</h3>
-                    </div>
-                    <div class="relative overflow-x-auto">
-                      <div id="worldmap" class="w-full" style="min-height: 10rem"></div>
-                    </div>
-                  </div>
-                </div>
+	                <!-- Blank spacers for each column -->
+	                <div class="h-8"></div>
+	                <div class="h-8"></div>
 
-                <div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex ioajsklehsnm pb-6">
-                      <h3 class="text-base font-bold">New Followers</h3>
-                    </div>
-                    <div class="relative">
-                      <a href="#">
-                        <img class="inline-block boalstehwqbj shadow-xl size-12 max-w-full -me-4 border-2 border-gray-200 bg-gray-300 dark:bg-gray-900 dark:border-gray-700 transform hover:-translate-y-1" src="{{ url_for('static', filename='img/avatar/avatar.png') }}" alt="Image Description">
-                      </a>
-                      <a href="#">
-                        <img class="inline-block boalstehwqbj shadow-xl size-12 max-w-full -me-4 border-2 border-gray-200 bg-gray-300 dark:bg-gray-900 dark:border-gray-700 transform hover:-translate-y-1" src="{{ url_for('static', filename='img/avatar/avatar2.png') }}" alt="Image Description">
-                      </a>
-                      <a href="#">
-                        <img class="inline-block boalstehwqbj shadow-xl size-12 max-w-full -me-4 border-2 border-gray-200 bg-gray-300 dark:bg-gray-900 dark:border-gray-700 transform hover:-translate-y-1" src="{{ url_for('static', filename='img/avatar/avatar3.png') }}" alt="Image Description">
-                      </a>
-                      <a href="#">
-                        <img class="inline-block boalstehwqbj shadow-xl size-12 max-w-full -me-4 border-2 border-gray-200 bg-gray-300 dark:bg-gray-900 dark:border-gray-700 transform hover:-translate-y-1" src="{{ url_for('static', filename='img/avatar/avatar4.png') }}" alt="Image Description">
-                      </a>
-                      <a href="#">
-                        <img class="inline-block boalstehwqbj shadow-xl size-12 max-w-full -me-4 border-2 border-gray-200 bg-gray-300 dark:bg-gray-900 dark:border-gray-700 transform hover:-translate-y-1" src="{{ url_for('static', filename='img/avatar/avatar5.png') }}" alt="Image Description">
-                      </a>
+	                <!-- Storage Usage Gauge -->
+	                <div class="flex justify-center items-center">
+	                  <div class="relative w-30 h-30">
+	                    <canvas id="StorageGaugeChart" class="max-w-full max-h-full"></canvas>
+	                  </div>
+	                </div>
 
-                      <!-- more -->
-                      <a href="#">
-                        <span class="ms-5 text-sm text-gray-500 font-semibold self-center">+232 more</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
+	                <!-- Docker Resources Gauge -->
+	                <div class="flex justify-center items-center">
+	                  <div class="relative w-30 h-30">
+	                    <canvas id="DockerGaugeChart" class="max-w-full max-h-full"></canvas>
+	                  </div>
+	                </div>
+	              </div>
+							</div>
+						</div>
+					</div>
 
-                <div class="shrink max-w-full uajskeiolksb w-full lg:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full p-6">
-                    <div class="flex ioajsklehsnm pb-6">
-                      <h3 class="text-base font-bold">Statistics</h3>
-                    </div>
-                    <div class="relative text-sm">
-                      <div class="inline-flex klsuaonrmcha layhetgsjdcb mb-3 me-2">
-                        <div class="self-center py-1 px-2 boalstehwqbj bg-transparent sm:bg-indigo-100 text-indigo-500 dark:bg-gray-900/20 relative flex layhetgsjdcb yhansklopals">
-                          3.122
-                        </div>
-                        <div class="ms-3">
-                          <h2 class="self-center">Articles</h2>
-                        </div>
-                      </div>
 
-                      <div class="inline-flex klsuaonrmcha layhetgsjdcb mb-3 me-2">
-                        <div class="self-center py-1 px-2 boalstehwqbj bg-transparent sm:bg-indigo-100 text-indigo-500 dark:bg-gray-900/20 relative flex layhetgsjdcb yhansklopals">
-                          654
-                        </div>
-                        <div class="ms-3">
-                          <h2 class="self-center">Tags</h2>
-                        </div>
-                      </div>
 
-                      <div class="inline-flex klsuaonrmcha layhetgsjdcb mb-3 me-2">
-                        <div class="self-center py-1 px-2 boalstehwqbj bg-transparent sm:bg-indigo-100 text-indigo-500 dark:bg-gray-900/20 relative flex layhetgsjdcb yhansklopals">
-                          142
-                        </div>
-                        <div class="ms-3">
-                          <h2 class="self-center">Categories</h2>
-                        </div>
-                      </div>
+					<!-- row -->
+					<div class="flex flex-wrap klsuaonrmcha">
+          	<div class="shrink max-w-full uajskeiolksb w-full mb-6">
+          		<div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg h-full">
+          			<div class="flex klsuaonrmcha vlaoethsnkma pb-6">
+								  <div class="flex ioajsklehsnm">
+		                <h3 class="text-base font-bold">Phenotype Distribution</h3>
+		                <span class="text-gray-500 text-sm">Most common phenotypes in analyses</span>
+		              </div>
+		            </div>
+          			<div class="relative aspect-[4/2]">
+			            <canvas class="max-w-full" id="PhenotypeHistogram"></canvas>
+	              </div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-                      <div class="inline-flex klsuaonrmcha layhetgsjdcb mb-3 me-2">
-                        <div class="self-center py-1 px-2 boalstehwqbj bg-transparent sm:bg-indigo-100 text-indigo-500 dark:bg-gray-900/20 relative flex layhetgsjdcb yhansklopals">
-                          32
-                        </div>
-                        <div class="ms-3">
-                          <h2 class="self-center">Pages</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gauge Charts for System Monitoring
 
-                <div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg h-full shadow-lg p-6">
-                    <div class="flex ioajsklehsnm pb-6">
-                      <h3 class="text-base font-bold">Status</h3>
-                    </div>
-                    <div class="relative" style="margin-top: -18%;margin-bottom:-18%">
-                      <canvas id="GaugeChart" class="max-w-full"></canvas>
-                      <div class="absolute start-1/2 top-1/2 transform ltr:-translate-x-1/2 rtl:translate-x-1/2 translate-y-full">80%</div>
-                    </div>
-                    <div class="relative text-center">
-                      <div class="p-3">
-                        <div class="inline-block me-2">
-                          Articles:
-                        </div>
-                        <div class="inline-block me-2">
-                          <span class="inline-block w-3 h-3 me-1 boalstehwqbj bg-indigo-500"></span> Published
-                        </div>
-                        <div class="inline-block me-2">
-                          <span class="inline-block w-3 h-3 me-1 boalstehwqbj bg-pink-500"></span> Draft
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+    // CPU Usage Gauge
+    const cpuCtx = document.getElementById('CPUGaugeChart');
+    if (cpuCtx) {
+        new Chart(cpuCtx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [72, 28], // 72% used, 28% available
+                    backgroundColor: ['rgb(59, 130, 246)', 'rgb(229, 231, 235)'],
+                    borderWidth: 0,
+                    cutout: '70%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            },
+            plugins: [{
+                id: 'gaugeText',
+                afterDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const centerX = chart.width / 2;
+                    const centerY = chart.height / 2;
 
-                <div class="shrink max-w-full uajskeiolksb w-full sm:w-1/2 mb-6">
-                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                    <div class="flex ioajsklehsnm pb-6">
-                      <h3 class="text-base font-bold">SEO score</h3>
-                    </div>
-                    <div class="relative" style="margin-top: -18%;margin-bottom:-18%">
-                      <canvas id="SeoChart" class="max-w-full"></canvas>
-                      <div class="absolute start-1/2 top-1/2 transform ltr:-translate-x-1/2 rtl:translate-x-1/2 translate-y-full">85/100</div>
-                    </div>
-                    <div class="relative text-center">
-                      <div class="p-3">
-                        <div class="inline-block me-2">
-                          <span class="inline-block w-3 h-3 me-1 boalstehwqbj bg-pink-500"></span> Bad (0 - 60)
-                        </div>
-                        <div class="inline-block me-2">
-                          <span class="inline-block w-3 h-3 me-1 boalstehwqbj bg-yellow-500"></span> Medium (60+)
-                        </div>
-                        <div class="inline-block me-2">
-                          <span class="inline-block w-3 h-3 me-1 boalstehwqbj bg-green-500"></span> Good (80+)
-                        </div>
-                        <div class="inline-block me-2">
-                          <span class="inline-block w-3 h-3 me-1 boalstehwqbj bg-indigo-500"></span> Excelent (90+)
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="shrink max-w-full uajskeiolksb w-full order-1 md:order-2 xl:w-1/3 mb-6">
-              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-                <div class="flex vlaoethsnkma mb-3">
-                  <a href="#" class="py-2 uajskeiolksb inline-flex layhetgsjdcb yhansklopals gap-2 mb-3 rounded-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="inline-block bi bi-plus-lg" viewBox="0 0 16 16">
-                      <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"></path>
-                    </svg>Add Post
-                  </a>
-                  <a href="#" class="py-2 uajskeiolksb inline-flex layhetgsjdcb yhansklopals gap-2 mb-3 rounded-sm leading-5 text-gray-100 bg-pink-500 border border-pink-500 hover:text-white hover:bg-pink-600 hover:ring-0 hover:border-pink-600 focus:bg-pink-600 focus:border-pink-600 focus:outline-hidden focus:ring-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="inline-block bi bi-plus-lg" viewBox="0 0 16 16">
-                      <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"></path>
-                    </svg><span class="xl:hidden">Add</span> Pages
-                  </a>
-                </div>
+                    ctx.fillStyle = 'rgb(59, 130, 246)';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('72%', centerX, centerY - 10);
 
-                <div class="hidden-header hidden-sort-after">
-                  <table class="table-sorter table-bordered w-full text-start text-gray-500 dark:text-gray-400">
-                    <thead>
-                      <tr class="bg-gray-200 dark:bg-gray-900/40">
-                        <th>
-                          Title
-                        </th>
-                        <th>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                            <title>Total view</title>
-                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"></path>
-                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"></path>
-                          </svg>
-                        </th>
-                        <th>
-                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
-                          <title>Total like</title>
-                            <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"></path>
-                          </svg>
-                        </th>
-                        <th>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-                            <title>Total comment</title>
-                            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"></path>
-                            <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"></path>
-                          </svg>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">How to get started with Tailwind Css ?</a>
-                        </td>
-                        <td>
-                          934
-                        </td>
-                        <td>
-                          136
-                        </td>
-                        <td>
-                          121
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">Best Html admin template for Tailwind</a>
-                        </td>
-                        <td>
-                          789
-                        </td>
-                        <td>
-                          132
-                        </td>
-                        <td>
-                          98
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">Introducing Tailwind UI/UX Ecommerce</a>
-                        </td>
-                        <td>
-                          629
-                        </td>
-                        <td>
-                          92
-                        </td>
-                        <td>
-                          87
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">The Next Generation of Tailwind CSS</a>
-                        </td>
-                        <td>
-                          609
-                        </td>
-                        <td>
-                          82
-                        </td>
-                        <td>
-                          83
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">W3C TPAC 2021 Exhibition Space opens for registration</a>
-                        </td>
-                        <td>
-                          600
-                        </td>
-                        <td>
-                          90
-                        </td>
-                        <td>
-                          72
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">Minecraft Wild Update's Deep Cities Turn It Into A Horror Game</a>
-                        </td>
-                        <td>
-                          529
-                        </td>
-                        <td>
-                          72
-                        </td>
-                        <td>
-                          81
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">How Long Is A Day On Mars</a>
-                        </td>
-                        <td>
-                          509
-                        </td>
-                        <td>
-                          62
-                        </td>
-                        <td>
-                          77
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">Why The Moon Sequel Isn't Happening</a>
-                        </td>
-                        <td>
-                          500
-                        </td>
-                        <td>
-                          52
-                        </td>
-                        <td>
-                          57
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">How Far Away Is It From The Sun?</a>
-                        </td>
-                        <td>
-                          489
-                        </td>
-                        <td>
-                          62
-                        </td>
-                        <td>
-                          66
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">Mars is a cold planet filled with rocks & sand</a>
-                        </td>
-                        <td>
-                          489
-                        </td>
-                        <td>
-                          62
-                        </td>
-                        <td>
-                          57
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">Why Mars Has Longer Days Than Earth?</a>
-                        </td>
-                        <td>
-                          329
-                        </td>
-                        <td>
-                          42
-                        </td>
-                        <td>
-                          47
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <a href="#" target="_blank" class="hover:text-indigo-500 hover:underline">Mars Dunes Look Massive In This Stunning Perseverance Photo</a>
-                        </td>
-                        <td>
-                          249
-                        </td>
-                        <td>
-                          32
-                        </td>
-                        <td>
-                          34
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                    ctx.fillStyle = 'rgb(107, 114, 128)';
+                    ctx.font = '12px Arial';
+                    ctx.fillText('CPU Usage', centerX, centerY + 15);
+                    ctx.fillText('4/8 cores', centerX, centerY + 30);
+                }
+            }]
+        });
+    }
+
+    // Memory Usage Gauge
+    const memoryCtx = document.getElementById('MemoryGaugeChart');
+    if (memoryCtx) {
+        new Chart(memoryCtx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [78, 22], // 78% used, 22% available
+                    backgroundColor: ['rgb(249, 115, 22)', 'rgb(229, 231, 235)'],
+                    borderWidth: 0,
+                    cutout: '70%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            },
+            plugins: [{
+                id: 'gaugeText',
+                afterDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const centerX = chart.width / 2;
+                    const centerY = chart.height / 2;
+
+                    ctx.fillStyle = 'rgb(249, 115, 22)';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('78%', centerX, centerY - 10);
+
+                    ctx.fillStyle = 'rgb(107, 114, 128)';
+                    ctx.font = '12px Arial';
+                    ctx.fillText('Memory', centerX, centerY + 15);
+                    ctx.fillText('12.5/16 GB', centerX, centerY + 30);
+                }
+            }]
+        });
+    }
+
+    // Storage Usage Gauge
+    const storageCtx = document.getElementById('StorageGaugeChart');
+    if (storageCtx) {
+        new Chart(storageCtx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [45, 55], // 45% used, 55% available
+                    backgroundColor: ['rgb(34, 197, 94)', 'rgb(229, 231, 235)'],
+                    borderWidth: 0,
+                    cutout: '70%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            },
+            plugins: [{
+                id: 'gaugeText',
+                afterDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const centerX = chart.width / 2;
+                    const centerY = chart.height / 2;
+
+                    ctx.fillStyle = 'rgb(34, 197, 94)';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('45%', centerX, centerY - 10);
+
+                    ctx.fillStyle = 'rgb(107, 114, 128)';
+                    ctx.font = '12px Arial';
+                    ctx.fillText('Storage', centerX, centerY + 15);
+                    ctx.fillText('450/1000 GB', centerX, centerY + 30);
+                }
+            }]
+        });
+    }
+
+    // Docker Resources Gauge
+    const dockerCtx = document.getElementById('DockerGaugeChart');
+    if (dockerCtx) {
+        new Chart(dockerCtx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [1, 1], // 1 running, 1 available slot
+                    backgroundColor: ['rgb(168, 85, 247)', 'rgb(229, 231, 235)'],
+                    borderWidth: 0,
+                    cutout: '70%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            },
+            plugins: [{
+                id: 'gaugeText',
+                afterDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const centerX = chart.width / 2;
+                    const centerY = chart.height / 2;
+
+                    ctx.fillStyle = 'rgb(168, 85, 247)';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('1', centerX, centerY - 10);
+
+                    ctx.fillStyle = 'rgb(107, 114, 128)';
+                    ctx.font = '12px Arial';
+                    ctx.fillText('Containers', centerX, centerY + 15);
+                    ctx.fillText('Running', centerX, centerY + 30);
+                }
+            }]
+        });
+    }
+
+    // Analysis Status Pie Chart
+    const analysisCtx = document.getElementById('AnalysisStatusChart');
+    if (analysisCtx) {
+        new Chart(analysisCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Pending', 'Running', 'Completed'],
+                datasets: [{
+                    data: [7, 3, 18],
+                    backgroundColor: [
+                        'rgb(234, 179, 8)',    // Yellow for Pending
+                        'rgb(59, 130, 246)',   // Blue for Running
+                        'rgb(34, 197, 94)'     // Green for Completed
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false  // Hide the default legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((context.parsed / total) * 100);
+                                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: true,
+                        color: 'white',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        formatter: function(value, context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return value + '\n(' + percentage + '%)';
+                        },
+                        textAlign: 'center'
+                    }
+                },
+                layout: {
+                    padding: 5
+                }
+            },
+            plugins: [{
+                id: 'datalabels',
+                afterDatasetsDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const labels = chart.data.labels;
+
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        if (!meta.hidden) {
+                            meta.data.forEach((element, index) => {
+                                // Get the position
+                                const model = element;
+                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((dataset.data[index] / total) * 100);
+
+                                // Set font style
+                                ctx.fillStyle = 'white';
+                                ctx.font = 'bold 12px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+
+                                // Calculate position
+                                const position = element.tooltipPosition();
+
+                                // Draw the text (3 lines)
+                                const text1 = labels[index]; // Status name (Pending, Running, Completed)
+                                const text2 = dataset.data[index].toString(); // Value
+                                const text3 = '(' + percentage + '%)'; // Percentage
+
+                                ctx.fillText(text1, position.x, position.y - 12);
+                                ctx.fillText(text2, position.x, position.y);
+                                ctx.fillText(text3, position.x, position.y + 12);
+                            });
+                        }
+                    });
+                }
+            }]
+        });
+    }
+
+    // Doughnut Chart (if exists)
+    const doughnutCtx = document.getElementById('DoughnutChart');
+    if (doughnutCtx) {
+        new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['VCF Processing', 'HPO Analysis', 'Exomiser Execution', 'Report Generation'],
+                datasets: [{
+                    data: [35, 25, 30, 10],
+                    backgroundColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(34, 197, 94)',
+                        'rgb(249, 115, 22)',
+                        'rgb(168, 85, 247)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Phenotype Histogram
+    const phenotypeCtx = document.getElementById('PhenotypeHistogram');
+    if (phenotypeCtx) {
+        new Chart(phenotypeCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Intellectual disability',
+                    'Seizures',
+                    'Muscular hypotonia',
+                    'Delayed speech',
+                    'Motor delay',
+                    'Ataxia',
+                    'Autism',
+                    'Microcephaly',
+                    'Heart defects',
+                    'Visual impairment'
+                ],
+                datasets: [{
+                    label: 'Frequency',
+                    data: [45, 38, 32, 28, 25, 22, 19, 16, 14, 12],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(249, 115, 22, 0.8)',
+                        'rgba(168, 85, 247, 0.8)',
+                        'rgba(236, 72, 153, 0.8)',
+                        'rgba(34, 197, 94, 0.8)',
+                        'rgba(239, 68, 68, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(20, 184, 166, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(16, 185, 129)',
+                        'rgb(249, 115, 22)',
+                        'rgb(168, 85, 247)',
+                        'rgb(236, 72, 153)',
+                        'rgb(34, 197, 94)',
+                        'rgb(239, 68, 68)',
+                        'rgb(245, 158, 11)',
+                        'rgb(99, 102, 241)',
+                        'rgb(20, 184, 166)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 5
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Cases'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Phenotypes (HPO Terms)'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Cases: ' + context.parsed.y;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 
 {% endblock %}
