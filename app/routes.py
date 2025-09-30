@@ -258,3 +258,56 @@ def admin_delete_user(user_id):
             return render_template("admin/delete_user.html", user_to_delete=user_to_delete)
 
     return render_template("admin/delete_user.html", user_to_delete=user_to_delete)
+
+
+# ===== API ROUTES =====
+@routes_bp.route("/api/search/analyses")
+@login_required
+def api_search_analyses():
+    """Search API for analyses - returns JSON data for Select2"""
+    from models import Analysis, Individual, TaskStatus
+
+    # Get search term from query parameter
+    search_term = request.args.get('q', '').strip()
+
+    # Build query for analyses that the user can access
+    query = db.session.query(Analysis).join(Individual)
+
+    # Filter by search term if provided
+    if search_term:
+        query = query.filter(
+            db.or_(
+                Analysis.name.ilike(f'%{search_term}%'),
+                Analysis.description.ilike(f'%{search_term}%'),
+                Individual.identity.ilike(f'%{search_term}%')
+            )
+        )
+
+    # Only show completed analyses with results
+    query = query.filter(
+        Analysis.status == TaskStatus.COMPLETED,
+        Analysis.output_html.isnot(None)
+    )
+
+    # Order by most recent first
+    query = query.order_by(Analysis.completed_at.desc())
+
+    # Limit results for performance
+    analyses = query.limit(50).all()
+
+    # Format for Select2
+    results = []
+    for analysis in analyses:
+        results.append({
+            'id': analysis.id,
+            'text': f"{analysis.name} - {analysis.individual.identity} ({analysis.completed_at.strftime('%Y-%m-%d')})",
+            'name': analysis.name,
+            'individual_id': analysis.individual.identity,
+            'completed_at': analysis.completed_at.strftime('%Y-%m-%d %H:%M'),
+            'status': analysis.status.value
+        })
+
+    return jsonify({
+        'results': results,
+        'pagination': {'more': False}
+    })

@@ -30,6 +30,55 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
   <!-- Favicon  -->
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 
+  <!-- Select2 CSS -->
+  <link href="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/css/select2.min.css') }}" rel="stylesheet" />
+
+  <!-- Custom Select2 Styling -->
+  <style>
+    /* Select2 Dark Theme Support */
+    .dark .select2-container--default .select2-dropdown {
+      background-color: #374151;
+      border: 1px solid #4b5563;
+      color: #e5e7eb;
+    }
+
+    .dark .select2-container--default .select2-results__option {
+      color: #e5e7eb;
+    }
+
+    .dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
+      background-color: #6366f1;
+      color: white;
+    }
+
+    .dark .select2-container--default .select2-search--dropdown .select2-search__field {
+      background-color: #4b5563;
+      border: 1px solid #6b7280;
+      color: #e5e7eb;
+    }
+
+    /* Custom result styling */
+    .select2-result-analysis .analysis-name {
+      font-weight: 500;
+    }
+
+    .select2-result-analysis .analysis-details {
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Select2 container width adjustment */
+    .select2-container {
+      min-width: 300px;
+    }
+
+    /* Loading state */
+    .select2-results__option[aria-live] {
+      text-align: center;
+      font-style: italic;
+    }
+  </style>
+
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -65,18 +114,14 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
           <!-- <i class="text-2xl bi bi-list"></i> -->
         </button>
 
-        <!-- Search -->
-        <form class="hidden sm:inline-block md:hidden lg:inline-block mx-5">
+        <!-- Analysis Search -->
+        <div class="hidden sm:inline-block md:hidden lg:inline-block mx-5">
           <div class="flex flex-wrap items-stretch w-full relative">
-            <input type="text" class="shrink flex-grow max-w-full leading-5 relative text-sm px-4 py-2 uajskeiolksb rounded-s-sm text-gray-800 bg-gray-100 overflow-x-auto focus:outline-hidden border border-gray-100 focus:border-gray-200 focus:ring-0 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600" placeholder="Search…" aria-label="Search">
-            <div class="flex -me-px">
-              <button class="flex layhetgsjdcb py-2 uajskeiolksb -ms-1 rounded-e-sm leading-5 text-gray-100 bg-indigo-500 border border-indigo-500 hover:text-white hover:bg-indigo-600 hover:ring-0 hover:border-indigo-600 focus:bg-indigo-600 focus:border-indigo-600 focus:outline-hidden focus:ring-0" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <!-- <i class="inline-block size-4 bi bi-search"></i> -->
-              </button>
-            </div>
+            <select id="analysis-search" class="shrink flex-grow max-w-full leading-5 relative text-sm px-4 py-2 uajskeiolksb rounded-s-sm text-gray-800 bg-gray-100 overflow-x-auto focus:outline-hidden border border-gray-100 focus:border-gray-200 focus:ring-0 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600" style="width: 300px;">
+              <option value="">Search analyses...</option>
+            </select>
           </div>
-        </form>
+        </div>
 
         <!-- menu -->
         <ul class="flex ms-auto mt-2">
@@ -385,6 +430,13 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
   <script src="{{ url_for('static', filename='vendors/yaireo/tagify/dist/tagify.js') }}"></script><!-- input tags -->
   <script src="{{ url_for('static', filename='vendors/pristinejs/dist/pristine.min.js') }}"></script><!-- form validation -->
   <script src="{{ url_for('static', filename='vendors/simple-datatables/dist/umd/simple-datatables.js') }}"></script><!--sort table-->
+
+  <!-- jQuery (required for Select2) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/js/select2.min.js') }}"></script>
+
   <!--end::Global javascript (used in all pages)-->
 
   <!-- Minify Global javascript (for production purpose) -->
@@ -401,6 +453,73 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
   <!--start::Vendor javascript (only on this page)-->
   <script src="{{ url_for('static', filename='vendors/jsvectormap/dist/js/jsvectormap.min.js') }}"></script><!-- vector map -->
   <script src="{{ url_for('static', filename='vendors/jsvectormap/dist/maps/world.js') }}"></script><!-- world vector map -->
+
+  <!-- Analysis Search Script -->
+  <script>
+  $(document).ready(function() {
+    // Initialize Select2 for analysis search
+    $('#analysis-search').select2({
+      ajax: {
+        url: "{{ url_for('routes.api_search_analyses') }}",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // search term
+          };
+        },
+        processResults: function (data, params) {
+          return {
+            results: data.results
+          };
+        },
+        cache: true
+      },
+      placeholder: 'Search analyses by name, individual ID...',
+      minimumInputLength: 2,
+      allowClear: true,
+      width: '100%',
+      theme: 'default',
+      templateResult: function(result) {
+        if (result.loading) {
+          return result.text;
+        }
+
+        // Custom formatting for search results
+        var $container = $(
+          '<div class="select2-result-analysis">' +
+            '<div class="analysis-name">' + (result.name || result.text) + '</div>' +
+            '<div class="analysis-details text-sm text-gray-500">' +
+              'Individual: ' + (result.individual_id || 'N/A') + ' | ' +
+              'Completed: ' + (result.completed_at || 'N/A') +
+            '</div>' +
+          '</div>'
+        );
+
+        return $container;
+      },
+      templateSelection: function(result) {
+        return result.name || result.text || 'Search analyses...';
+      }
+    });
+
+    // Handle selection - open analysis results in new window
+    $('#analysis-search').on('select2:select', function (e) {
+      var data = e.params.data;
+      if (data.id) {
+        // Open analysis results in new window
+        var url = "{{ url_for('analysis.analysis_view', analysis_id=0) }}".replace('0', data.id);
+        window.open(url, '_blank');
+
+        // Clear the selection for next search
+        setTimeout(function() {
+          $('#analysis-search').val(null).trigger('change');
+        }, 100);
+      }
+    });
+
+  });
+  </script>
   {% endblock %}
   <!--end::Vendor javascript (only on this page)-->
   <!--start::Call vendor ( initialize vendor javascript )-->
