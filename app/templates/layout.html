@@ -57,6 +57,31 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
       color: #e5e7eb;
     }
 
+    /* Custom dropdown arrow - replace with search icon */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      display: none;
+    }
+
+    .select2-container--default .select2-selection--single::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      pointer-events: none;
+    }
+
+    /* Dark theme search icon */
+    .dark .select2-container--default .select2-selection--single::after {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e5e7eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+    }
+
     /* Custom result styling */
     .select2-result-analysis .analysis-name {
       font-weight: 500;
@@ -475,7 +500,7 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
         },
         cache: true
       },
-      placeholder: 'Search analyses by name, individual ID...',
+      placeholder: 'Search analyses by name, individual...',
       minimumInputLength: 2,
       allowClear: true,
       width: '100%',
