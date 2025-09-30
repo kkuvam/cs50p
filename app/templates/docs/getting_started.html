@@ -1,0 +1,338 @@
+{% extends "layout.html" %}
+
+{% block title %}Getting Started - Exomiser Documentation{% endblock %}
+
+{% block content %}
+<div class="mx-auto py-2 sm:px-2">
+    <div class="flex flex-wrap">
+        <div class="w-full">
+            <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+                <!-- Header -->
+                <div class="flex items-center mb-6 p-6">
+                    <div class="p-3 bg-green-100 dark:bg-green-900/40 rounded-lg mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-8 h-8 text-green-600 dark:text-green-400" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Getting Started</h1>
+                        <p class="text-gray-600 dark:text-gray-400">Complete guide to start using Exomiser for genomic variant analysis</p>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="prose max-w-none dark:prose-invert px-6 pb-6">
+                    <!-- Navigation breadcrumb -->
+                    <nav class="flex mb-8" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                            <li class="inline-flex items-center">
+                                <a href="{{ url_for('routes.docs') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Documentation</a>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="text-gray-500 dark:text-gray-400 ml-1 md:ml-2">Getting Started</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <!-- Overview -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Overview</h2>
+                        <p class="text-gray-700 dark:text-gray-300 mb-4">
+                            Exomiser is a powerful genomic variant analysis platform that helps identify potential disease-causing variants from whole-exome or whole-genome sequencing data. This guide will walk you through setting up your account and running your first analysis.
+                        </p>
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+                            <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">What You'll Learn</h3>
+                            <ul class="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-1">
+                                <li>System requirements and account setup</li>
+                                <li>How to create individual records</li>
+                                <li>Uploading VCF files and adding phenotype data</li>
+                                <li>Running and monitoring analyses</li>
+                                <li>Interpreting results</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- System Requirements -->
+                    <section id="system-requirements" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">System Requirements</h2>
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Supported Browsers</h3>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1 mb-4">
+                                <li>Chrome 90+ (recommended)</li>
+                                <li>Firefox 88+</li>
+                                <li>Safari 14+</li>
+                                <li>Edge 90+</li>
+                            </ul>
+
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">File Requirements</h3>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1 mb-4">
+                                <li><strong>VCF Files:</strong> Standard VCF format (v4.0+)</li>
+                                <li><strong>Genome Assembly:</strong> hg19/GRCh37 or hg38/GRCh38</li>
+                                <li><strong>File Size:</strong> Up to 500MB per VCF file</li>
+                                <li><strong>Compression:</strong> Gzipped files supported (.vcf.gz)</li>
+                            </ul>
+
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Phenotype Data</h3>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">
+                                <li><strong>HPO Terms:</strong> Human Phenotype Ontology identifiers (HP:XXXXXXX)</li>
+                                <li><strong>Clinical Information:</strong> Medical history and diagnosis (optional)</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Account Setup -->
+                    <section id="account-setup" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Account Setup</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">1. Registration</h3>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Navigate to the registration page</li>
+                                <li>Fill in your email address and create a secure password</li>
+                                <li>Provide your full name for identification</li>
+                                <li>Submit the registration form</li>
+                                <li>Wait for admin approval (accounts require manual activation)</li>
+                            </ol>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">2. First Login</h3>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Once approved, log in with your credentials</li>
+                                <li>Familiarize yourself with the dashboard</li>
+                                <li>Review the navigation menu and available features</li>
+                                <li>Consider changing your password if needed</li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                            <h4 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">📝 Note</h4>
+                            <p class="text-yellow-700 dark:text-yellow-300">
+                                New accounts are created as inactive and require administrator approval. This ensures proper access control and data security.
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Creating Your First Individual -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Creating Your First Individual</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Step 1: Navigate to Individuals</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                From the main dashboard, click on "Individuals" in the navigation menu to access the individual management interface.
+                            </p>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Step 2: Add New Individual</h3>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Click the "Add Individual" button</li>
+                                <li>Fill in the basic information:
+                                    <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
+                                        <li><strong>Identity:</strong> Unique identifier (e.g., P0001)</li>
+                                        <li><strong>Full Name:</strong> Patient or sample name</li>
+                                        <li><strong>Sex:</strong> Male, Female, Other, or Unknown</li>
+                                        <li><strong>Age:</strong> Age in years</li>
+                                    </ul>
+                                </li>
+                                <li>Upload VCF file (see VCF Upload section below)</li>
+                                <li>Add phenotype information (see HPO Terms section below)</li>
+                                <li>Optionally add medical history and diagnosis</li>
+                                <li>Save the individual record</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <!-- VCF File Upload -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">VCF File Upload</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Preparing Your VCF File</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Before uploading, ensure your VCF file meets the following criteria:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Valid VCF format (version 4.0 or higher)</li>
+                                <li>Contains variant calls with proper coordinates</li>
+                                <li>Genome assembly matches your selection (hg19 or hg38)</li>
+                                <li>File size under 500MB</li>
+                                <li>Quality filters applied (PASS variants recommended)</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Upload Process</h3>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Click the "Choose File" button in the individual form</li>
+                                <li>Select your VCF file from your computer</li>
+                                <li>Wait for the upload progress indicator</li>
+                                <li>Verify the filename appears correctly</li>
+                                <li>The system will automatically store the file securely</li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+                            <h4 class="font-semibold text-red-800 dark:text-red-300 mb-2">⚠️ Important</h4>
+                            <p class="text-red-700 dark:text-red-300">
+                                VCF files cannot be changed after upload. If you need to use a different file, create a new individual record.
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- HPO Terms -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Adding Phenotype Information (HPO Terms)</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">What are HPO Terms?</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Human Phenotype Ontology (HPO) terms are standardized descriptions of phenotypic abnormalities. They help Exomiser prioritize variants based on clinical phenotypes.
+                            </p>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Finding HPO Terms</h3>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Visit the HPO Browser at <a href="https://hpo.jax.org" class="text-blue-600 hover:text-blue-800 dark:text-blue-400" target="_blank">hpo.jax.org</a></li>
+                                <li>Search for clinical features using medical terms</li>
+                                <li>Copy the HPO ID (format: HP:XXXXXXX)</li>
+                                <li>Note the human-readable label for reference</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Adding HPO Terms</h3>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>In the individual form, find the "HPO Terms" section</li>
+                                <li>Enter the HPO ID (e.g., HP:0001250)</li>
+                                <li>Enter the corresponding label (e.g., "Seizures")</li>
+                                <li>Click "Add HPO Term" to include it</li>
+                                <li>Repeat for all relevant phenotypes</li>
+                                <li>Review the list before saving</li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                            <h4 class="font-semibold text-green-800 dark:text-green-300 mb-2">💡 Tip</h4>
+                            <p class="text-green-700 dark:text-green-300">
+                                More specific HPO terms generally lead to better variant prioritization. Include as many relevant phenotypes as possible.
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- First Analysis -->
+                    <section id="first-analysis" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Running Your First Analysis</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Prerequisites</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Before starting an analysis, ensure you have:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1 ml-4">
+                                <li>Created an individual record with VCF file</li>
+                                <li>Added relevant HPO terms</li>
+                                <li>Verified all information is correct</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Starting an Analysis</h3>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Navigate to the "Analysis" section</li>
+                                <li>Click "New Analysis"</li>
+                                <li>Fill in the analysis details:
+                                    <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
+                                        <li><strong>Name:</strong> Descriptive analysis name</li>
+                                        <li><strong>Individual:</strong> Select from your individuals</li>
+                                        <li><strong>Genome Assembly:</strong> Match your VCF file</li>
+                                        <li><strong>Analysis Mode:</strong> Usually "PASS_ONLY"</li>
+                                        <li><strong>Frequency Threshold:</strong> Maximum allele frequency (default: 1.0)</li>
+                                        <li><strong>Pathogenicity Threshold:</strong> Minimum pathogenicity score (default: 0.5)</li>
+                                    </ul>
+                                </li>
+                                <li>Review settings and click "Start Analysis"</li>
+                            </ol>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Monitoring Progress</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                Once started, you can monitor your analysis in real-time:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>View status updates (PENDING → RUNNING → COMPLETED)</li>
+                                <li>Watch live progress logs</li>
+                                <li>Monitor resource usage</li>
+                                <li>Receive completion notifications</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Viewing Results -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Viewing and Interpreting Results</h2>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Accessing Results</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                When your analysis completes successfully:
+                            </p>
+                            <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li>Go to the Analysis section</li>
+                                <li>Find your completed analysis</li>
+                                <li>Click on the analysis name</li>
+                                <li>View the generated HTML report</li>
+                                <li>Download results for offline review</li>
+                            </ol>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Understanding the Report</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                The Exomiser report includes:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                                <li><strong>Gene Rankings:</strong> Prioritized genes based on phenotype matching</li>
+                                <li><strong>Variant Details:</strong> Detailed annotations for each variant</li>
+                                <li><strong>Pathogenicity Scores:</strong> Computational predictions</li>
+                                <li><strong>Frequency Data:</strong> Population allele frequencies</li>
+                                <li><strong>Phenotype Matching:</strong> How well genes match provided HPO terms</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">🔍 Next Steps</h4>
+                            <p class="text-blue-700 dark:text-blue-300">
+                                Review high-ranking variants with domain experts, validate findings with additional evidence, and consider functional studies for top candidates.
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Getting Help -->
+                    <section class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Getting Help</h2>
+                        <p class="text-gray-700 dark:text-gray-300 mb-4">
+                            If you encounter issues or need assistance:
+                        </p>
+                        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
+                            <li><a href="{{ url_for('routes.help_faq') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Check the FAQ</a> for common questions</li>
+                            <li><a href="{{ url_for('routes.docs_troubleshooting') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Visit Troubleshooting</a> for error solutions</li>
+                            <li><a href="{{ url_for('routes.docs_manual') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Read the User Manual</a> for detailed features</li>
+                            <li><a href="{{ url_for('routes.help_support') }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Contact Support</a> for direct assistance</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

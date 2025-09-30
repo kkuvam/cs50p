@@ -30,11 +30,29 @@ def help_support():
     """Support page - contact and support information"""
     return render_template("help/support.html", user=current_user)
 
-@routes_bp.route("/help/docs")
+@routes_bp.route("/docs")
 @login_required
-def help_docs():
+def docs():
     """Documentation page - user guides and system documentation"""
-    return render_template("help/docs.html", user=current_user)
+    return render_template("docs/index.html", user=current_user)
+
+@routes_bp.route("/docs/getting-started")
+@login_required
+def docs_getting_started():
+    """Getting Started documentation - complete guide for new users"""
+    return render_template("docs/getting_started.html", user=current_user)
+
+@routes_bp.route("/docs/manual")
+@login_required
+def docs_manual():
+    """User Manual documentation - comprehensive feature guide"""
+    return render_template("docs/manual.html", user=current_user)
+
+@routes_bp.route("/docs/troubleshooting")
+@login_required
+def docs_troubleshooting():
+    """Troubleshooting documentation - common issues and solutions"""
+    return render_template("docs/troubleshooting.html", user=current_user)
 
 @routes_bp.route("/privacy")
 def privacy():
