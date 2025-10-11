@@ -17,6 +17,8 @@ def get_system_metrics():
     """Get system monitoring metrics (CPU, Memory, Storage, Docker)"""
     metrics = {
         'cpu_usage': 0,
+        'cpu_cores': 0,
+        'cpu_cores_used': 0,
         'memory_usage': 0,
         'memory_total': 0,
         'memory_used': 0,
@@ -28,9 +30,14 @@ def get_system_metrics():
     }
 
     try:
-        # CPU Usage
+        # CPU Usage and Cores
         import psutil
         metrics['cpu_usage'] = round(psutil.cpu_percent(interval=1), 1)
+        metrics['cpu_cores'] = psutil.cpu_count(logical=True)  # Total logical cores
+        # Calculate cores "in use" based on CPU usage percentage
+        # This is an approximation: if CPU usage is 25% on 4 cores, ~1 core equivalent is busy
+        cpu_cores_used = round((metrics['cpu_usage'] / 100) * metrics['cpu_cores'], 1)
+        metrics['cpu_cores_used'] = cpu_cores_used
 
         # Memory Usage
         memory = psutil.virtual_memory()
@@ -48,14 +55,23 @@ def get_system_metrics():
         # Fallback if psutil is not available
         try:
             # Try to get basic info using system commands
-            # CPU usage from /proc/stat (Linux)
+            # CPU usage and cores from /proc/stat and /proc/cpuinfo (Linux)
             if os.path.exists('/proc/stat'):
                 with open('/proc/stat', 'r') as f:
                     line = f.readline()
                     cpu_times = [int(x) for x in line.split()[1:]]
                     idle_time = cpu_times[3]
                     total_time = sum(cpu_times)
-                    metrics['cpu_usage'] = round(100 * (1 - idle_time / total_time), 1)
+                    cpu_usage = round(100 * (1 - idle_time / total_time), 1)
+                    metrics['cpu_usage'] = cpu_usage
+
+            # Get CPU core count from /proc/cpuinfo (Linux)
+            if os.path.exists('/proc/cpuinfo'):
+                with open('/proc/cpuinfo', 'r') as f:
+                    cpu_cores = len([line for line in f if line.startswith('processor')])
+                    metrics['cpu_cores'] = cpu_cores
+                    # Calculate cores "in use" based on CPU usage
+                    metrics['cpu_cores_used'] = round((cpu_usage / 100) * cpu_cores, 1) if 'cpu_usage' in locals() else 0
 
             # Memory from /proc/meminfo (Linux)
             if os.path.exists('/proc/meminfo'):
@@ -84,6 +100,8 @@ def get_system_metrics():
             # Ultimate fallback with dummy data
             metrics.update({
                 'cpu_usage': 72.0,
+                'cpu_cores': 4,
+                'cpu_cores_used': 2.9,
                 'memory_usage': 78.0,
                 'memory_total': 16.0,
                 'memory_used': 12.5,

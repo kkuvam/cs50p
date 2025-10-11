@@ -297,6 +297,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cpuCtx) {
         const cpuUsage = {{ system_metrics.cpu_usage }};
         const cpuAvailable = 100 - cpuUsage;
+        const cpuCores = {{ system_metrics.cpu_cores }};
+        const cpuCoresUsed = {{ system_metrics.cpu_cores_used }};
 
         new Chart(cpuCtx, {
             type: 'doughnut',
@@ -332,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.fillStyle = 'rgb(107, 114, 128)';
                     ctx.font = '12px Arial';
                     ctx.fillText('CPU Usage', centerX, centerY + 15);
-                    ctx.fillText('4/8 cores', centerX, centerY + 30);
+                    ctx.fillText(cpuCoresUsed + '/' + cpuCores + ' cores', centerX, centerY + 30);
                 }
             }]
         });
