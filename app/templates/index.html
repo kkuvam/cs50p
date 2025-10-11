@@ -20,7 +20,7 @@
 										  <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
 										</svg>
 									</div>
-							    <h2 class="self-center text-3xl">28</h2>
+							    <h2 class="self-center text-3xl">{{ total_analyses or 0 }}</h2>
 							  </div>
 							  <div class="dkslaoeyhnmj pb-6"></div>
 							</div>
@@ -37,7 +37,7 @@
 										  <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
 										</svg>
 									</div>
-							    <h2 class="self-center text-3xl">15</h2>
+							    <h2 class="self-center text-3xl">{{ total_individuals or 0 }}</h2>
 							  </div>
 							  <div class="dkslaoeyhnmj pb-6"></div>
 							</div>
@@ -54,7 +54,7 @@
 										  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
 										</svg>
 									</div>
-							    <h2 class="self-center text-3xl">94%</h2>
+							    <h2 class="self-center text-3xl">{{ success_rate or 0 }}%</h2>
 							  </div>
 							  <div class="dkslaoeyhnmj pb-6"></div>
 							</div>
@@ -71,7 +71,7 @@
 										  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
 										</svg>
 									</div>
-							    <h2 class="self-center text-3xl">45min</h2>
+							    <h2 class="self-center text-3xl">{{ mean_runtime or "N/A" }}</h2>
 							  </div>
 							  <div class="dkslaoeyhnmj pb-6"></div>
 							</div>
@@ -89,18 +89,71 @@
                     <span class="text-gray-500 text-sm">Status of analysis process</span>
                   </div>
 
-                  <!-- Chart Container -->
-                  <div class="flex justify-center items-center w-full mb-6">
-                    <!-- Centered Pie Chart (25% larger) -->
-                    <div class="relative w-50 h-50 mx-auto">
-                      <canvas id="AnalysisStatusChart" class="max-w-full max-h-full"></canvas>
+                  <!-- Two-column layout: Chart (80%) + Legend (20%) -->
+                  <div class="flex flex-col lg:flex-row gap-6">
+                    <!-- Pie Chart Column (80%) -->
+                    <div class="lg:w-4/5 w-full">
+                      <div class="flex justify-center items-center h-64">
+                        <div class="relative w-56 h-56">
+                          <canvas id="AnalysisStatusChart" class="max-w-full max-h-full"></canvas>
+                        </div>
+                      </div>
+                      <!-- Total Summary -->
+                      <div class="text-center mt-4">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                          Total Analyses: <span class="font-semibold">{{ total_analyses or 0 }}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <!-- Total Summary -->
-                  <div class="text-center">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                      Total Analyses: <span class="font-semibold">28</span>
+                    <!-- Legend Column (20%) -->
+                    <div class="lg:w-1/5 w-full">
+                      <div class="space-y-2">
+                        <!-- Pending -->
+                        <div class="flex items-center justify-between p-2 rounded border" style="background-color: rgba(234, 179, 8, 0.1); border-color: rgba(234, 179, 8, 0.3);">
+                          <div class="flex items-center flex-1">
+                            <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: rgb(234, 179, 8);"></div>
+                            <span class="text-xs font-medium" style="color: rgb(146, 114, 5);">Pending</span>
+                          </div>
+                          <span class="text-sm font-bold text-right" style="color: rgb(146, 114, 5);">{{ pending_analyses or 0 }}</span>
+                        </div>
+
+                        <!-- Running -->
+                        <div class="flex items-center justify-between p-2 rounded border" style="background-color: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3);">
+                          <div class="flex items-center flex-1">
+                            <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: rgb(59, 130, 246);"></div>
+                            <span class="text-xs font-medium" style="color: rgb(37, 85, 156);">Running</span>
+                          </div>
+                          <span class="text-sm font-bold text-right" style="color: rgb(37, 85, 156);">{{ running_analyses or 0 }}</span>
+                        </div>
+
+                        <!-- Completed -->
+                        <div class="flex items-center justify-between p-2 rounded border" style="background-color: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.4);">
+                          <div class="flex items-center flex-1">
+                            <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: rgb(34, 197, 94);"></div>
+                            <span class="text-xs font-medium" style="color: rgb(21, 128, 61);">Completed</span>
+                          </div>
+                          <span class="text-sm font-bold text-right" style="color: rgb(21, 128, 61);">{{ successful_analyses or 0 }}</span>
+                        </div>
+
+                        <!-- Failed -->
+                        <div class="flex items-center justify-between p-2 rounded border" style="background-color: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                          <div class="flex items-center flex-1">
+                            <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: rgb(239, 68, 68);"></div>
+                            <span class="text-xs font-medium" style="color: rgb(153, 27, 27);">Failed</span>
+                          </div>
+                          <span class="text-sm font-bold text-right" style="color: rgb(153, 27, 27);">{{ failed_analyses or 0 }}</span>
+                        </div>
+
+                        <!-- Cancelled -->
+                        <div class="flex items-center justify-between p-2 rounded border" style="background-color: rgba(107, 114, 128, 0.1); border-color: rgba(107, 114, 128, 0.3);">
+                          <div class="flex items-center flex-1">
+                            <div class="w-2.5 h-2.5 rounded-full mr-2" style="background-color: rgb(107, 114, 128);"></div>
+                            <span class="text-xs font-medium" style="color: rgb(75, 85, 99);">Cancelled</span>
+                          </div>
+                          <span class="text-sm font-bold text-right" style="color: rgb(75, 85, 99);">{{ cancelled_analyses or 0 }}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 	              </div>
@@ -119,57 +172,49 @@
                     <table class="w-full text-sm">
                       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                          <th scope="col" class="px-3 py-2 text-left">Patient ID</th>
-                          <th scope="col" class="px-3 py-2 text-left">Patient Name</th>
+                          <th scope="col" class="px-3 py-2 text-left">Analysis Name</th>
+                          <th scope="col" class="px-3 py-2 text-left">Individual</th>
+                          <th scope="col" class="px-3 py-2 text-left">Completed</th>
                           <th scope="col" class="px-3 py-2 text-left">Results</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25391</td>
-                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">John Smith</td>
-                          <td class="px-3 py-2">
-                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
-                              View Report
-                            </a>
-                          </td>
-                        </tr>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25387</td>
-                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Sarah Johnson</td>
-                          <td class="px-3 py-2">
-                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
-                              View Report
-                            </a>
-                          </td>
-                        </tr>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25334</td>
-                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Michael Brown</td>
-                          <td class="px-3 py-2">
-                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
-                              View Report
-                            </a>
-                          </td>
-                        </tr>
-                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25298</td>
-                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Emily Davis</td>
-                          <td class="px-3 py-2">
-                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
-                              View Report
-                            </a>
-                          </td>
-                        </tr>
-                        <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                          <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">PWES_25276</td>
-                          <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Robert Wilson</td>
-                          <td class="px-3 py-2">
-                            <a href="#" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
-                              View Report
-                            </a>
-                          </td>
-                        </tr>
+                        {% if recent_analyses %}
+                          {% for analysis in recent_analyses %}
+                          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">{{ analysis.name }}</td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-300">
+                              {% if analysis.individual %}
+                                {{ analysis.individual.identity or 'N/A' }}
+                              {% else %}
+                                Individual {{ analysis.individual_id or 'N/A' }}
+                              {% endif %}
+                            </td>
+                            <td class="px-3 py-2 text-gray-700 dark:text-gray-300">
+                              {% if analysis.completed_at %}
+                                {{ analysis.completed_at.strftime('%Y-%m-%d %H:%M') }}
+                              {% else %}
+                                N/A
+                              {% endif %}
+                            </td>
+                            <td class="px-3 py-2">
+                              {% if analysis.output_html %}
+                                <a href="{{ url_for('routes.serve_analysis_report', analysis_id=analysis.id) }}" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                                  View Report
+                                </a>
+                              {% else %}
+                                <span class="text-gray-500 dark:text-gray-400">No Report</span>
+                              {% endif %}
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        {% else %}
+                          <tr class="bg-white dark:bg-gray-800">
+                            <td colspan="4" class="px-3 py-4 text-center text-gray-500 dark:text-gray-400">
+                              No completed analyses found
+                            </td>
+                          </tr>
+                        {% endif %}
                       </tbody>
                     </table>
                   </div>
@@ -232,7 +277,7 @@
           			<div class="flex klsuaonrmcha vlaoethsnkma pb-6">
 								  <div class="flex ioajsklehsnm">
 		                <h3 class="text-base font-bold">Phenotype Distribution</h3>
-		                <span class="text-gray-500 text-sm">Most common phenotypes in analyses</span>
+		                <span class="text-gray-500 text-sm">HPO terms from current individuals (top 10)</span>
 		              </div>
 		            </div>
           			<div class="relative aspect-[4/2]">
@@ -250,11 +295,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // CPU Usage Gauge
     const cpuCtx = document.getElementById('CPUGaugeChart');
     if (cpuCtx) {
+        const cpuUsage = {{ system_metrics.cpu_usage }};
+        const cpuAvailable = 100 - cpuUsage;
+
         new Chart(cpuCtx, {
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [72, 28], // 72% used, 28% available
+                    data: [cpuUsage, cpuAvailable],
                     backgroundColor: ['rgb(59, 130, 246)', 'rgb(229, 231, 235)'],
                     borderWidth: 0,
                     cutout: '70%'
@@ -279,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.font = 'bold 20px Arial';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('72%', centerX, centerY - 10);
+                    ctx.fillText(cpuUsage + '%', centerX, centerY - 10);
 
                     ctx.fillStyle = 'rgb(107, 114, 128)';
                     ctx.font = '12px Arial';
@@ -293,11 +341,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Memory Usage Gauge
     const memoryCtx = document.getElementById('MemoryGaugeChart');
     if (memoryCtx) {
+        const memoryUsage = {{ system_metrics.memory_usage }};
+        const memoryAvailable = 100 - memoryUsage;
+        const memoryUsed = {{ system_metrics.memory_used }};
+        const memoryTotal = {{ system_metrics.memory_total }};
+
         new Chart(memoryCtx, {
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [78, 22], // 78% used, 22% available
+                    data: [memoryUsage, memoryAvailable],
                     backgroundColor: ['rgb(249, 115, 22)', 'rgb(229, 231, 235)'],
                     borderWidth: 0,
                     cutout: '70%'
@@ -322,12 +375,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.font = 'bold 20px Arial';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('78%', centerX, centerY - 10);
+                    ctx.fillText(memoryUsage + '%', centerX, centerY - 10);
 
                     ctx.fillStyle = 'rgb(107, 114, 128)';
                     ctx.font = '12px Arial';
                     ctx.fillText('Memory', centerX, centerY + 15);
-                    ctx.fillText('12.5/16 GB', centerX, centerY + 30);
+                    ctx.fillText(memoryUsed + '/' + memoryTotal + ' GB', centerX, centerY + 30);
                 }
             }]
         });
@@ -336,11 +389,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Storage Usage Gauge
     const storageCtx = document.getElementById('StorageGaugeChart');
     if (storageCtx) {
+        const storageUsage = {{ system_metrics.storage_usage }};
+        const storageAvailable = 100 - storageUsage;
+        const storageUsed = {{ system_metrics.storage_used }};
+        const storageTotal = {{ system_metrics.storage_total }};
+
         new Chart(storageCtx, {
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [45, 55], // 45% used, 55% available
+                    data: [storageUsage, storageAvailable],
                     backgroundColor: ['rgb(34, 197, 94)', 'rgb(229, 231, 235)'],
                     borderWidth: 0,
                     cutout: '70%'
@@ -365,12 +423,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.font = 'bold 20px Arial';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('45%', centerX, centerY - 10);
+                    ctx.fillText(storageUsage + '%', centerX, centerY - 10);
 
                     ctx.fillStyle = 'rgb(107, 114, 128)';
                     ctx.font = '12px Arial';
                     ctx.fillText('Storage', centerX, centerY + 15);
-                    ctx.fillText('450/1000 GB', centerX, centerY + 30);
+                    ctx.fillText(storageUsed + '/' + storageTotal + ' GB', centerX, centerY + 30);
                 }
             }]
         });
@@ -379,11 +437,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Docker Resources Gauge
     const dockerCtx = document.getElementById('DockerGaugeChart');
     if (dockerCtx) {
+        const dockerRunning = {{ system_metrics.docker_running }};
+        const dockerTotal = {{ system_metrics.docker_containers }};
+        const dockerStopped = dockerTotal - dockerRunning;
+
         new Chart(dockerCtx, {
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [1, 1], // 1 running, 1 available slot
+                    data: [dockerRunning, dockerStopped],
                     backgroundColor: ['rgb(168, 85, 247)', 'rgb(229, 231, 235)'],
                     borderWidth: 0,
                     cutout: '70%'
@@ -408,12 +470,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.font = 'bold 20px Arial';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('1', centerX, centerY - 10);
+                    ctx.fillText(dockerRunning, centerX, centerY - 10);
 
                     ctx.fillStyle = 'rgb(107, 114, 128)';
                     ctx.font = '12px Arial';
                     ctx.fillText('Containers', centerX, centerY + 15);
-                    ctx.fillText('Running', centerX, centerY + 30);
+                    ctx.fillText(dockerRunning + '/' + dockerTotal + ' Running', centerX, centerY + 30);
                 }
             }]
         });
@@ -422,17 +484,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Analysis Status Pie Chart
     const analysisCtx = document.getElementById('AnalysisStatusChart');
     if (analysisCtx) {
+        // Get data from template variables
+        const pendingCount = {{ pending_analyses or 0 }};
+        const runningCount = {{ running_analyses or 0 }};
+        const completedCount = {{ successful_analyses or 0 }};
+        const failedCount = {{ failed_analyses or 0 }};
+        const cancelledCount = {{ cancelled_analyses or 0 }};
+
+        // Filter out zero values for cleaner chart
+        const statusData = [
+            {label: 'Pending', count: pendingCount, color: 'rgb(234, 179, 8)'},
+            {label: 'Running', count: runningCount, color: 'rgb(59, 130, 246)'},
+            {label: 'Completed', count: completedCount, color: 'rgb(34, 197, 94)'},
+            {label: 'Failed', count: failedCount, color: 'rgb(239, 68, 68)'},
+            {label: 'Cancelled', count: cancelledCount, color: 'rgb(107, 114, 128)'}
+        ].filter(item => item.count > 0);
+
         new Chart(analysisCtx, {
             type: 'pie',
             data: {
-                labels: ['Pending', 'Running', 'Completed'],
+                labels: statusData.map(item => item.label),
                 datasets: [{
-                    data: [7, 3, 18],
-                    backgroundColor: [
-                        'rgb(234, 179, 8)',    // Yellow for Pending
-                        'rgb(59, 130, 246)',   // Blue for Running
-                        'rgb(34, 197, 94)'     // Green for Completed
-                    ],
+                    data: statusData.map(item => item.count),
+                    backgroundColor: statusData.map(item => item.color),
                     borderWidth: 2,
                     borderColor: '#fff',
                     hoverOffset: 4
@@ -554,48 +628,46 @@ document.addEventListener('DOMContentLoaded', function() {
     // Phenotype Histogram
     const phenotypeCtx = document.getElementById('PhenotypeHistogram');
     if (phenotypeCtx) {
+        // Get data from template variables
+        const phenotypeLabels = {{ phenotype_labels | tojson }};
+        const phenotypeCounts = {{ phenotype_counts | tojson }};
+
+        // Generate colors dynamically based on the number of phenotypes
+        const colors = [
+            'rgba(59, 130, 246, 0.8)',
+            'rgba(16, 185, 129, 0.8)',
+            'rgba(249, 115, 22, 0.8)',
+            'rgba(168, 85, 247, 0.8)',
+            'rgba(236, 72, 153, 0.8)',
+            'rgba(34, 197, 94, 0.8)',
+            'rgba(239, 68, 68, 0.8)',
+            'rgba(245, 158, 11, 0.8)',
+            'rgba(99, 102, 241, 0.8)',
+            'rgba(20, 184, 166, 0.8)'
+        ];
+
+        const borderColors = [
+            'rgb(59, 130, 246)',
+            'rgb(16, 185, 129)',
+            'rgb(249, 115, 22)',
+            'rgb(168, 85, 247)',
+            'rgb(236, 72, 153)',
+            'rgb(34, 197, 94)',
+            'rgb(239, 68, 68)',
+            'rgb(245, 158, 11)',
+            'rgb(99, 102, 241)',
+            'rgb(20, 184, 166)'
+        ];
+
         new Chart(phenotypeCtx, {
             type: 'bar',
             data: {
-                labels: [
-                    'Intellectual disability',
-                    'Seizures',
-                    'Muscular hypotonia',
-                    'Delayed speech',
-                    'Motor delay',
-                    'Ataxia',
-                    'Autism',
-                    'Microcephaly',
-                    'Heart defects',
-                    'Visual impairment'
-                ],
+                labels: phenotypeLabels,
                 datasets: [{
                     label: 'Frequency',
-                    data: [45, 38, 32, 28, 25, 22, 19, 16, 14, 12],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(249, 115, 22, 0.8)',
-                        'rgba(168, 85, 247, 0.8)',
-                        'rgba(236, 72, 153, 0.8)',
-                        'rgba(34, 197, 94, 0.8)',
-                        'rgba(239, 68, 68, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(99, 102, 241, 0.8)',
-                        'rgba(20, 184, 166, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgb(59, 130, 246)',
-                        'rgb(16, 185, 129)',
-                        'rgb(249, 115, 22)',
-                        'rgb(168, 85, 247)',
-                        'rgb(236, 72, 153)',
-                        'rgb(34, 197, 94)',
-                        'rgb(239, 68, 68)',
-                        'rgb(245, 158, 11)',
-                        'rgb(99, 102, 241)',
-                        'rgb(20, 184, 166)'
-                    ],
+                    data: phenotypeCounts,
+                    backgroundColor: colors.slice(0, phenotypeLabels.length),
+                    borderColor: borderColors.slice(0, phenotypeLabels.length),
                     borderWidth: 1
                 }]
             },
