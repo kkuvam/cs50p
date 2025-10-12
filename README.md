@@ -1,6 +1,6 @@
 # Web Exomiser
 
-Video Demo: 
+Video Demo: https://youtu.be/8JFphQ4I_9w
 
 A simple, browser-based tool that makes genetic variant analysis easy and approachable.  
 Upload a VCF file, run advanced genome interpretation powered by the Exomiser engine,  
