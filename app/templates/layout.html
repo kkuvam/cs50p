@@ -424,8 +424,8 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
       </main>
 
       <footer class="bg-white dark:bg-gray-800 p-6 shadow-xs">
-        <div class="flex flex-wrap klsuaonrmcha">
-          <div class="shrink max-w-full w-full lg:w-1/2 text-center lg:text-start">
+        <div class="flex flex-wrap klsuaonrmcha items-center justify-between">
+          <div class="shrink max-w-full w-full lg:w-1/3 text-center lg:text-start">
             <ul class="ps-0 space-x-3">
               <li class="inline-block">
                 <a class="hover:text-indigo-500" href="{{ url_for('routes.help_support') }}">Support</a>
@@ -438,8 +438,13 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
               </li>
             </ul>
           </div>
-          <div class="shrink max-w-full w-full lg:w-1/2 text-center lg:text-end">
-            <p class="mb-0 mt-3 md:mt-0">
+          <div class="shrink max-w-full w-full lg:w-1/3 text-center">
+            <p class="mb-0 mt-3 lg:mt-0 text-sm text-gray-600 dark:text-gray-400">
+              Made with <span class="text-red-500">❤️</span> by <a href="https://kunshkuvam.com" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-500">Kunsh Kuvam</a>
+            </p>
+          </div>
+          <div class="shrink max-w-full w-full lg:w-1/3 text-center lg:text-end">
+            <p class="mb-0 mt-3 lg:mt-0">
               <a href="{{ url_for('routes.index') }}" class="hover:text-indigo-500">Exomiser App</a> | All right reserved
             </p>
           </div>
