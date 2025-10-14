@@ -40,7 +40,7 @@ Backend functionality includes:
 - Receiving uploaded VCF files and validating their structure.  
 - Saving temporary copies of input files to a controlled directory.  
 - Writing job details into a database (schema defined in `app.sql`).  
-- Calling the Exomiser engine (inside its container) through subprocess commands or APIs.  
+- Calling the Exomiser engine (inside its container) through subprocess commands.  
 - Monitoring each analysis job and reporting progress back to the frontend.  
 - Formatting final results into JSON or tabular form for display.  
 
@@ -61,11 +61,6 @@ This ensures every environment (local or cloud) runs consistently, without manua
 
 ---
 
-### `.env.example`
-
-A template for environment variables required by the system. Copy this to `.env` and update settings such as port numbers, database credentials, and data directory paths before running the stack.
-
----
 
 ### `docker-compose.yml`
 
@@ -113,26 +108,21 @@ The project is distributed under the MIT License, allowing free use, modificatio
 
 ## Quick Start
 
-1. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit values such as database credentials, ports, and data paths.
 
-2. **Install Docker and Docker Compose**
+1. **Install Docker and Docker Compose**
 
    Make sure both are installed and running on your system.
 
-3. **Build and launch the app**
+2. **Build and launch the app**
    ```bash
    docker compose up --build
    ```
 
-4. **Open the web interface**
+3. **Open the web interface**
 
    Navigate to `http://localhost:5000` (or the port defined in your `.env` file).
 
-5. **Run an analysis**
+4. **Run an analysis**
 
    Upload a `.vcf` file, start the Exomiser analysis, and follow its progress on the dashboard.  
    Once complete, results will be displayed interactively in the browser.
