@@ -33,7 +33,7 @@ The design philosophy is minimalism — let users focus on their data rather tha
 
 #### **Backend**
 
-The backend is written in **Python**, using a lightweight web framework such as Flask or FastAPI to handle routing and data flow. It serves as the bridge between user input and the Exomiser analysis engine.
+The backend is written in **Python**, using a lightweight web framework such as Flask to handle routing and data flow. It serves as the bridge between user input and the Exomiser analysis engine.
 
 Backend functionality includes:
 
