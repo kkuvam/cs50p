@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from models import db, Individual, Analysis, TaskStatus, GenomeAssembly
 import os
+import shutil
 import subprocess
 import threading
 import time
@@ -388,13 +389,25 @@ def run_exomiser_analysis(analysis_id):
                 # Set results directory path
                 analysis.results_directory = "/opt/exomiser/ikdrc/results"
 
-                # Try to find and set the output HTML file
+                # Try to find and set the output HTML file, and move VCF into results/vcf/
                 results_dir = "/opt/exomiser/ikdrc/results"
+                vcf_subdir = os.path.join(results_dir, "vcf")
                 if os.path.exists(results_dir):
                     for filename in os.listdir(results_dir):
                         if filename.endswith(".html") and individual.identity in filename:
                             analysis.output_html = os.path.join(results_dir, filename)
                             analysis_outputs[analysis_id].append(f"Results saved to: {filename}")
+                            # Move output VCF into results/vcf/ (same stem as HTML)
+                            vcf_basename = os.path.splitext(filename)[0] + ".vcf"
+                            vcf_src = os.path.join(results_dir, vcf_basename)
+                            if os.path.isfile(vcf_src):
+                                os.makedirs(vcf_subdir, exist_ok=True)
+                                vcf_dst = os.path.join(vcf_subdir, vcf_basename)
+                                try:
+                                    shutil.move(vcf_src, vcf_dst)
+                                    analysis_outputs[analysis_id].append(f"VCF saved to: vcf/{vcf_basename}")
+                                except OSError as e:
+                                    analysis_outputs[analysis_id].append(f"Note: could not move VCF to vcf/: {e}")
                             break
             else:
                 analysis.status = TaskStatus.FAILED
