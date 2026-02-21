@@ -147,36 +147,41 @@
 </div>
 
 <script>
-// Auto-populate VCF filename when individual is selected
-document.getElementById('individual_id').addEventListener('change', function() {
-  const individualSelect = this;
-  const vcfFilenameInput = document.getElementById('vcf_filename');
+$(document).ready(function() {
+  // Select2 on individual dropdown: search within options (theme already loads Select2 in layout)
+  $('#individual_id').select2({
+    placeholder: 'Select Individual',
+    allowClear: true,
+    width: '100%'
+  });
 
-  if (individualSelect.value) {
-    // Get the selected individual's data
-    const selectedOption = individualSelect.options[individualSelect.selectedIndex];
-    const individualText = selectedOption.text; // Format: "P0001 - John Doe"
-    const individualIdentity = individualText.split(' - ')[0]; // Extract "P0001"
+  // Auto-populate VCF filename when individual is selected
+  $('#individual_id').on('change', function() {
+    const individualSelect = this;
+    const vcfFilenameInput = document.getElementById('vcf_filename');
 
-    // Make an AJAX request to get the individual's VCF filename
-    fetch(`/api/individual/${individualSelect.value}/vcf-info`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.vcf_filename) {
-          vcfFilenameInput.value = data.vcf_filename;
-        } else {
-          // Fallback: use identity-based filename if no VCF file exists
+    if (individualSelect.value) {
+      const selectedOption = individualSelect.options[individualSelect.selectedIndex];
+      const individualText = selectedOption.text;
+      const individualIdentity = individualText.split(' - ')[0];
+
+      fetch(`/api/individual/${individualSelect.value}/vcf-info`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.vcf_filename) {
+            vcfFilenameInput.value = data.vcf_filename;
+          } else {
+            vcfFilenameInput.value = `${individualIdentity}_sample.vcf`;
+          }
+        })
+        .catch(error => {
+          console.log('Could not fetch VCF info, using fallback');
           vcfFilenameInput.value = `${individualIdentity}_sample.vcf`;
-        }
-      })
-      .catch(error => {
-        console.log('Could not fetch VCF info, using fallback');
-        // Fallback: use identity-based filename
-        vcfFilenameInput.value = `${individualIdentity}_sample.vcf`;
-      });
-  } else {
-    vcfFilenameInput.value = '';
-  }
+        });
+    } else {
+      vcfFilenameInput.value = '';
+    }
+  });
 });
 
 // Ensure disabled fields are submitted with form
