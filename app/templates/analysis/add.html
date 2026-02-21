@@ -145,10 +145,13 @@
     </form>
   </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+{{ super() }}
 <script>
 $(document).ready(function() {
-  // Select2 on individual dropdown: search within options (theme already loads Select2 in layout)
+  // Select2 on individual dropdown: search within options (runs after layout loads jQuery/Select2)
   $('#individual_id').select2({
     placeholder: 'Select Individual',
     allowClear: true,
@@ -190,5 +193,4 @@ document.querySelector('form').addEventListener('submit', function() {
   document.getElementById('analysis_mode').disabled = false;
 });
 </script>
-
 {% endblock %}
