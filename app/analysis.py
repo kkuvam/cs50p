@@ -388,13 +388,40 @@ def run_exomiser_analysis(analysis_id):
                 # Set results directory path
                 analysis.results_directory = "/opt/exomiser/ikdrc/results"
 
-                # Try to find and set the output HTML file
+                # Find output HTML and VCF, rename both to match sample (identity) in same directory
                 results_dir = "/opt/exomiser/ikdrc/results"
+                sample_html = f"{individual.identity}-exomiser.html"
+                sample_vcf = f"{individual.identity}-exomiser.vcf"
                 if os.path.exists(results_dir):
                     for filename in os.listdir(results_dir):
                         if filename.endswith(".html") and individual.identity in filename:
-                            analysis.output_html = os.path.join(results_dir, filename)
-                            analysis_outputs[analysis_id].append(f"Results saved to: {filename}")
+                            html_src = os.path.join(results_dir, filename)
+                            stem = os.path.splitext(filename)[0]  # same stem for .vcf
+                            vcf_src = os.path.join(results_dir, stem + ".vcf")
+
+                            # Rename HTML to sample name if different
+                            if filename != sample_html:
+                                html_dst = os.path.join(results_dir, sample_html)
+                                try:
+                                    os.rename(html_src, html_dst)
+                                    html_src = html_dst
+                                    analysis_outputs[analysis_id].append(f"Results saved to: {sample_html}")
+                                except OSError as e:
+                                    analysis_outputs[analysis_id].append(f"Results at: {filename} (rename to {sample_html} failed: {e})")
+                            else:
+                                analysis_outputs[analysis_id].append(f"Results saved to: {filename}")
+
+                            analysis.output_html = html_src
+
+                            # Rename VCF to sample name in same directory if it exists
+                            if os.path.isfile(vcf_src):
+                                vcf_dst = os.path.join(results_dir, sample_vcf)
+                                try:
+                                    if vcf_src != vcf_dst:
+                                        os.rename(vcf_src, vcf_dst)
+                                    analysis_outputs[analysis_id].append(f"VCF saved to: {sample_vcf}")
+                                except OSError as e:
+                                    analysis_outputs[analysis_id].append(f"VCF at: {stem}.vcf (rename to {sample_vcf} failed: {e})")
                             break
             else:
                 analysis.status = TaskStatus.FAILED
