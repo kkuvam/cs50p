@@ -106,4 +106,4 @@ outputOptions:
     # Filename for the output files. Will default to {input-vcf-filename}-exomiser
     # outputFileName: Pfeiffer-hiphive-exome-PASS_ONLY
     #out-format options: HTML, JSON, TSV_GENE, TSV_VARIANT, VCF (default: HTML)
-    outputFormats: [HTML]
+    outputFormats: [HTML, VCF]
