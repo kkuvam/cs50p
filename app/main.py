@@ -7,6 +7,7 @@ from auth import auth_bp
 from routes import routes_bp
 from individual import individual_bp
 from analysis import analysis_bp
+from autohpo import autohpo_bp
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config.update(
@@ -35,7 +36,12 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(routes_bp)
 app.register_blueprint(individual_bp)
 app.register_blueprint(analysis_bp)
+app.register_blueprint(autohpo_bp)
 
+
+import hpo as hpo_module
+with app.app_context():
+    hpo_module.init_app()
 
 if __name__ == "__main__":
     # Create tables when running directly
