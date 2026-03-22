@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./compose/Dockerfile
       args:
-        - EXOMISER_VERSION=14.1.0
+        - EXOMISER_VERSION=15.0.0
     image: exomiser-ui:latest
     container_name: exomiser-ui
     volumes:
@@ -13,6 +13,7 @@ services:
       - ./app:/opt/app:ro
       # Persistent data volumes
       - ./instance:/opt/instance
+      - ./logs:/opt/logs
       - /Volumes/Extreme/Exomiser/data:/opt/exomiser/data
       - ./ikdrc:/opt/exomiser/ikdrc # vcf, phenopacket, results
       # Optional: mount configuration

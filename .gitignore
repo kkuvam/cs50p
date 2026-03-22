@@ -174,3 +174,7 @@ results
 
 # IKDRC
 ikdrc/*
+
+# Analysis log files
+logs/*
+!logs/.gitkeep
