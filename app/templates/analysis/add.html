@@ -317,6 +317,19 @@ $(document).ready(function() {
     $('#hpo_terms').val(JSON.stringify(selectedHpoTerms));
     $('#hpo-count').text(`(${selectedHpoTerms.length} selected)`);
   }
+
+  // Add selected AutoHPO terms to HPO list (needs access to selectedHpoTerms/refreshChosenList)
+  document.getElementById('autohpo-add-btn').addEventListener('click', function() {
+    document.querySelectorAll('.autohpo-check:checked').forEach(cb => {
+      const t = autohpoResults[parseInt(cb.value)];
+      if (!t || !t.hpo_id) return;
+      if (!selectedHpoTerms.find(x => x.id === t.hpo_id)) {
+        selectedHpoTerms.push({ id: t.hpo_id, label: t.name });
+      }
+    });
+    refreshChosenList();
+    document.getElementById('autohpo-modal').style.display = 'none';
+  });
 });
 
 // Ensure disabled fields are submitted with form
@@ -428,17 +441,5 @@ document.getElementById('autohpo-analyse-btn').addEventListener('click', functio
   });
 });
 
-// Add selected terms to HPO list
-document.getElementById('autohpo-add-btn').addEventListener('click', function() {
-  document.querySelectorAll('.autohpo-check:checked').forEach(cb => {
-    const t = autohpoResults[parseInt(cb.value)];
-    if (!t || !t.hpo_id) return;
-    if (!selectedHpoTerms.find(x => x.id === t.hpo_id)) {
-      selectedHpoTerms.push({ id: t.hpo_id, label: t.name });
-    }
-  });
-  refreshChosenList();
-  document.getElementById('autohpo-modal').style.display = 'none';
-});
 </script>
 {% endblock %}

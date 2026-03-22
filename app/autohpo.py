@@ -114,23 +114,28 @@ def _parse_terms(content: str) -> list[str]:
 def _call_llm(clinical_text: str) -> str:
     """Call local LLM via OpenAI-compatible API. Returns raw response content."""
     base_url = (os.environ.get("OPENAI_BASE_URL") or "http://localhost:1234/v1").rstrip("/")
-    model_id = os.environ.get("OPENAI_MODEL_ID") or "default"
+    model_id = (os.environ.get("OPENAI_MODEL_ID") or "").strip()
     api_key = os.environ.get("OPENAI_API_KEY") or "NA"
 
     url = f"{base_url}/chat/completions"
     payload = {
-        "model": model_id,
         "messages": [
             {"role": "system", "content": HPO_SYSTEM_MESSAGE},
             {"role": "user", "content": clinical_text},
         ],
         "temperature": 0.1,
         "max_tokens": 1024,
+        "stream": False,
     }
+    # Only include model if explicitly set — LM Studio uses whichever model is loaded
+    if model_id:
+        payload["model"] = model_id
+
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
-    resp = http_requests.post(url, json=payload, headers=headers, timeout=60)
-    resp.raise_for_status()
+    resp = http_requests.post(url, json=payload, headers=headers, timeout=180)
+    if not resp.ok:
+        raise RuntimeError(f"HTTP {resp.status_code}: {resp.text[:300]}")
     data = resp.json()
     return data["choices"][0]["message"]["content"]
 
