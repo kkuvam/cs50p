@@ -60,7 +60,6 @@ def analysis_add():
             name = request.form.get("name", "").strip()
             description = request.form.get("description", "").strip()
             individual_id = request.form.get("individual_id", type=int)
-            vcf_filename = request.form.get("vcf_filename", "").strip()
             genome_assembly = request.form.get("genome_assembly", "hg19")
             analysis_mode = request.form.get("analysis_mode", "FULL")
             frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
@@ -84,10 +83,6 @@ def analysis_add():
                 flash("Individual selection is required", "error")
                 return render_template("analysis/add.html", individuals=individuals, user=current_user)
 
-            if not vcf_filename:
-                flash("VCF filename is required", "error")
-                return render_template("analysis/add.html", individuals=individuals, user=current_user)
-
             if not hpo_terms:
                 flash("At least one HPO term is required", "error")
                 return render_template("analysis/add.html", individuals=individuals, user=current_user)
@@ -102,7 +97,6 @@ def analysis_add():
                 name=name,
                 description=description,
                 individual_id=individual_id,
-                vcf_filename=vcf_filename,
                 genome_assembly=genome_assembly_enum,
                 analysis_mode=analysis_mode,
                 frequency_threshold=frequency_threshold,
@@ -144,7 +138,6 @@ def analysis_edit(analysis_id):
             analysis.name = request.form.get("name", "").strip()
             analysis.description = request.form.get("description", "").strip() or None
             analysis.individual_id = request.form.get("individual_id", type=int)
-            analysis.vcf_filename = request.form.get("vcf_filename", "").strip()
             genome_assembly = request.form.get("genome_assembly", "hg19")
             analysis.genome_assembly = GenomeAssembly(genome_assembly)
             analysis.analysis_mode = request.form.get("analysis_mode", "FULL")
@@ -368,8 +361,6 @@ def run_exomiser_analysis(analysis_id):
             with open(phenopacket_file, 'w') as f:
                 f.write(phenopacket_content)
 
-            # Store the phenopacket path in the database for future reference
-            analysis.phenopacket_path = phenopacket_file
             db.session.commit()
 
             _append_log(analysis_id, f"Generated phenopacket: {phenopacket_file}")
@@ -419,9 +410,6 @@ def run_exomiser_analysis(analysis_id):
                 analysis.error_message = None
 
                 _append_log(analysis_id, "Analysis completed successfully!")
-
-                # Set results directory path
-                analysis.results_directory = "/opt/exomiser/ikdrc/results"
 
                 # Find output HTML and VCF, rename both to match sample (identity) in same directory
                 results_dir = "/opt/exomiser/ikdrc/results"

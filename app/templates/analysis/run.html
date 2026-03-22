@@ -194,7 +194,7 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VCF File</label>
         <div class="p-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
-          <span class="text-gray-900 dark:text-white text-sm">{{ analysis.vcf_filename }}</span>
+          <span class="text-gray-900 dark:text-white text-sm">{{ analysis.individual.vcf_filename or analysis.individual.vcf_file_path.split('/')[-1] }}</span>
         </div>
       </div>
 
