@@ -290,25 +290,11 @@ $(document).ready(function() {
     minimumInputLength: 2,
     width: '100%',
     ajax: {
-      url: 'https://ontology.jax.org/api/hp/search',
+      url: '/api/hpo/search',
       dataType: 'json',
       delay: 250,
-      data: params => ({ q: params.term, limit: -1 }),
-      processResults: data => {
-        const hits = Array.isArray(data) ? data : (data.terms || data.results || []);
-        return {
-          results: hits.map(t => {
-            const iri = t.id || t.curie || t.iri || t.identifier;
-            let id = iri;
-            const m = iri.match(/HP[_:]?(\d{7})/);
-            if (m) id = 'HP:' + m[1];
-            const label = t.label || t.term || t.name;
-            const desc = t.definition || t.def || t.description || '';
-            const short = desc.length > 90 ? desc.slice(0, 87) + '…' : desc;
-            return { id, text: `${id}: ${label}${short ? ' – ' + short : ''}` };
-          })
-        };
-      },
+      data: params => ({ q: params.term, limit: 20 }),
+      processResults: data => data,
       cache: true
     },
     templateSelection: () => ''
