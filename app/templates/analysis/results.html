@@ -89,7 +89,6 @@
                 <th scope="col" class="px-6 py-3">Analysis</th>
                 <th scope="col" class="px-6 py-3">Individual</th>
                 <th scope="col" class="px-6 py-3">Status</th>
-                <th scope="col" class="px-6 py-3">Progress</th>
                 <th scope="col" class="px-6 py-3">Completed</th>
                 <th scope="col" class="px-6 py-3">Results</th>
                 <th scope="col" class="px-6 py-3">Actions</th>
@@ -120,12 +119,6 @@
                   {% else %}
                   <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-900 dark:text-gray-300">{{ analysis.status.value }}</span>
                   {% endif %}
-                </td>
-                <td class="px-6 py-4">
-                  <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ analysis.progress_percent or 0 }}%"></div>
-                  </div>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ analysis.progress_percent or 0 }}%</span>
                 </td>
                 <td class="px-6 py-4 text-gray-900 dark:text-white">
                   {{ analysis.completed_at.strftime('%Y-%m-%d %H:%M') if analysis.completed_at else '-' }}

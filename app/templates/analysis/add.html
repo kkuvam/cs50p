@@ -79,13 +79,6 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="vcf_filename" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">VCF Filename *</label>
-            <input type="text" name="vcf_filename" id="vcf_filename" required
-                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                   placeholder="example.vcf">
-          </div>
-
-          <div>
             <label for="genome_assembly" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Genome Assembly</label>
             <select name="genome_assembly" id="genome_assembly" disabled
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed">
@@ -183,28 +176,6 @@ $(document).ready(function() {
     placeholder: 'Select Individual',
     allowClear: true,
     width: '100%'
-  });
-
-  // Auto-populate VCF filename when individual is selected
-  $('#individual_id').on('change', function() {
-    const individualSelect = this;
-    const vcfFilenameInput = document.getElementById('vcf_filename');
-
-    if (individualSelect.value) {
-      const selectedOption = individualSelect.options[individualSelect.selectedIndex];
-      const individualIdentity = selectedOption.text.split(' - ')[0];
-
-      fetch(`/api/individual/${individualSelect.value}/vcf-info`)
-        .then(response => response.json())
-        .then(data => {
-          vcfFilenameInput.value = data.vcf_filename || `${individualIdentity}_sample.vcf`;
-        })
-        .catch(() => {
-          vcfFilenameInput.value = `${individualIdentity}_sample.vcf`;
-        });
-    } else {
-      vcfFilenameInput.value = '';
-    }
   });
 
   // ── HPO term search ───────────────────────────────────────────────────────

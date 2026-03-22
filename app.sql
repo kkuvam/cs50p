@@ -49,31 +49,23 @@ CREATE INDEX ix_individuals_identity ON individuals (identity);
 -- Analyses table
 CREATE TABLE analyses (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    individual_id INTEGER NOT NULL,
+    hpo_terms TEXT,            -- JSON array: [{"id":"HP:0001250","label":"Seizures"},...]
+    phenopacket_yaml TEXT,     -- Generated GA4GH Phenopacket v1.0 YAML
     name VARCHAR(120) NOT NULL,
     description TEXT,
-    vcf_filename VARCHAR(255) NOT NULL,
-    vcf_file_path VARCHAR(500),
     genome_assembly VARCHAR(10) NOT NULL DEFAULT 'hg19', -- hg19, hg38
     analysis_mode VARCHAR(50) DEFAULT 'PASS_ONLY',
     frequency_threshold REAL DEFAULT 1.0,
     pathogenicity_threshold REAL DEFAULT 0.5,
-    hpo_terms TEXT,            -- JSON array: [{"id":"HP:0001250","label":"Seizures"},...]
-    phenopacket_yaml TEXT,     -- Generated GA4GH Phenopacket v1.0 YAML
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING, RUNNING, COMPLETED, FAILED, CANCELLED
-    progress_percent INTEGER DEFAULT 0,
-    results_directory VARCHAR(500),
     output_html VARCHAR(500),
-    output_tsv VARCHAR(500),
-    output_vcf VARCHAR(500),
-    phenopacket_path VARCHAR(500), -- Saved phenopacket file path
     started_at DATETIME,
     completed_at DATETIME,
     error_message TEXT,
-    log_file_path VARCHAR(500),
-    log TEXT, -- Complete process output log for debugging
+    log TEXT,                  -- Complete process output log for debugging
     is_deleted BOOLEAN NOT NULL DEFAULT 0,
     deleted_at DATETIME,
-    individual_id INTEGER NOT NULL,
     created_by INTEGER NOT NULL,
     updated_by INTEGER NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -168,14 +160,12 @@ INSERT INTO individuals (
 INSERT INTO analyses (
     name,
     description,
-    vcf_filename,
     genome_assembly,
     analysis_mode,
     frequency_threshold,
     pathogenicity_threshold,
     hpo_terms,
     status,
-    progress_percent,
     individual_id,
     created_by,
     updated_by,
@@ -184,14 +174,12 @@ INSERT INTO analyses (
 ) VALUES (
     'P0001 Epilepsy Analysis',
     'Genomic analysis for epilepsy individual P0001',
-    'P0001_sample.vcf',
     'hg38',
     'PASS_ONLY',
     0.01,
     0.7,
     '[{"id": "HP:0001250", "label": "Seizures"}]',
     'PENDING',
-    0,
     1,  -- individual P0001
     1,  -- created by admin
     1,  -- updated by admin

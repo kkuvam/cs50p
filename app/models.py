@@ -142,45 +142,35 @@ class Analysis(db.Model):
     __tablename__ = "analyses"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)  # User-friendly analysis name
-    description = db.Column(db.Text, nullable=True)   # Analysis description
-
-    # Analysis configuration
-    vcf_filename = db.Column(db.String(255), nullable=False)  # Original VCF filename
-    vcf_file_path = db.Column(db.String(500), nullable=True)  # Server file path
-    genome_assembly = db.Column(db.Enum(GenomeAssembly), nullable=False, default=GenomeAssembly.hg19)
-
-    # Analysis parameters
-    analysis_mode = db.Column(db.String(50), default='PASS_ONLY')  # PASS_ONLY, FULL, etc.
-    frequency_threshold = db.Column(db.Float, default=1.0)  # Max allele frequency
-    pathogenicity_threshold = db.Column(db.Float, default=0.5)  # Min pathogenicity score
-
-    # Analysis execution
-    status = db.Column(db.Enum(TaskStatus), nullable=False, default=TaskStatus.PENDING)
-    progress_percent = db.Column(db.Integer, default=0)  # 0-100
+    individual_id = db.Column(db.Integer, db.ForeignKey('individuals.id'), nullable=False)
 
     # HPO phenotypes for this specific analysis run
     hpo_terms = db.Column(db.JSON, nullable=True)  # [{"id": "HP:0001250", "label": "Seizures"}, ...]
     phenopacket_yaml = db.Column(db.Text, nullable=True)  # Generated YAML phenopacket content
 
-    # Results and outputs
-    results_directory = db.Column(db.String(500), nullable=True)  # Path to results folder
-    output_html = db.Column(db.String(500), nullable=True)  # HTML report path
-    phenopacket_path = db.Column(db.String(500), nullable=True)  # Saved phenopacket YAML file path
+    # Basic info
+    name = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
 
-    # Execution details
+    # Analysis configuration
+    genome_assembly = db.Column(db.Enum(GenomeAssembly), nullable=False, default=GenomeAssembly.hg19)
+    analysis_mode = db.Column(db.String(50), default='PASS_ONLY')  # PASS_ONLY, FULL, etc.
+    frequency_threshold = db.Column(db.Float, default=1.0)  # Max allele frequency
+    pathogenicity_threshold = db.Column(db.Float, default=0.5)  # Min pathogenicity score
+
+    # Execution state
+    status = db.Column(db.Enum(TaskStatus), nullable=False, default=TaskStatus.PENDING)
+    output_html = db.Column(db.String(500), nullable=True)  # HTML report path
     started_at = db.Column(db.DateTime, nullable=True)
     completed_at = db.Column(db.DateTime, nullable=True)
     error_message = db.Column(db.Text, nullable=True)  # Error details if failed
-    log_file_path = db.Column(db.String(500), nullable=True)  # Execution log path
     log = db.Column(db.Text, nullable=True)  # Complete process output log for debugging
 
     # Soft delete
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
 
-    # Relationships
-    individual_id = db.Column(db.Integer, db.ForeignKey('individuals.id'), nullable=False)
+    # Audit trail
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     updated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -304,7 +294,6 @@ class Analysis(db.Model):
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'vcf_filename': self.vcf_filename,
             'genome_assembly': self.genome_assembly.value if self.genome_assembly else None,
             'hpo_terms': self.hpo_terms,
             'hpo_count': self.hpo_count,
