@@ -98,31 +98,114 @@ INSERT INTO users (
     datetime('now')
 );
 
--- Create triggers to automatically update the updated_at timestamp
+-- ── History tables ───────────────────────────────────────────────────────
+-- Full row snapshot on every INSERT, UPDATE, DELETE.
+-- log and phenopacket_yaml excluded from analyses_history (large fields).
 
--- Trigger for users table
-CREATE TRIGGER update_users_updated_at
-    AFTER UPDATE ON users
-    FOR EACH ROW
-BEGIN
-    UPDATE users SET updated_at = datetime('now') WHERE id = NEW.id;
-END;
+CREATE TABLE users_history (
+    history_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    operation     VARCHAR(10) NOT NULL,   -- INSERT, UPDATE, DELETE
+    changed_at    DATETIME    NOT NULL,
+    id            INTEGER     NOT NULL,
+    email         VARCHAR(120),
+    password_hash VARCHAR(256),
+    full_name     VARCHAR(120),
+    is_active     BOOLEAN,
+    is_admin      BOOLEAN,
+    is_deleted    BOOLEAN,
+    deleted_at    DATETIME,
+    created_at    DATETIME,
+    updated_at    DATETIME
+);
+CREATE INDEX ix_users_history_id ON users_history (id);
 
--- Trigger for individuals table
-CREATE TRIGGER update_individuals_updated_at
-    AFTER UPDATE ON individuals
-    FOR EACH ROW
-BEGIN
-    UPDATE individuals SET updated_at = datetime('now') WHERE id = NEW.id;
-END;
+CREATE TABLE individuals_history (
+    history_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    operation       VARCHAR(10) NOT NULL,
+    changed_at      DATETIME    NOT NULL,
+    id              INTEGER     NOT NULL,
+    identity        VARCHAR(50),
+    full_name       VARCHAR(120),
+    sex             VARCHAR(10),
+    age_years       INTEGER,
+    age_months      INTEGER,
+    medical_history TEXT,
+    diagnosis       VARCHAR(255),
+    vcf_filename    VARCHAR(255),
+    vcf_file_path   VARCHAR(255),
+    is_deleted      BOOLEAN,
+    deleted_at      DATETIME,
+    created_by      INTEGER,
+    updated_by      INTEGER,
+    created_at      DATETIME,
+    updated_at      DATETIME
+);
+CREATE INDEX ix_individuals_history_id ON individuals_history (id);
 
--- Trigger for analyses table
-CREATE TRIGGER update_analyses_updated_at
-    AFTER UPDATE ON analyses
-    FOR EACH ROW
-BEGIN
-    UPDATE analyses SET updated_at = datetime('now') WHERE id = NEW.id;
-END;
+CREATE TABLE analyses_history (
+    history_id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    operation               VARCHAR(10) NOT NULL,
+    changed_at              DATETIME    NOT NULL,
+    id                      INTEGER     NOT NULL,
+    individual_id           INTEGER,
+    hpo_terms               TEXT,
+    name                    VARCHAR(120),
+    description             TEXT,
+    genome_assembly         VARCHAR(10),
+    analysis_mode           VARCHAR(50),
+    frequency_threshold     REAL,
+    pathogenicity_threshold REAL,
+    status                  VARCHAR(20),
+    output_html             VARCHAR(500),
+    output_vcf              VARCHAR(500),
+    started_at              DATETIME,
+    completed_at            DATETIME,
+    error_message           TEXT,
+    -- log excluded (large debug output)
+    -- phenopacket_yaml excluded (large YAML document)
+    is_deleted              BOOLEAN,
+    deleted_at              DATETIME,
+    created_by              INTEGER,
+    updated_by              INTEGER,
+    created_at              DATETIME,
+    updated_at              DATETIME
+);
+CREATE INDEX ix_analyses_history_id ON analyses_history (id);
+
+-- ── History triggers ─────────────────────────────────────────────────────
+-- Note: updated_at triggers removed — SQLAlchemy handles updated_at via
+-- onupdate=datetime.utcnow. Keeping them would cause updated_at
+-- discrepancies in history rows.
+
+-- users
+CREATE TRIGGER users_history_insert AFTER INSERT ON users FOR EACH ROW
+BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('INSERT', datetime('now'), NEW.id, NEW.email, NEW.password_hash, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at); END;
+
+CREATE TRIGGER users_history_update AFTER UPDATE ON users FOR EACH ROW
+BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('UPDATE', datetime('now'), NEW.id, NEW.email, NEW.password_hash, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at); END;
+
+CREATE TRIGGER users_history_delete AFTER DELETE ON users FOR EACH ROW
+BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('DELETE', datetime('now'), OLD.id, OLD.email, OLD.password_hash, OLD.full_name, OLD.is_active, OLD.is_admin, OLD.is_deleted, OLD.deleted_at, OLD.created_at, OLD.updated_at); END;
+
+-- individuals
+CREATE TRIGGER individuals_history_insert AFTER INSERT ON individuals FOR EACH ROW
+BEGIN INSERT INTO individuals_history (operation, changed_at, id, identity, full_name, sex, age_years, age_months, medical_history, diagnosis, vcf_filename, vcf_file_path, is_deleted, deleted_at, created_by, updated_by, created_at, updated_at) VALUES ('INSERT', datetime('now'), NEW.id, NEW.identity, NEW.full_name, NEW.sex, NEW.age_years, NEW.age_months, NEW.medical_history, NEW.diagnosis, NEW.vcf_filename, NEW.vcf_file_path, NEW.is_deleted, NEW.deleted_at, NEW.created_by, NEW.updated_by, NEW.created_at, NEW.updated_at); END;
+
+CREATE TRIGGER individuals_history_update AFTER UPDATE ON individuals FOR EACH ROW
+BEGIN INSERT INTO individuals_history (operation, changed_at, id, identity, full_name, sex, age_years, age_months, medical_history, diagnosis, vcf_filename, vcf_file_path, is_deleted, deleted_at, created_by, updated_by, created_at, updated_at) VALUES ('UPDATE', datetime('now'), NEW.id, NEW.identity, NEW.full_name, NEW.sex, NEW.age_years, NEW.age_months, NEW.medical_history, NEW.diagnosis, NEW.vcf_filename, NEW.vcf_file_path, NEW.is_deleted, NEW.deleted_at, NEW.created_by, NEW.updated_by, NEW.created_at, NEW.updated_at); END;
+
+CREATE TRIGGER individuals_history_delete AFTER DELETE ON individuals FOR EACH ROW
+BEGIN INSERT INTO individuals_history (operation, changed_at, id, identity, full_name, sex, age_years, age_months, medical_history, diagnosis, vcf_filename, vcf_file_path, is_deleted, deleted_at, created_by, updated_by, created_at, updated_at) VALUES ('DELETE', datetime('now'), OLD.id, OLD.identity, OLD.full_name, OLD.sex, OLD.age_years, OLD.age_months, OLD.medical_history, OLD.diagnosis, OLD.vcf_filename, OLD.vcf_file_path, OLD.is_deleted, OLD.deleted_at, OLD.created_by, OLD.updated_by, OLD.created_at, OLD.updated_at); END;
+
+-- analyses
+CREATE TRIGGER analyses_history_insert AFTER INSERT ON analyses FOR EACH ROW
+BEGIN INSERT INTO analyses_history (operation, changed_at, id, individual_id, hpo_terms, name, description, genome_assembly, analysis_mode, frequency_threshold, pathogenicity_threshold, status, output_html, output_vcf, started_at, completed_at, error_message, is_deleted, deleted_at, created_by, updated_by, created_at, updated_at) VALUES ('INSERT', datetime('now'), NEW.id, NEW.individual_id, NEW.hpo_terms, NEW.name, NEW.description, NEW.genome_assembly, NEW.analysis_mode, NEW.frequency_threshold, NEW.pathogenicity_threshold, NEW.status, NEW.output_html, NEW.output_vcf, NEW.started_at, NEW.completed_at, NEW.error_message, NEW.is_deleted, NEW.deleted_at, NEW.created_by, NEW.updated_by, NEW.created_at, NEW.updated_at); END;
+
+CREATE TRIGGER analyses_history_update AFTER UPDATE ON analyses FOR EACH ROW
+BEGIN INSERT INTO analyses_history (operation, changed_at, id, individual_id, hpo_terms, name, description, genome_assembly, analysis_mode, frequency_threshold, pathogenicity_threshold, status, output_html, output_vcf, started_at, completed_at, error_message, is_deleted, deleted_at, created_by, updated_by, created_at, updated_at) VALUES ('UPDATE', datetime('now'), NEW.id, NEW.individual_id, NEW.hpo_terms, NEW.name, NEW.description, NEW.genome_assembly, NEW.analysis_mode, NEW.frequency_threshold, NEW.pathogenicity_threshold, NEW.status, NEW.output_html, NEW.output_vcf, NEW.started_at, NEW.completed_at, NEW.error_message, NEW.is_deleted, NEW.deleted_at, NEW.created_by, NEW.updated_by, NEW.created_at, NEW.updated_at); END;
+
+CREATE TRIGGER analyses_history_delete AFTER DELETE ON analyses FOR EACH ROW
+BEGIN INSERT INTO analyses_history (operation, changed_at, id, individual_id, hpo_terms, name, description, genome_assembly, analysis_mode, frequency_threshold, pathogenicity_threshold, status, output_html, output_vcf, started_at, completed_at, error_message, is_deleted, deleted_at, created_by, updated_by, created_at, updated_at) VALUES ('DELETE', datetime('now'), OLD.id, OLD.individual_id, OLD.hpo_terms, OLD.name, OLD.description, OLD.genome_assembly, OLD.analysis_mode, OLD.frequency_threshold, OLD.pathogenicity_threshold, OLD.status, OLD.output_html, OLD.output_vcf, OLD.started_at, OLD.completed_at, OLD.error_message, OLD.is_deleted, OLD.deleted_at, OLD.created_by, OLD.updated_by, OLD.created_at, OLD.updated_at); END;
 
 -- Sample data (optional - remove if not needed)
 
