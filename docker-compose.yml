@@ -16,6 +16,7 @@ services:
       - ./logs:/opt/logs
       - /Volumes/Extreme/Exomiser/data:/opt/exomiser/data
       - ./ikdrc:/opt/exomiser/ikdrc # vcf, phenopacket, results
+      - ./data:/opt/data:ro         # HPO ontology data (hp.json)
       # Optional: mount configuration
       - ./compose/application.properties:/opt/exomiser/application.properties:ro
     ports:
@@ -38,6 +39,8 @@ services:
       - OPENAI_BASE_URL=${OPENAI_BASE_URL:-http://localhost:1234/v1}
       - OPENAI_MODEL_ID=${OPENAI_MODEL_ID:-default}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-NA}
+      # AutoHPO - In-memory HPO search
+      - HPO_JSON_PATH=${HPO_JSON_PATH:-/opt/data/hp.json}
       # AutoHPO - Meilisearch
       - MEILISEARCH_URL=${MEILISEARCH_URL:-http://localhost:7700}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-}

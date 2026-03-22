@@ -162,8 +162,9 @@ cython_debug/
 # Staff
 staff/*
 
-# Exomiser Data
+# Exomiser Data / HPO data
 data/*
+!data/.gitkeep
 
 # Exomiser resuls
 resuls/*

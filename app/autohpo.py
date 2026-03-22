@@ -12,7 +12,7 @@ import requests as http_requests
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
 
-from hpo import search_hpo_results
+from hpo import search_hpo_memory, search_hpo_results
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +138,36 @@ def _call_llm(clinical_text: str) -> str:
         raise RuntimeError(f"HTTP {resp.status_code}: {resp.text[:300]}")
     data = resp.json()
     return data["choices"][0]["message"]["content"]
+
+
+@autohpo_bp.route("/api/hpo/search")
+@login_required
+def hpo_search():
+    """
+    Local HPO search via Meilisearch — replaces external JAX API for Select2.
+    GET /api/hpo/search?q=seizure&limit=20
+    Returns Select2-compatible {results: [{id, text}]}
+    """
+    q = (request.args.get("q") or "").strip()
+    limit = min(int(request.args.get("limit") or 20), 50)
+    if not q:
+        return jsonify({"results": []})
+
+    hits = search_hpo_memory(q, limit=limit)
+    if not hits:
+        hits_ms, _ = search_hpo_results(q, limit=limit)
+        hits = hits_ms
+    results = []
+    for h in hits:
+        hpo_id = h.get("hpo_id") or ""
+        name = h.get("name") or ""
+        defn = h.get("definition") or ""
+        short = defn[:90] + "…" if len(defn) > 90 else defn
+        text = f"{hpo_id}: {name}"
+        if short:
+            text += f" – {short}"
+        results.append({"id": hpo_id, "text": text})
+    return jsonify({"results": results})
 
 
 @autohpo_bp.route("/api/autohpo/suggest", methods=["POST"])
