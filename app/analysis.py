@@ -11,7 +11,7 @@ from datetime import datetime
 analysis_bp = Blueprint("analysis", __name__)
 
 # File-based log storage — shared across all Gunicorn workers via the persistent volume
-_LOG_DIR = "/opt/instance"
+_LOG_DIR = "/opt/logs"
 
 
 def _log_path(analysis_id):
