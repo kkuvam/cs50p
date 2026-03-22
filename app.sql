@@ -60,6 +60,7 @@ CREATE TABLE analyses (
     pathogenicity_threshold REAL DEFAULT 0.5,
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING, RUNNING, COMPLETED, FAILED, CANCELLED
     output_html VARCHAR(500),
+    output_vcf VARCHAR(500),
     started_at DATETIME,
     completed_at DATETIME,
     error_message TEXT,

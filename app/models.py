@@ -161,6 +161,7 @@ class Analysis(db.Model):
     # Execution state
     status = db.Column(db.Enum(TaskStatus), nullable=False, default=TaskStatus.PENDING)
     output_html = db.Column(db.String(500), nullable=True)  # HTML report path
+    output_vcf = db.Column(db.String(500), nullable=True)   # VCF output path
     started_at = db.Column(db.DateTime, nullable=True)
     completed_at = db.Column(db.DateTime, nullable=True)
     error_message = db.Column(db.Text, nullable=True)  # Error details if failed
