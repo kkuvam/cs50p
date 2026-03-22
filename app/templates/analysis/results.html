@@ -17,6 +17,19 @@
           </div>
         </div>
 
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-6 dkslaoeyhnmj">
+              {% for category, message in messages %}
+                <div class="{% if category == 'error' %}bg-red-100 border-red-400 text-red-700{% else %}bg-green-100 border-green-400 text-green-700{% endif %} border px-4 py-3 rounded relative mb-2" role="alert">
+                  <span class="block sm:inline">{{ message }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
         <!-- Results Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 px-6">
           <!-- Total Analyses -->

@@ -1,4 +1,4 @@
-FROM amazoncorretto:21
+FROM amazoncorretto:21.0.10-al2023
 
 # Install system dependencies
 RUN yum update -y && \
@@ -6,7 +6,7 @@ RUN yum update -y && \
     python3 \
     python3-pip \
     python3-devel \
-    curl \
+    curl-minimal \
     unzip \
     shadow-utils \
     procps-ng \
@@ -21,7 +21,7 @@ RUN groupadd -g 1001 exomiser && \
     chown exomiser:exomiser /home/exomiser
 
 # Set environment variables
-ENV EXOMISER_VERSION=14.1.0
+ENV EXOMISER_VERSION=15.0.0
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -46,8 +46,7 @@ COPY --chown=exomiser:exomiser ./compose/analysis.yml /opt/exomiser/analysis.yml
 COPY --chown=exomiser:exomiser requirements.txt /opt/app/requirements.txt
 
 # Install Python dependencies
-RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip3 install --no-cache-dir -r /opt/app/requirements.txt
+RUN pip3 install --no-cache-dir -r /opt/app/requirements.txt
 
 # Copy application code
 COPY --chown=exomiser:exomiser ./app /opt/app
