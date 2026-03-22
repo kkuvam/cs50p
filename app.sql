@@ -10,6 +10,8 @@ CREATE TABLE users (
     full_name VARCHAR(120),
     is_active BOOLEAN NOT NULL DEFAULT 1,
     is_admin BOOLEAN NOT NULL DEFAULT 0,
+    is_deleted BOOLEAN NOT NULL DEFAULT 0,
+    deleted_at DATETIME,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -29,6 +31,8 @@ CREATE TABLE individuals (
     diagnosis VARCHAR(255),
     vcf_file_path VARCHAR(255) NOT NULL,
     vcf_filename VARCHAR(255), -- Original filename at upload time
+    is_deleted BOOLEAN NOT NULL DEFAULT 0,
+    deleted_at DATETIME,
     created_by INTEGER NOT NULL,
     updated_by INTEGER NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,6 +71,8 @@ CREATE TABLE analyses (
     error_message TEXT,
     log_file_path VARCHAR(500),
     log TEXT, -- Complete process output log for debugging
+    is_deleted BOOLEAN NOT NULL DEFAULT 0,
+    deleted_at DATETIME,
     individual_id INTEGER NOT NULL,
     created_by INTEGER NOT NULL,
     updated_by INTEGER NOT NULL,

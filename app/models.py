@@ -38,6 +38,8 @@ class User(UserMixin, db.Model):
     full_name = db.Column(db.String(120), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)   # flask-login uses is_active
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
@@ -84,6 +86,10 @@ class Individual(db.Model):
     vcf_filename = db.Column(db.String(255), nullable=True)  # Original VCF filename at upload
     vcf_file_path = db.Column(db.String(255), nullable=False)  # Path to uploaded VCF file in /opt/exomiser/ikdrc/vcf/
 
+    # Soft delete
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
     # Audit trail - track who created and last updated
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     updated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -91,11 +97,15 @@ class Individual(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relationships
-    # Analysis relationship
     analyses = db.relationship('Analysis', backref='individual', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Individual {self.identity}: {self.full_name or 'Unnamed'}>"
+
+    @property
+    def active_analyses(self):
+        """Return non-deleted analyses for this individual."""
+        return Analysis.query.filter_by(individual_id=self.id, is_deleted=False).all()
 
     @property
     def age_display(self):
@@ -164,6 +174,10 @@ class Analysis(db.Model):
     error_message = db.Column(db.Text, nullable=True)  # Error details if failed
     log_file_path = db.Column(db.String(500), nullable=True)  # Execution log path
     log = db.Column(db.Text, nullable=True)  # Complete process output log for debugging
+
+    # Soft delete
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
 
     # Relationships
     individual_id = db.Column(db.Integer, db.ForeignKey('individuals.id'), nullable=False)

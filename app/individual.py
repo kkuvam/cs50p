@@ -16,7 +16,7 @@ individual_bp = Blueprint("individual", __name__)
 @login_required
 def individual_list():
     """Individual list page - shows all individuals for all users"""
-    individuals = Individual.query.order_by(Individual.created_at.desc()).all()
+    individuals = Individual.query.filter_by(is_deleted=False).order_by(Individual.created_at.desc()).all()
     return render_template("individual/individuals.html", individuals=individuals, user=current_user)
 
 @individual_bp.route("/individual/add", methods=["GET", "POST"])
@@ -56,8 +56,8 @@ def individual_add():
             # At this point, we know vcf_file is not None and has a filename
             assert vcf_file is not None and vcf_file.filename is not None
 
-            # Check for duplicate identity across all users
-            existing = Individual.query.filter_by(identity=identity).first()
+            # Check for duplicate identity among active individuals
+            existing = Individual.query.filter_by(identity=identity, is_deleted=False).first()
             if existing:
                 flash(f"Individual with Identity '{identity}' already exists", "error")
                 return render_template("individual/add.html", user=current_user)
@@ -105,14 +105,14 @@ def individual_add():
 @login_required
 def individual_view(individual_id):
     """View individual details"""
-    individual = Individual.query.get_or_404(individual_id)
+    individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
     return render_template("individual/view.html", individual=individual, user=current_user)
 
 @individual_bp.route("/individual/<int:individual_id>/edit", methods=["GET", "POST"])
 @login_required
 def individual_edit(individual_id):
     """Edit existing individual"""
-    individual = Individual.query.get_or_404(individual_id)
+    individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
 
     if request.method == "POST":
         try:
@@ -148,8 +148,8 @@ def individual_edit(individual_id):
                 flash("Identity is required", "error")
                 return render_template("individual/edit.html", individual=individual, user=current_user)
 
-            # Check for duplicate identity (excluding current individual)
-            existing = Individual.query.filter_by(identity=individual.identity).filter(Individual.id != individual_id).first()
+            # Check for duplicate identity among active individuals (excluding current)
+            existing = Individual.query.filter_by(identity=individual.identity, is_deleted=False).filter(Individual.id != individual_id).first()
             if existing:
                 flash(f"Another individual with Identity '{individual.identity}' already exists", "error")
                 return render_template("individual/edit.html", individual=individual, user=current_user)
@@ -168,8 +168,8 @@ def individual_edit(individual_id):
 @individual_bp.route("/individual/<int:individual_id>/delete", methods=["GET", "POST"])
 @login_required
 def individual_delete(individual_id):
-    """Delete individual with confirmation"""
-    individual = Individual.query.get_or_404(individual_id)
+    """Soft-delete individual with confirmation"""
+    individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
 
     if request.method == "POST":
         try:
@@ -179,22 +179,17 @@ def individual_delete(individual_id):
                 flash("Please type 'DELETE' to confirm deletion", "error")
                 return render_template("individual/delete.html", individual=individual, user=current_user)
 
-            # Check if individual has associated analyses
-            analysis_count = Analysis.query.filter_by(individual_id=individual_id).count()
-            if analysis_count > 0:
-                flash(f"Cannot delete individual '{individual.identity}' - {analysis_count} analysis record(s) are associated with this individual", "error")
-                return render_template("individual/delete.html", individual=individual, user=current_user)
-
-            # Delete VCF file if it exists
-            if individual.vcf_file_path and os.path.exists(individual.vcf_file_path):
-                try:
-                    os.remove(individual.vcf_file_path)
-                except Exception as e:
-                    # Log the error but don't fail the deletion
-                    print(f"Warning: Could not delete VCF file {individual.vcf_file_path}: {str(e)}")
-
+            now = datetime.utcnow()
             identity_val = individual.identity
-            db.session.delete(individual)
+
+            # Cascade soft delete to all associated analyses
+            Analysis.query.filter_by(individual_id=individual_id, is_deleted=False).update(
+                {"is_deleted": True, "deleted_at": now}
+            )
+
+            # Soft delete the individual
+            individual.is_deleted = True
+            individual.deleted_at = now
             db.session.commit()
 
             flash(f"Individual '{identity_val}' deleted successfully", "success")
@@ -211,7 +206,7 @@ def individual_delete(individual_id):
 @login_required
 def download_vcf(individual_id):
     """Download VCF file for an individual"""
-    individual = Individual.query.get_or_404(individual_id)
+    individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
 
     # Check if VCF file exists
     if not individual.vcf_file_path or not os.path.exists(individual.vcf_file_path):
@@ -238,7 +233,7 @@ def download_vcf(individual_id):
 def get_individual_vcf_info(individual_id):
     """API endpoint to get individual's VCF filename for analysis form"""
     try:
-        individual = Individual.query.get_or_404(individual_id)
+        individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
         return {
             "vcf_filename": individual.vcf_filename,
             "identity": individual.identity,
