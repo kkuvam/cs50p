@@ -133,7 +133,7 @@ def analysis_edit(analysis_id):
             # Update fields (only allow editing if analysis is not running)
             if analysis.status in [TaskStatus.RUNNING]:
                 flash("Cannot edit running analysis", "error")
-                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
+                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
             analysis.name = request.form.get("name", "").strip()
             analysis.description = request.form.get("description", "").strip() or None
@@ -157,17 +157,17 @@ def analysis_edit(analysis_id):
             # Validation
             if not analysis.name:
                 flash("Analysis name is required", "error")
-                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
+                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
             if not analysis.individual_id:
                 flash("Individual selection is required", "error")
-                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
+                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
             # Verify individual exists
             individual = Individual.query.filter_by(id=analysis.individual_id, is_deleted=False).first()
             if not individual:
                 flash("Selected individual not found", "error")
-                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
+                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
             # Reset status to pending if it was failed/cancelled (allow restart via edit)
             if analysis.status in [TaskStatus.FAILED, TaskStatus.CANCELLED]:
@@ -181,9 +181,28 @@ def analysis_edit(analysis_id):
         except Exception as e:
             db.session.rollback()
             flash(f"Error updating analysis: {str(e)}", "error")
-            return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
+            return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
-    return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
+    return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
+
+@analysis_bp.route("/analysis/<int:analysis_id>/cancel", methods=["POST"])
+@login_required
+def analysis_cancel(analysis_id):
+    """Force-cancel a stuck RUNNING analysis."""
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
+
+    if analysis.status != TaskStatus.RUNNING:
+        flash("Only running analyses can be cancelled.", "warning")
+        return redirect(url_for("analysis.analysis_edit", analysis_id=analysis_id))
+
+    analysis.status = TaskStatus.CANCELLED
+    analysis.completed_at = datetime.utcnow()
+    analysis.error_message = "Manually cancelled by user after running for more than 24 hours."
+    analysis.updated_by = current_user.id
+    db.session.commit()
+
+    flash("Analysis has been cancelled.", "success")
+    return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
 
 @analysis_bp.route("/analysis/<int:analysis_id>/delete", methods=["GET", "POST"])
 @login_required
