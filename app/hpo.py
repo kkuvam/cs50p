@@ -20,25 +20,6 @@ _index = None
 _embedding_model = None
 
 
-def _configure_session(client) -> None:
-    try:
-        from requests.adapters import HTTPAdapter
-        from urllib3.util.retry import Retry
-
-        retry = Retry(
-            total=3,
-            backoff_factor=0.3,
-            status_forcelist=[502, 503, 504],
-            allowed_methods=["GET", "POST"],
-        )
-        adapter = HTTPAdapter(max_retries=retry, pool_connections=4, pool_maxsize=10)
-        session = client.http.session
-        session.mount("http://", adapter)
-        session.mount("https://", adapter)
-    except Exception as exc:
-        logger.warning("Could not configure Meilisearch session adapter: %s", exc)
-
-
 def init_app() -> None:
     """Initialise Meilisearch client and embedding model. Idempotent."""
     global _client, _index, _embedding_model
@@ -48,7 +29,6 @@ def init_app() -> None:
             url = (os.environ.get("MEILISEARCH_URL") or "http://localhost:7700").strip()
             api_key = (os.environ.get("MEILI_MASTER_KEY") or "").strip() or None
             _client = MeilisearchClient(url, api_key=api_key)
-            _configure_session(_client)
             _index = _client.index(HPO_INDEX_UID)
             health = _client.health()
             logger.info("Meilisearch health OK: %s — %s", url, health)

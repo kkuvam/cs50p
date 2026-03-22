@@ -178,3 +178,5 @@ ikdrc/*
 # Analysis log files
 logs/*
 !logs/.gitkeep
+ikdrc.zip
+instance.zip
