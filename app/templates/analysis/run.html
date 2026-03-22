@@ -310,6 +310,34 @@
     </div>
   </div>
   {% endif %}
+
+  <!-- Phenopacket YAML Card -->
+  {% if analysis.phenopacket_yaml %}
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-6">
+    <div class="flex items-center mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Generated Phenopacket YAML</h2>
+      <span class="ml-2 px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full dark:bg-orange-900 dark:text-orange-200">
+        Auto-generated
+      </span>
+    </div>
+
+    <div class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Phenopacket Configuration</span>
+        <button onclick="copyPhenopacketYaml()" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-orange-700 bg-orange-100 hover:bg-orange-200 dark:text-orange-200 dark:bg-orange-800 dark:hover:bg-orange-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          Copy
+        </button>
+      </div>
+      <pre id="phenopacketYamlContent" class="text-sm text-gray-800 dark:text-gray-200 overflow-auto max-h-64 whitespace-pre-wrap">{{ analysis.phenopacket_yaml }}</pre>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
 <script>
@@ -409,5 +437,17 @@ document.getElementById('download-html').addEventListener('click', function(e) {
   window.location.href = downloadUrl;
 });
 {% endif %}
+
+// Copy phenopacket YAML to clipboard
+function copyPhenopacketYaml() {
+  const content = document.getElementById('phenopacketYamlContent').textContent;
+  navigator.clipboard.writeText(content).then(function() {
+    const button = event.target.closest('button');
+    const original = button.innerHTML;
+    button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Copied!';
+    button.classList.add('bg-green-100', 'text-green-700');
+    setTimeout(() => { button.innerHTML = original; button.classList.remove('bg-green-100', 'text-green-700'); }, 2000);
+  }).catch(() => alert('Failed to copy YAML content'));
+}
 </script>
 {% endblock %}

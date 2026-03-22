@@ -86,12 +86,23 @@
         </div>
 
         <div>
-          <label for="age_years" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Age (years) <span class="text-red-500">*</span>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Age <span class="text-red-500">*</span>
           </label>
-          <input type="number" id="age_years" name="age_years" required min="0" max="150"
-                 placeholder="Age in years"
-                 class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <input type="number" id="age_years" name="age_years" min="0" max="150" value="0"
+                     placeholder="Years"
+                     class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Years</p>
+            </div>
+            <div class="flex-1">
+              <input type="number" id="age_months" name="age_months" min="0" max="11" value="0"
+                     placeholder="Months"
+                     class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Months (0–11)</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -124,45 +135,6 @@
                     placeholder="Relevant medical history, symptoms, or clinical notes"
                     class="w-full leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600"></textarea>
         </div>
-      </div>
-    </div>
-
-    <!-- HPO Phenotype Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-      <div class="flex items-center mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Phenotype (HPO Terms)</h2>
-        <span class="ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Required</span>
-      </div>
-
-      <div class="space-y-4">
-        <div>
-          <label for="hpo-search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Search HPO Terms <span class="text-red-500">*</span>
-          </label>
-          <select id="hpo-search" class="w-full"></select>
-          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Search and select Human Phenotype Ontology terms that describe the individual's phenotype</p>
-        </div>
-
-        <div>
-          <label for="chosen-list" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Selected HPO Terms
-          </label>
-          <select id="chosen-list" name="hpo_ids[]" multiple
-                  class="w-full h-48 leading-5 relative py-2 uajskeiolksb rounded-sm text-gray-800 bg-white border border-gray-300 overflow-x-auto focus:outline-hidden focus:border-gray-400 focus:ring-0 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-700 dark:focus:border-gray-600">
-          </select>
-          <input type="hidden" name="hpo_terms" id="hpo_terms">
-        </div>
-
-        <button type="button" id="remove-btn"
-                class="py-2 uajskeiolksb inline-flex layhetgsjdcb gap-2 yhansklopals mb-3 rounded-sm leading-5 text-gray-100 bg-red-500 border border-red-500 hover:text-white hover:bg-red-600 hover:ring-0 hover:border-red-600 focus:bg-red-600 focus:border-red-600 focus:outline-hidden focus:ring-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="inline-block me-1" width="1.5rem" height="1.5rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
-          Remove Selected
-        </button>
       </div>
     </div>
 
@@ -241,38 +213,21 @@
   </form>
 </div>
 
-<!-- Select2 CSS -->
-<link rel="stylesheet" href="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/css/select2.min.css') }}"/>
-
-<!-- jQuery (required for Select2) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Select2 JS -->
-<script src="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/js/select2.min.js') }}"></script>
-
 <script>
 // Disable Dropzone auto-discovery to prevent it from taking over the whole form
 if (typeof Dropzone !== 'undefined') {
     Dropzone.autoDiscover = false;
 }
-
-// Prevent any Dropzone from being applied to our form
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof Dropzone !== 'undefined') {
         Dropzone.autoDiscover = false;
-        // Remove any dropzone class that might have been added automatically
-        const forms = document.querySelectorAll('form[enctype="multipart/form-data"]');
-        forms.forEach(form => {
-            form.classList.remove('dropzone');
-        });
+        document.querySelectorAll('form[enctype="multipart/form-data"]').forEach(f => f.classList.remove('dropzone'));
     }
 });
 
-// Global function for file name display
 function displayFileName(input) {
     const fileInfo = document.getElementById('file-info');
     const fileName = document.getElementById('file-name');
-
     if (input.files && input.files[0]) {
         fileName.textContent = input.files[0].name;
         fileInfo.classList.remove('hidden');
@@ -280,162 +235,11 @@ function displayFileName(input) {
         fileInfo.classList.add('hidden');
     }
 }
-
-$(document).ready(function() {
-    // Initialize Select2 for HPO search with live API (copied from phenopacket.html)
-    $('#hpo-search').select2({
-        placeholder: 'Type at least two characters…',
-        minimumInputLength: 2,
-        width: '100%',
-        ajax: {
-            url: 'https://ontology.jax.org/api/hp/search',
-            dataType: 'json',
-            delay: 250,
-            data: params => ({ q: params.term, limit: -1 }),
-            processResults: data => {
-                const hits = Array.isArray(data) ? data : (data.terms || data.results || []);
-                return {
-                    results: hits.map(t => {
-                        const iri = t.id || t.curie || t.iri || t.identifier;
-                        let id = iri;
-                        const m = iri.match(/HP[_:]?(\d{7})/);
-                        if (m) id = 'HP:' + m[1];
-                        const label = t.label || t.term || t.name;
-                        const desc = t.definition || t.def || t.description || t.desc || '';
-                        const short = desc.length > 90 ? desc.slice(0, 87) + '…' : desc;
-                        return { id, text: `${id}: ${label} – ${short}` };
-                    })
-                };
-            },
-            cache: true
-        },
-        templateSelection: () => ''   // keep bar empty after selection
-    });
-
-    // Store selected HPO terms
-    let selectedHpoTerms = [];
-
-    // Handle HPO term selection (adapted from phenopacket.html)
-    $('#hpo-search').on('select2:select', function (e) {
-        const data = e.params.data;
-        const id = data.id;
-        const text = data.text;
-
-        // Extract label from the formatted text (format: "HP:XXXXXXX: Label – Description")
-        const labelMatch = text.match(/^HP:\d+:\s*([^–]+)/);
-        const label = labelMatch ? labelMatch[1].trim() : text;
-
-        // Check if already selected
-        if (!selectedHpoTerms.find(term => term.id === id)) {
-            selectedHpoTerms.push({ id: id, label: label });
-            updateChosenList();
-            updateHiddenField();
-        }
-
-        // Clear the search
-        $(this).val(null).trigger('change');
-    });
-
-    // Handle removal of selected terms
-    $('#remove-btn').on('click', function() {
-        $('#chosen-list option:selected').each(function() {
-            const termId = $(this).val();
-            selectedHpoTerms = selectedHpoTerms.filter(term => term.id !== termId);
-        });
-        updateChosenList();
-        updateHiddenField();
-    });
-
-    // Update the chosen list display
-    function updateChosenList() {
-        const $chosenList = $('#chosen-list');
-        $chosenList.empty();
-
-        selectedHpoTerms.forEach(term => {
-            $chosenList.append(
-                $('<option>', {
-                    value: term.id,
-                    text: term.id + ' - ' + term.label
-                })
-            );
-        });
-    }
-
-    // Update hidden field with JSON data
-    function updateHiddenField() {
-        $('#hpo_terms').val(JSON.stringify(selectedHpoTerms));
-    }
-
-    // Form validation
-    $('form').on('submit', function(e) {
-        if (selectedHpoTerms.length === 0) {
-            e.preventDefault();
-            alert('Please select at least one HPO term.');
-            return false;
-        }
-    });
-});
 </script>
 
 <style>
-/* Custom Select2 styling */
-.select2-container--default .select2-selection--single {
-    height: 48px;
-    padding: 12px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 24px;
-    padding-left: 0;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 46px;
-    right: 16px;
-}
-
-.select2-dropdown {
-    border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
-}
-
-/* Dark mode support */
-.dark .select2-container--default .select2-selection--single {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #fff;
-}
-
-.dark .select2-dropdown {
-    background-color: #374151;
-    border-color: #4b5563;
-}
-
-.dark .select2-search__field {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #fff;
-}
-
-.dark .select2-results__option {
-    color: #fff;
-}
-
-.dark .select2-results__option[aria-selected=true] {
-    background-color: #4f46e5;
-}
-
 /* Prevent Dropzone from taking over our form */
-form:not(.dropzone) {
-    border: none !important;
-    background: transparent !important;
-}
-
-/* Ensure our custom file upload area doesn't get Dropzone styling */
-.border-dashed {
-    border-style: dashed !important;
-}
+form:not(.dropzone) { border: none !important; background: transparent !important; }
+.border-dashed { border-style: dashed !important; }
 </style>
 {% endblock %}

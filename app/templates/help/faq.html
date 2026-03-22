@@ -38,7 +38,7 @@
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">How do I create an individual record?</h2>
-            <p class="text-gray-600 dark:text-gray-400">To create an individual record, navigate to the Individuals section and click "Add Individual". You'll need to provide basic information (name, age, sex), upload a VCF file, and add relevant HPO phenotype terms that describe the clinical features.</p>
+            <p class="text-gray-600 dark:text-gray-400">To create an individual record, navigate to the Individuals section and click "Add Individual". You'll need to provide basic information (name, age in years and months, sex) and upload a VCF file. HPO phenotype terms are configured when you create an analysis, not on the individual record.</p>
           </div>
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
@@ -48,7 +48,7 @@
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">How do I start an analysis?</h2>
-            <p class="text-gray-600 dark:text-gray-400">Once you have created an individual record with a VCF file and HPO terms, go to the Analysis section and click "New Analysis". Select the individual, configure analysis parameters (frequency threshold, pathogenicity threshold), and start the analysis.</p>
+            <p class="text-gray-600 dark:text-gray-400">Once you have created an individual record with a VCF file, go to the Analysis section and click "New Analysis". Select the individual, add the relevant HPO phenotype terms, configure analysis parameters (frequency threshold, pathogenicity threshold), and start the analysis.</p>
           </div>
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
@@ -73,7 +73,7 @@
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">Can I edit individual records after creation?</h2>
-            <p class="text-gray-600 dark:text-gray-400">Yes, you can edit individual records to update information such as medical history, diagnosis, or add/remove HPO terms. However, the VCF file cannot be changed once uploaded. If you need to use a different VCF file, create a new individual record.</p>
+            <p class="text-gray-600 dark:text-gray-400">Yes, you can edit individual records to update information such as medical history, diagnosis, or age. HPO terms are managed per analysis — edit the analysis to change phenotype terms. To upload a new VCF file, edit the individual record and upload the replacement file.</p>
           </div>
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
@@ -83,7 +83,7 @@
 
           <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-3">What is a phenopacket?</h2>
-            <p class="text-gray-600 dark:text-gray-400">A phenopacket is a standardized format for sharing phenotypic and clinical data. The application automatically generates phenopacket YAML files from your individual records, containing the subject information, HPO terms, and metadata that Exomiser uses for analysis.</p>
+            <p class="text-gray-600 dark:text-gray-400">A phenopacket is a standardized format for sharing phenotypic and clinical data. The application automatically generates phenopacket YAML files when an analysis runs, combining the individual's subject information with the analysis HPO terms and metadata that Exomiser needs. The generated YAML is displayed on the analysis run page.</p>
           </div>
 
           <div class="pb-6">

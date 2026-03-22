@@ -46,11 +46,11 @@ def register():
             flash("Email already registered", "warning")
             return redirect(url_for("auth.register"))
 
-        user = User(email=email, full_name=full_name, is_active=False)
+        user = User(email=email, full_name=full_name, is_active=True)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        flash("Registration successful. Please wait for admin approval before you can log in.", "success")
+        flash("Registration successful. You can now log in.", "success")
         return redirect(url_for("auth.login"))
 
     return render_template("register.html")

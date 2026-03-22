@@ -101,6 +101,33 @@
         </div>
       </div>
 
+      <!-- HPO Phenotype Terms -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Phenotype (HPO Terms) <span class="text-red-500 text-base">*</span></h2>
+
+        <div class="space-y-4">
+          <div>
+            <label for="hpo-search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search HPO Terms</label>
+            <select id="hpo-search" class="w-full"></select>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Type at least 2 characters to search Human Phenotype Ontology terms</p>
+          </div>
+
+          <div>
+            <label for="chosen-list" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Selected HPO Terms <span id="hpo-count" class="ml-1 text-xs text-gray-500">(0 selected)</span>
+            </label>
+            <select id="chosen-list" multiple
+                    class="w-full h-40 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"></select>
+            <input type="hidden" name="hpo_terms" id="hpo_terms">
+          </div>
+
+          <button type="button" id="remove-btn"
+                  class="py-1 px-3 inline-flex items-center gap-1 rounded-sm text-sm text-gray-100 bg-red-500 border border-red-500 hover:bg-red-600">
+            Remove Selected
+          </button>
+        </div>
+      </div>
+
       <!-- Analysis Parameters -->
       <div class="mb-8">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Analysis Parameters</h2>
@@ -169,6 +196,69 @@
 </div>
 
 <script>
+$(document).ready(function() {
+  // ── HPO term search ───────────────────────────────────────────────────────
+  let selectedHpoTerms = {{ analysis.hpo_terms | tojson if analysis.hpo_terms else '[]' }};
+
+  $('#hpo-search').select2({
+    placeholder: 'Type at least 2 characters…',
+    minimumInputLength: 2,
+    width: '100%',
+    ajax: {
+      url: 'https://ontology.jax.org/api/hp/search',
+      dataType: 'json',
+      delay: 250,
+      data: params => ({ q: params.term, limit: -1 }),
+      processResults: data => {
+        const hits = Array.isArray(data) ? data : (data.terms || data.results || []);
+        return {
+          results: hits.map(t => {
+            const iri = t.id || t.curie || t.iri || t.identifier;
+            let id = iri;
+            const m = iri.match(/HP[_:]?(\d{7})/);
+            if (m) id = 'HP:' + m[1];
+            const label = t.label || t.term || t.name;
+            const desc = t.definition || t.def || t.description || '';
+            const short = desc.length > 90 ? desc.slice(0, 87) + '…' : desc;
+            return { id, text: `${id}: ${label}${short ? ' – ' + short : ''}` };
+          })
+        };
+      },
+      cache: true
+    },
+    templateSelection: () => ''
+  });
+
+  $('#hpo-search').on('select2:select', function(e) {
+    const { id, text } = e.params.data;
+    const m = text.match(/^HP:\d+:\s*([^–]+)/);
+    const label = m ? m[1].trim() : text;
+    if (!selectedHpoTerms.find(t => t.id === id)) {
+      selectedHpoTerms.push({ id, label });
+      refreshChosenList();
+    }
+    $(this).val(null).trigger('change');
+  });
+
+  $('#remove-btn').on('click', function() {
+    $('#chosen-list option:selected').each(function() {
+      const termId = $(this).val();
+      selectedHpoTerms = selectedHpoTerms.filter(t => t.id !== termId);
+    });
+    refreshChosenList();
+  });
+
+  function refreshChosenList() {
+    const $list = $('#chosen-list').empty();
+    selectedHpoTerms.forEach(t => $list.append($('<option>', { value: t.id, text: `${t.id} — ${t.label}` })));
+    $('#hpo_terms').val(JSON.stringify(selectedHpoTerms));
+    $('#hpo-count').text(`(${selectedHpoTerms.length} selected)`);
+  }
+
+  // Pre-populate on load
+  refreshChosenList();
+});
+
 // Ensure disabled fields are submitted with form
 document.querySelector('form').addEventListener('submit', function() {
   document.getElementById('genome_assembly').disabled = false;
