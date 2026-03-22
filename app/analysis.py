@@ -327,6 +327,25 @@ def analysis_download(analysis_id):
     return send_file(results_file, as_attachment=True,
                     download_name=download_filename)
 
+@analysis_bp.route("/analysis/<int:analysis_id>/download_vcf")
+@login_required
+def analysis_download_vcf(analysis_id):
+    """Download the VCF output file"""
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
+
+    if analysis.status != TaskStatus.COMPLETED:
+        flash("Analysis not completed yet", "warning")
+        return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
+
+    if not analysis.output_vcf or not os.path.exists(analysis.output_vcf):
+        flash("VCF output file not found", "error")
+        return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
+
+    download_filename = f"{analysis.individual.identity}-exomiser.vcf.gz"
+    return send_file(analysis.output_vcf, as_attachment=True,
+                     download_name=download_filename,
+                     mimetype="application/gzip")
+
 def run_exomiser_analysis(analysis_id):
     """Background function to run Exomiser analysis with simple output storage"""
     from main import app  # Import here to avoid circular imports
@@ -411,40 +430,55 @@ def run_exomiser_analysis(analysis_id):
 
                 _append_log(analysis_id, "Analysis completed successfully!")
 
-                # Find output HTML and VCF, rename both to match sample (identity) in same directory
-                results_dir = "/opt/exomiser/ikdrc/results"
+                # Move HTML and VCF into a named subfolder: results/<analysis_name>/
+                results_base = "/opt/exomiser/ikdrc/results"
+                folder_name = analysis.name.replace(" ", "_")
+                output_dir = os.path.join(results_base, folder_name)
+                os.makedirs(output_dir, exist_ok=True)
+
                 sample_html = f"{individual.identity}-exomiser.html"
-                sample_vcf = f"{individual.identity}-exomiser.vcf"
-                if os.path.exists(results_dir):
-                    for filename in os.listdir(results_dir):
+                sample_vcf_gz = f"{individual.identity}-exomiser.vcf.gz"
+                sample_vcf_tbi = f"{individual.identity}-exomiser.vcf.gz.tbi"
+
+                # Derive expected VCF.gz filename from the individual's uploaded VCF path
+                vcf_stem = os.path.splitext(os.path.basename(individual.vcf_file_path))[0]
+                vcf_gz_src = os.path.join(results_base, vcf_stem + "-exomiser.vcf.gz")
+                vcf_tbi_src = vcf_gz_src + ".tbi"
+
+                if os.path.exists(results_base):
+                    for filename in os.listdir(results_base):
                         if filename.endswith(".html") and individual.identity in filename:
-                            html_src = os.path.join(results_dir, filename)
-                            stem = os.path.splitext(filename)[0]  # same stem for .vcf
-                            vcf_src = os.path.join(results_dir, stem + ".vcf")
+                            html_src = os.path.join(results_base, filename)
 
-                            # Rename HTML to sample name if different
-                            if filename != sample_html:
-                                html_dst = os.path.join(results_dir, sample_html)
+                            # Move HTML into subfolder with standard name
+                            html_dst = os.path.join(output_dir, sample_html)
+                            try:
+                                os.rename(html_src, html_dst)
+                                analysis.output_html = html_dst
+                                _append_log(analysis_id, f"HTML saved to: {html_dst}")
+                            except OSError as e:
+                                analysis.output_html = html_src
+                                _append_log(analysis_id, f"HTML move failed ({e}), staying at: {html_src}")
+
+                            # Move vcf.gz into subfolder with standard name
+                            if os.path.isfile(vcf_gz_src):
+                                vcf_gz_dst = os.path.join(output_dir, sample_vcf_gz)
                                 try:
-                                    os.rename(html_src, html_dst)
-                                    html_src = html_dst
-                                    _append_log(analysis_id, f"Results saved to: {sample_html}")
+                                    os.rename(vcf_gz_src, vcf_gz_dst)
+                                    analysis.output_vcf = vcf_gz_dst
+                                    _append_log(analysis_id, f"VCF saved to: {vcf_gz_dst}")
                                 except OSError as e:
-                                    _append_log(analysis_id, f"Results at: {filename} (rename to {sample_html} failed: {e})")
+                                    analysis.output_vcf = vcf_gz_src
+                                    _append_log(analysis_id, f"VCF move failed ({e}), staying at: {vcf_gz_src}")
+                                # Move .tbi index alongside the gz
+                                if os.path.isfile(vcf_tbi_src):
+                                    try:
+                                        os.rename(vcf_tbi_src, os.path.join(output_dir, sample_vcf_tbi))
+                                        _append_log(analysis_id, f"VCF index saved to: {sample_vcf_tbi}")
+                                    except OSError as e:
+                                        _append_log(analysis_id, f"VCF index move failed ({e})")
                             else:
-                                _append_log(analysis_id, f"Results saved to: {filename}")
-
-                            analysis.output_html = html_src
-
-                            # Rename VCF to sample name in same directory if it exists
-                            if os.path.isfile(vcf_src):
-                                vcf_dst = os.path.join(results_dir, sample_vcf)
-                                try:
-                                    if vcf_src != vcf_dst:
-                                        os.rename(vcf_src, vcf_dst)
-                                    _append_log(analysis_id, f"VCF saved to: {sample_vcf}")
-                                except OSError as e:
-                                    _append_log(analysis_id, f"VCF at: {stem}.vcf (rename to {sample_vcf} failed: {e})")
+                                _append_log(analysis_id, f"No VCF output found at: {vcf_gz_src}")
                             break
             else:
                 analysis.status = TaskStatus.FAILED
