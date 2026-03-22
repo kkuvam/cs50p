@@ -33,6 +33,13 @@ services:
       - PYTHONUNBUFFERED=1
       - GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}
       - GUNICORN_THREADS=${GUNICORN_THREADS:-4}
+      # AutoHPO - LLM
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-http://localhost:1234/v1}
+      - OPENAI_MODEL_ID=${OPENAI_MODEL_ID:-default}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-NA}
+      # AutoHPO - Meilisearch
+      - MEILISEARCH_URL=${MEILISEARCH_URL:-http://localhost:7700}
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       interval: 30s

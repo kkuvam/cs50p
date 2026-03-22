@@ -107,7 +107,17 @@
 
       <!-- HPO Phenotype Terms -->
       <div class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Phenotype (HPO Terms) <span class="text-red-500 text-base">*</span></h2>
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Phenotype (HPO Terms) <span class="text-red-500 text-base">*</span></h2>
+          <button type="button" id="autohpo-btn" disabled
+                  class="py-1 px-5 inline-flex items-center gap-1 rounded-sm text-sm text-gray-100 bg-purple-500 border border-purple-500 hover:bg-purple-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Select an individual first">
+            <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="1rem" height="1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            Auto HPO
+          </button>
+        </div>
 
         <div class="space-y-4">
           <div>
@@ -178,6 +188,63 @@
         </button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- AutoHPO Modal -->
+<div id="autohpo-modal" style="display:none; position:fixed; inset:0; z-index:50; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:0.5rem; box-shadow:0 20px 60px rgba(0,0,0,0.3); width:100%; max-width:42rem; margin:0 1rem; min-height:70vh; max-height:90vh; display:flex; flex-direction:column;" class="dark:bg-gray-800">
+    <!-- Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-bottom:1px solid #e5e7eb;" class="dark:border-gray-700 flex-shrink-0">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Auto HPO from Clinical History</h3>
+      <button type="button" id="autohpo-modal-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <!-- Body -->
+    <div style="padding:1rem 1.5rem; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:1rem;">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Diagnosis</label>
+        <textarea id="autohpo-diagnosis" rows="1"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white text-sm"
+                  placeholder="Primary diagnosis"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Medical History</label>
+        <textarea id="autohpo-history" rows="8"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white text-sm"
+                  placeholder="Clinical notes / medical history"></textarea>
+      </div>
+      <div id="autohpo-results" style="display:none;">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Suggested HPO Terms <span class="text-xs text-gray-500">(select terms to add)</span>
+        </label>
+        <div id="autohpo-checklist" style="max-height:18rem; overflow-y:auto; border:1px solid #e5e7eb; border-radius:0.375rem; padding:0.75rem;"></div>
+      </div>
+      <div id="autohpo-error" style="display:none;" class="bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 rounded-md px-4 py-3 text-sm"></div>
+    </div>
+    <!-- Footer -->
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; border-top:1px solid #e5e7eb; flex-shrink:0;" class="dark:border-gray-700">
+      <button type="button" id="autohpo-analyse-btn"
+              class="py-1 px-3 inline-flex items-center gap-1 rounded-sm text-sm text-gray-100 bg-purple-500 border border-purple-500 hover:bg-purple-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block" width="1rem" height="1rem" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span id="autohpo-analyse-label">Analyse</span>
+      </button>
+      <div style="display:flex; gap:0.5rem;">
+        <button type="button" id="autohpo-modal-close2"
+                class="py-1 px-3 inline-flex items-center gap-1 rounded-sm text-sm text-gray-100 bg-gray-500 border border-gray-500 hover:bg-gray-600">
+          Cancel
+        </button>
+        <button type="button" id="autohpo-add-btn" disabled
+                class="py-1 px-3 inline-flex items-center gap-1 rounded-sm text-sm text-gray-100 bg-indigo-500 border border-indigo-500 hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed">
+          Add Selected
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -256,6 +323,122 @@ $(document).ready(function() {
 document.querySelector('form').addEventListener('submit', function() {
   document.getElementById('genome_assembly').disabled = false;
   document.getElementById('analysis_mode').disabled = false;
+});
+
+// ── AutoHPO ────────────────────────────────────────────────────────────────
+let autohpoResults = [];
+
+// Enable Auto HPO button when individual is selected; pre-fill modal fields
+$('#individual_id').on('change', function() {
+  const individualId = $(this).val();
+  const btn = document.getElementById('autohpo-btn');
+  if (!individualId) {
+    btn.disabled = true;
+    btn.title = 'Select an individual first';
+    document.getElementById('autohpo-diagnosis').value = '';
+    document.getElementById('autohpo-history').value = '';
+    return;
+  }
+  fetch(`/api/individual/${individualId}/clinical-history`)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('autohpo-diagnosis').value = data.diagnosis || '';
+      document.getElementById('autohpo-history').value = data.medical_history || '';
+      btn.disabled = false;
+      btn.title = 'Auto-suggest HPO terms from clinical history';
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.title = 'Auto-suggest HPO terms from clinical history';
+    });
+});
+
+// Open/close modal
+document.getElementById('autohpo-btn').addEventListener('click', () => {
+  document.getElementById('autohpo-modal').style.display = 'flex';
+  document.getElementById('autohpo-results').style.display = 'none';
+  document.getElementById('autohpo-error').style.display = 'none';
+  document.getElementById('autohpo-add-btn').disabled = true;
+});
+['autohpo-modal-close', 'autohpo-modal-close2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    document.getElementById('autohpo-modal').style.display = 'none';
+  });
+});
+
+// Analyse button
+document.getElementById('autohpo-analyse-btn').addEventListener('click', function() {
+  const diagnosis = document.getElementById('autohpo-diagnosis').value.trim();
+  const history = document.getElementById('autohpo-history').value.trim();
+  if (!diagnosis && !history) return;
+
+  const label = document.getElementById('autohpo-analyse-label');
+  label.textContent = 'Analysing…';
+  this.disabled = true;
+  document.getElementById('autohpo-results').style.display = 'none';
+  document.getElementById('autohpo-error').style.display = 'none';
+
+  fetch('/api/autohpo/suggest', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ diagnosis, medical_history: history })
+  })
+  .then(r => r.json())
+  .then(data => {
+    label.textContent = 'Analyse';
+    document.getElementById('autohpo-analyse-btn').disabled = false;
+    if (data.error) {
+      document.getElementById('autohpo-error').textContent = data.error;
+      document.getElementById('autohpo-error').style.display = 'block';
+      return;
+    }
+    autohpoResults = data.terms || [];
+    const checklist = document.getElementById('autohpo-checklist');
+    checklist.innerHTML = '';
+    autohpoResults.forEach((t, i) => {
+      if (!t.hpo_id) return; // skip unmatched
+      const id = `autohpo-term-${i}`;
+      checklist.insertAdjacentHTML('beforeend', `
+        <label for="${id}" class="flex items-start gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded p-1">
+          <input type="checkbox" id="${id}" value="${i}" class="mt-0.5 autohpo-check">
+          <span class="text-sm">
+            <span class="font-medium text-gray-900 dark:text-white">${t.hpo_id}</span>
+            <span class="text-gray-600 dark:text-gray-400"> — ${t.name}</span>
+            ${t.definition ? `<br><span class="text-xs text-gray-400">${t.definition.slice(0, 100)}${t.definition.length > 100 ? '…' : ''}</span>` : ''}
+            <br><span class="text-xs text-purple-600 dark:text-purple-400">Extracted: ${t.term}</span>
+          </span>
+        </label>
+      `);
+    });
+    if (checklist.children.length === 0) {
+      checklist.innerHTML = '<p class="text-sm text-gray-500 py-2">No HPO terms found. Try editing the clinical text.</p>';
+    }
+    document.getElementById('autohpo-results').style.display = 'block';
+    document.getElementById('autohpo-add-btn').disabled = false;
+    checklist.addEventListener('change', () => {
+      const anyChecked = checklist.querySelectorAll('.autohpo-check:checked').length > 0;
+      document.getElementById('autohpo-add-btn').disabled = !anyChecked;
+    });
+  })
+  .catch(err => {
+    label.textContent = 'Analyse';
+    document.getElementById('autohpo-analyse-btn').disabled = false;
+    document.getElementById('autohpo-error').textContent = 'Request failed: ' + err.message;
+    document.getElementById('autohpo-error').style.display = 'block';
+  });
+});
+
+// Add selected terms to HPO list
+document.getElementById('autohpo-add-btn').addEventListener('click', function() {
+  document.querySelectorAll('.autohpo-check:checked').forEach(cb => {
+    const t = autohpoResults[parseInt(cb.value)];
+    if (!t || !t.hpo_id) return;
+    if (!selectedHpoTerms.find(x => x.id === t.hpo_id)) {
+      selectedHpoTerms.push({ id: t.hpo_id, label: t.name });
+    }
+  });
+  refreshChosenList();
+  document.getElementById('autohpo-modal').style.display = 'none';
 });
 </script>
 {% endblock %}

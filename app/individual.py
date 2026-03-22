@@ -228,6 +228,17 @@ def download_vcf(individual_id):
         return redirect(url_for('individual.individual_view', individual_id=individual_id))
 
 
+@individual_bp.route("/api/individual/<int:individual_id>/clinical-history")
+@login_required
+def get_individual_clinical_history(individual_id):
+    """Return diagnosis and medical_history for the AutoHPO modal."""
+    individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
+    return jsonify({
+        "diagnosis": individual.diagnosis or "",
+        "medical_history": individual.medical_history or "",
+    })
+
+
 @individual_bp.route("/api/individual/<int:individual_id>/vcf-info")
 @login_required
 def get_individual_vcf_info(individual_id):
