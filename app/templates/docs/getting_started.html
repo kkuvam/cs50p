@@ -51,7 +51,7 @@
                             <ul class="list-disc list-inside text-blue-700 dark:text-blue-300 space-y-1">
                                 <li>System requirements and account setup</li>
                                 <li>How to create individual records</li>
-                                <li>Uploading VCF files and adding phenotype data</li>
+                                <li>Uploading VCF files and configuring analyses with HPO phenotype terms</li>
                                 <li>Running and monitoring analyses</li>
                                 <li>Interpreting results</li>
                             </ul>
@@ -80,8 +80,8 @@
 
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Phenotype Data</h3>
                             <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">
-                                <li><strong>HPO Terms:</strong> Human Phenotype Ontology identifiers (HP:XXXXXXX)</li>
-                                <li><strong>Clinical Information:</strong> Medical history and diagnosis (optional)</li>
+                                <li><strong>HPO Terms:</strong> Human Phenotype Ontology identifiers (HP:XXXXXXX) — entered per analysis, not per individual</li>
+                                <li><strong>Clinical Information:</strong> Medical history and diagnosis (optional, on individual record)</li>
                             </ul>
                         </div>
                     </section>
@@ -139,11 +139,10 @@
                                         <li><strong>Identity:</strong> Unique identifier (e.g., P0001)</li>
                                         <li><strong>Full Name:</strong> Patient or sample name</li>
                                         <li><strong>Sex:</strong> Male, Female, Other, or Unknown</li>
-                                        <li><strong>Age:</strong> Age in years</li>
+                                        <li><strong>Age:</strong> Age in years and months (months optional, for infants)</li>
                                     </ul>
                                 </li>
                                 <li>Upload VCF file (see VCF Upload section below)</li>
-                                <li>Add phenotype information (see HPO Terms section below)</li>
                                 <li>Optionally add medical history and diagnosis</li>
                                 <li>Save the individual record</li>
                             </ol>
@@ -179,10 +178,10 @@
                             </ol>
                         </div>
 
-                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
-                            <h4 class="font-semibold text-red-800 dark:text-red-300 mb-2">⚠️ Important</h4>
-                            <p class="text-red-700 dark:text-red-300">
-                                VCF files cannot be changed after upload. If you need to use a different file, create a new individual record.
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">💡 Note</h4>
+                            <p class="text-blue-700 dark:text-blue-300">
+                                To upload a different VCF file, edit the individual record and upload the replacement file.
                             </p>
                         </div>
                     </section>
@@ -196,6 +195,11 @@
                             <p class="text-gray-700 dark:text-gray-300 mb-4">
                                 Human Phenotype Ontology (HPO) terms are standardized descriptions of phenotypic abnormalities. They help Exomiser prioritize variants based on clinical phenotypes.
                             </p>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
+                                <p class="text-blue-700 dark:text-blue-300">
+                                    <strong>Note:</strong> HPO terms are configured per analysis, not per individual. This allows different analyses for the same individual to use different phenotype sets.
+                                </p>
+                            </div>
                         </div>
 
                         <div class="mb-6">
@@ -209,14 +213,13 @@
                         </div>
 
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Adding HPO Terms</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Adding HPO Terms to an Analysis</h3>
                             <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
-                                <li>In the individual form, find the "HPO Terms" section</li>
-                                <li>Enter the HPO ID (e.g., HP:0001250)</li>
-                                <li>Enter the corresponding label (e.g., "Seizures")</li>
-                                <li>Click "Add HPO Term" to include it</li>
+                                <li>When creating or editing an analysis, find the "Phenotype (HPO Terms)" section</li>
+                                <li>Type at least 2 characters in the search box to search the HPO ontology</li>
+                                <li>Select a term from the dropdown — it appears in the selected list below</li>
                                 <li>Repeat for all relevant phenotypes</li>
-                                <li>Review the list before saving</li>
+                                <li>Use "Remove Selected" to remove any unwanted terms</li>
                             </ol>
                         </div>
 
@@ -238,9 +241,8 @@
                                 Before starting an analysis, ensure you have:
                             </p>
                             <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1 ml-4">
-                                <li>Created an individual record with VCF file</li>
-                                <li>Added relevant HPO terms</li>
-                                <li>Verified all information is correct</li>
+                                <li>Created an individual record with a VCF file uploaded</li>
+                                <li>Verified all individual information is correct</li>
                             </ul>
                         </div>
 

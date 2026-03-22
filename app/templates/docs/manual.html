@@ -57,13 +57,13 @@
                                     <ul class="space-y-1 text-sm">
                                         <li><a href="#individual-records" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Individual Records</a></li>
                                         <li><a href="#vcf-management" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">VCF File Management</a></li>
-                                        <li><a href="#phenotype-data" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Phenotype Data</a></li>
                                     </ul>
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Analysis</h3>
                                     <ul class="space-y-1 text-sm">
                                         <li><a href="#analysis-configuration" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Analysis Configuration</a></li>
+                                        <li><a href="#phenotype-data" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Phenotype Data (HPO Terms)</a></li>
                                         <li><a href="#batch-processing" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Batch Processing</a></li>
                                         <li><a href="#monitoring" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Monitoring & Results</a></li>
                                     </ul>
@@ -141,9 +141,8 @@
                                     <li><strong>Identity:</strong> Unique identifier (alphanumeric, max 50 characters)</li>
                                     <li><strong>Full Name:</strong> Individual's name (max 120 characters)</li>
                                     <li><strong>Sex:</strong> Biological sex (Male, Female, Other, Unknown)</li>
-                                    <li><strong>Age:</strong> Age in years (integer)</li>
+                                    <li><strong>Age:</strong> Age in years; optionally add months for infant records</li>
                                     <li><strong>VCF File:</strong> Genomic variant data file</li>
-                                    <li><strong>HPO Terms:</strong> At least one phenotype term</li>
                                 </ul>
                             </div>
 
@@ -184,14 +183,23 @@
                                 <h4 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">⚠️ File Limitations</h4>
                                 <ul class="list-disc list-inside text-yellow-700 dark:text-yellow-300 space-y-1">
                                     <li>Maximum file size: 500MB</li>
-                                    <li>VCF files cannot be replaced once uploaded</li>
+                                    <li>To replace a VCF file, edit the individual record and upload the new file</li>
                                     <li>File format validation occurs during upload</li>
                                 </ul>
                             </div>
                         </div>
 
+                    </section>
+
+                    <!-- Analysis Configuration -->
+                    <section id="analysis-configuration" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Analysis Configuration</h2>
+
                         <div class="mb-6">
-                            <h3 id="phenotype-data" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Phenotype Data Management</h3>
+                            <h3 id="phenotype-data" class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Phenotype Data (HPO Terms)</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                HPO terms are configured per analysis, not per individual. This allows the same individual to be analysed with different phenotype sets across multiple analyses.
+                            </p>
 
                             <div class="mb-4">
                                 <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">HPO Term Structure</h4>
@@ -211,16 +219,11 @@
                                 <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
                                     <li><strong>Specificity:</strong> Use the most specific HPO terms available</li>
                                     <li><strong>Completeness:</strong> Include all relevant phenotypes</li>
-                                    <li><strong>Accuracy:</strong> Verify HPO IDs and labels</li>
-                                    <li><strong>Updates:</strong> HPO terms can be modified after creation</li>
+                                    <li><strong>Accuracy:</strong> Verify HPO IDs and labels before running</li>
+                                    <li><strong>Updates:</strong> HPO terms can be modified by editing the analysis (before it is run)</li>
                                 </ul>
                             </div>
                         </div>
-                    </section>
-
-                    <!-- Analysis Configuration -->
-                    <section id="analysis-configuration" class="mb-8">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Analysis Configuration</h2>
 
                         <div class="mb-6">
                             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Analysis Parameters</h3>

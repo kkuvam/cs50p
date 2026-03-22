@@ -187,13 +187,13 @@ def index():
             Analysis.output_html.isnot(None)
         ).order_by(Analysis.completed_at.desc()).limit(5).all()
 
-        # Calculate phenotype distribution for the chart
+        # Calculate phenotype distribution for the chart (HPO terms now live on Analysis)
         phenotype_distribution = {}
-        all_individuals = Individual.query.all()
+        all_analyses = Analysis.query.all()
 
-        for individual in all_individuals:
-            if individual.hpo_terms and isinstance(individual.hpo_terms, list):
-                for term in individual.hpo_terms:
+        for analysis in all_analyses:
+            if analysis.hpo_terms and isinstance(analysis.hpo_terms, list):
+                for term in analysis.hpo_terms:
                     if isinstance(term, dict) and "label" in term:
                         label = term["label"]
                         phenotype_distribution[label] = phenotype_distribution.get(label, 0) + 1

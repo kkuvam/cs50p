@@ -1,6 +1,4 @@
 # Exomiser UI - Docker Compose Configuration
-version: '3.8'
-
 services:
   web:
     build:

@@ -73,19 +73,16 @@ class Individual(db.Model):
     identity = db.Column(db.String(50), nullable=False, index=True)  # e.g. P0001
     full_name = db.Column(db.String(120), nullable=False)
     sex = db.Column(db.Enum(SexType), nullable=False, default=SexType.UNKNOWN)
-    age_years = db.Column(db.Integer, nullable=False)  # Age in years
+    age_years = db.Column(db.Integer, nullable=False)   # Age in complete years
+    age_months = db.Column(db.Integer, nullable=False, default=0)  # Additional months (0–11)
 
     # Medical/Clinical information
     medical_history = db.Column(db.Text, nullable=True)  # Clinical notes
     diagnosis = db.Column(db.String(255), nullable=True)  # Primary diagnosis
 
-    # HPO (Human Phenotype Ontology) phenotypes - stored as JSON array
-    hpo_terms = db.Column(db.JSON, nullable=False)  # [{"id": "HP:0001250", "label": "Seizures"}, ...]
-
     # File storage paths
     vcf_filename = db.Column(db.String(255), nullable=True)  # Original VCF filename at upload
     vcf_file_path = db.Column(db.String(255), nullable=False)  # Path to uploaded VCF file in /opt/exomiser/ikdrc/vcf/
-    phenopacket_yaml = db.Column(db.Text, nullable=True)  # Generated YAML phenopacket content (updated after creation)
 
     # Audit trail - track who created and last updated
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -101,93 +98,13 @@ class Individual(db.Model):
         return f"<Individual {self.identity}: {self.full_name or 'Unnamed'}>"
 
     @property
-    def hpo_count(self):
-        """Return count of HPO terms for this individual."""
-        return len(self.hpo_terms) if self.hpo_terms else 0
-
-    def generate_phenopacket_yaml(self, creator="Exomiser Web Interface", genome_assembly="hg19", vcf_filename=None):
-        """
-        Generate phenopacket YAML content based on individual data.
-        This method replicates the JavaScript logic from phenopacket.html
-
-        Args:
-            creator: Creator attribution string
-            genome_assembly: Genome assembly version (hg19/hg38)
-            vcf_filename: VCF filename to include in phenopacket
-        """
-        import yaml
-        from datetime import datetime
-
-        # Convert sex to phenopacket format
-        sex_map = {
-            "MALE": "MALE",
-            "FEMALE": "FEMALE",
-            "OTHER": "OTHER_SEX",
-            "UNKNOWN": "UNKNOWN_SEX"
-        }
-
-        # Build phenotypic features from HPO terms
-        phenotypic_features = []
-        if self.hpo_terms and isinstance(self.hpo_terms, list):
-            for term in self.hpo_terms:
-                if isinstance(term, dict) and "id" in term:
-                    phenotypic_features.append({
-                        "type": {
-                            "id": term["id"],
-                            "label": term.get("label", "")
-                        }
-                    })
-
-        # Build the phenopacket object (following the exact format from exomiser-instructions.md)
-        phenopacket_obj = {
-            "id": self.identity,
-            "subject": {
-                "id": self.identity,
-                "sex": sex_map.get(self.sex.value if self.sex else "UNKNOWN", "UNKNOWN_SEX")
-            },
-            "phenotypicFeatures": phenotypic_features,
-            "metaData": {
-                "created": datetime.utcnow().isoformat() + "Z",
-                "createdBy": creator,
-                "resources": [
-                    {
-                        "id": "hp",
-                        "name": "human phenotype ontology",
-                        "url": "http://purl.obolibrary.org/obo/hp.owl",
-                        "version": "hp/releases/latest",
-                        "namespacePrefix": "HP",
-                        "iriPrefix": "http://purl.obolibrary.org/obo/HP_"
-                    }
-                ],
-                "phenopacketSchemaVersion": "1.0"
-            }
-        }
-
-        # Add age if available
-        if self.age_years:
-            phenopacket_obj["subject"]["age"] = {
-                "age": f"{self.age_years}Y"
-            }
-
-        # Add VCF file information if available - use actual file path from vcf_file_path
-        if self.vcf_file_path:
-            phenopacket_obj["htsFiles"] = [
-                {
-                    "uri": self.vcf_file_path,  # Use full path which includes timestamp
-                    "htsFormat": "VCF",
-                    "genomeAssembly": genome_assembly
-                }
-            ]
-
-        # Convert to YAML string
-        return yaml.dump(phenopacket_obj, default_flow_style=False, sort_keys=False)
-
-    def update_phenopacket_yaml(self, creator="Exomiser Web Interface"):
-        """
-        Generate and update the phenopacket_yaml field for this individual.
-        """
-        self.phenopacket_yaml = self.generate_phenopacket_yaml(creator)
-        return self.phenopacket_yaml
+    def age_display(self):
+        """Human-readable age string."""
+        if self.age_years == 0 and self.age_months:
+            return f"{self.age_months} month{'s' if self.age_months != 1 else ''}"
+        if self.age_months:
+            return f"{self.age_years}y {self.age_months}m"
+        return f"{self.age_years} year{'s' if self.age_years != 1 else ''}"
 
     def to_dict(self):
         """Convert individual to dictionary for API responses."""
@@ -197,13 +114,11 @@ class Individual(db.Model):
             'full_name': self.full_name,
             'sex': self.sex.value if self.sex else None,
             'age_years': self.age_years,
+            'age_months': self.age_months,
             'medical_history': self.medical_history,
             'diagnosis': self.diagnosis,
-            'hpo_terms': self.hpo_terms,
-            'hpo_count': self.hpo_count,
             'vcf_filename': self.vcf_filename,
             'vcf_file_path': self.vcf_file_path,
-            'phenopacket_yaml': self.phenopacket_yaml,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
@@ -234,10 +149,14 @@ class Analysis(db.Model):
     status = db.Column(db.Enum(TaskStatus), nullable=False, default=TaskStatus.PENDING)
     progress_percent = db.Column(db.Integer, default=0)  # 0-100
 
+    # HPO phenotypes for this specific analysis run
+    hpo_terms = db.Column(db.JSON, nullable=True)  # [{"id": "HP:0001250", "label": "Seizures"}, ...]
+    phenopacket_yaml = db.Column(db.Text, nullable=True)  # Generated YAML phenopacket content
+
     # Results and outputs
     results_directory = db.Column(db.String(500), nullable=True)  # Path to results folder
     output_html = db.Column(db.String(500), nullable=True)  # HTML report path
-    phenopacket_path = db.Column(db.String(500), nullable=True)  # Generated phenopacket YAML
+    phenopacket_path = db.Column(db.String(500), nullable=True)  # Saved phenopacket YAML file path
 
     # Execution details
     started_at = db.Column(db.DateTime, nullable=True)
@@ -255,6 +174,91 @@ class Analysis(db.Model):
 
     def __repr__(self):
         return f"<Analysis {self.name}: {self.status.value}>"
+
+    @property
+    def hpo_count(self):
+        """Return count of HPO terms for this analysis."""
+        return len(self.hpo_terms) if self.hpo_terms else 0
+
+    def generate_phenopacket_yaml(self, creator="Exomiser Web Interface"):
+        """
+        Generate GA4GH Phenopacket v1.0 YAML from this analysis and its linked individual.
+        Age is encoded as ISO 8601 duration (e.g. P2Y6M).
+        """
+        import yaml
+        from datetime import datetime as _dt
+
+        individual = self.individual
+
+        sex_map = {
+            "MALE": "MALE",
+            "FEMALE": "FEMALE",
+            "OTHER": "OTHER_SEX",
+            "UNKNOWN": "UNKNOWN_SEX",
+        }
+
+        phenotypic_features = []
+        if self.hpo_terms and isinstance(self.hpo_terms, list):
+            for term in self.hpo_terms:
+                if isinstance(term, dict) and "id" in term:
+                    phenotypic_features.append({
+                        "type": {
+                            "id": term["id"],
+                            "label": term.get("label", "")
+                        }
+                    })
+
+        phenopacket_obj = {
+            "id": individual.identity,
+            "subject": {
+                "id": individual.identity,
+                "sex": sex_map.get(
+                    individual.sex.value if individual.sex else "UNKNOWN", "UNKNOWN_SEX"
+                ),
+            },
+            "phenotypicFeatures": phenotypic_features,
+            "metaData": {
+                "created": _dt.utcnow().isoformat() + "Z",
+                "createdBy": creator,
+                "resources": [
+                    {
+                        "id": "hp",
+                        "name": "human phenotype ontology",
+                        "url": "http://purl.obolibrary.org/obo/hp.owl",
+                        "version": "hp/releases/latest",
+                        "namespacePrefix": "HP",
+                        "iriPrefix": "http://purl.obolibrary.org/obo/HP_",
+                    }
+                ],
+                "phenopacketSchemaVersion": "1.0",
+            },
+        }
+
+        # ISO 8601 age duration (P{Y}Y{M}M)
+        years = individual.age_years or 0
+        months = individual.age_months or 0
+        if years or months:
+            if months:
+                iso_age = f"P{years}Y{months}M"
+            else:
+                iso_age = f"P{years}Y"
+            phenopacket_obj["subject"]["age"] = {"age": iso_age}
+
+        if individual.vcf_file_path:
+            phenopacket_obj["htsFiles"] = [
+                {
+                    "uri": individual.vcf_file_path,
+                    "htsFormat": "VCF",
+                    "genomeAssembly": self.genome_assembly.value if self.genome_assembly else "hg19",
+                }
+            ]
+
+        return yaml.dump(phenopacket_obj, default_flow_style=False, sort_keys=False)
+
+    def update_phenopacket_yaml(self, creator="Exomiser Web Interface"):
+        """Generate and store phenopacket_yaml on this analysis."""
+        self.phenopacket_yaml = self.generate_phenopacket_yaml(creator)
+        return self.phenopacket_yaml
 
     @property
     def duration(self):
@@ -288,6 +292,8 @@ class Analysis(db.Model):
             'description': self.description,
             'vcf_filename': self.vcf_filename,
             'genome_assembly': self.genome_assembly.value if self.genome_assembly else None,
+            'hpo_terms': self.hpo_terms,
+            'hpo_count': self.hpo_count,
             'status': self.status.value,
             'progress_percent': self.progress_percent,
             'individual_id': self.individual_id,

@@ -29,20 +29,10 @@ def individual_add():
             identity = request.form.get("identity", "").strip()
             full_name = request.form.get("full_name", "").strip()
             sex = request.form.get("sex", "UNKNOWN")
-            age_years = request.form.get("age_years", type=int)
+            age_years = request.form.get("age_years", type=int) or 0
+            age_months = request.form.get("age_months", type=int) or 0
             medical_history = request.form.get("medical_history", "").strip()
             diagnosis = request.form.get("diagnosis", "").strip()
-
-            # Process HPO terms (expecting JSON string or form array)
-            hpo_terms = request.form.get("hpo_terms")
-            if hpo_terms:
-                try:
-                    import json
-                    hpo_terms = json.loads(hpo_terms) if isinstance(hpo_terms, str) else hpo_terms
-                except (json.JSONDecodeError, TypeError):
-                    hpo_terms = []
-            else:
-                hpo_terms = []
 
             # Validation for required fields
             errors = []
@@ -50,10 +40,8 @@ def individual_add():
                 errors.append("Identity is required")
             if not full_name:
                 errors.append("Full Name is required")
-            if not age_years:
-                errors.append("Age is required")
-            if not hpo_terms or len(hpo_terms) == 0:
-                errors.append("At least one HPO term is required")
+            if age_years == 0 and age_months == 0:
+                errors.append("Age is required (years and/or months)")
 
             # Handle VCF file upload (required)
             vcf_file = request.files.get('vcf_file')
@@ -86,24 +74,19 @@ def individual_add():
             # Save the file
             vcf_file.save(vcf_file_path)
 
-            # Create individual with all required fields (phenopacket_yaml will be generated next)
             individual = Individual(
                 identity=identity,
                 full_name=full_name,
                 sex=SexType(sex),
                 age_years=age_years,
+                age_months=age_months,
                 medical_history=medical_history or None,
                 diagnosis=diagnosis or None,
-                hpo_terms=hpo_terms,
-                vcf_filename=vcf_file.filename,  # Store original filename
+                vcf_filename=vcf_file.filename,
                 vcf_file_path=vcf_file_path,
-                phenopacket_yaml=None,  # Will be generated next using update_phenopacket_yaml()
                 created_by=current_user.id,
                 updated_by=current_user.id
             )
-
-            # Generate YAML phenopacket using the individual's method
-            individual.update_phenopacket_yaml("Exomiser Web Interface")
 
             db.session.add(individual)
             db.session.commit()
@@ -137,20 +120,10 @@ def individual_edit(individual_id):
             individual.identity = request.form.get("identity", "").strip()
             individual.full_name = request.form.get("full_name", "").strip() or None
             individual.sex = SexType(request.form.get("sex", "UNKNOWN"))
-            individual.age_years = request.form.get("age_years", type=int)
+            individual.age_years = request.form.get("age_years", type=int) or 0
+            individual.age_months = request.form.get("age_months", type=int) or 0
             individual.medical_history = request.form.get("medical_history", "").strip() or None
             individual.diagnosis = request.form.get("diagnosis", "").strip() or None
-
-            # Process HPO terms
-            hpo_terms = request.form.get("hpo_terms")
-            if hpo_terms:
-                try:
-                    import json
-                    individual.hpo_terms = json.loads(hpo_terms) if isinstance(hpo_terms, str) else hpo_terms
-                except (json.JSONDecodeError, TypeError):
-                    individual.hpo_terms = []
-            else:
-                individual.hpo_terms = []
 
             # Handle VCF file upload (optional)
             vcf_file = request.files.get("vcf_file")
@@ -233,40 +206,6 @@ def individual_delete(individual_id):
             return render_template("individual/delete.html", individual=individual, user=current_user)
 
     return render_template("individual/delete.html", individual=individual, user=current_user)
-
-@individual_bp.route("/individual/<int:individual_id>/analysis", methods=["POST"])
-@login_required
-def individual_analysis(individual_id):
-    """Handle analysis form submission with generated YAML"""
-    try:
-        individual = Individual.query.get(individual_id)
-        if not individual:
-            flash("Individual not found", "error")
-            return redirect(url_for('individual.individual_list'))
-
-        # Get the generated YAML from the form
-        phenopacket_yaml = request.form.get('phenopacket_yaml')
-
-        if not phenopacket_yaml:
-            flash("No phenopacket YAML was generated", "error")
-            return redirect(url_for('individual.individual_view', individual_id=individual_id))
-
-        # Update the individual with the generated YAML
-        individual.phenopacket_yaml = phenopacket_yaml
-        individual.last_updater = current_user
-        individual.updated_at = datetime.utcnow()
-
-        db.session.commit()
-
-        flash(f"Analysis phenopacket generated successfully for {individual.identity}", "success")
-
-        # Redirect to a results page or back to view
-        return redirect(url_for('individual.individual_view', individual_id=individual_id))
-
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Error generating analysis: {str(e)}", "error")
-        return redirect(url_for('individual.individual_view', individual_id=individual_id))
 
 @individual_bp.route("/individual/<int:individual_id>/download_vcf")
 @login_required

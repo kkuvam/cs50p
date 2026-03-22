@@ -24,12 +24,11 @@ CREATE TABLE individuals (
     full_name VARCHAR(120) NOT NULL,
     sex VARCHAR(10) NOT NULL DEFAULT 'UNKNOWN', -- MALE, FEMALE, OTHER, UNKNOWN
     age_years INTEGER NOT NULL,
+    age_months INTEGER NOT NULL DEFAULT 0,      -- Additional months (0-11)
     medical_history TEXT,
     diagnosis VARCHAR(255),
-    hpo_terms TEXT NOT NULL, -- JSON array stored as TEXT
     vcf_file_path VARCHAR(255) NOT NULL,
     vcf_filename VARCHAR(255), -- Original filename at upload time
-    phenopacket_yaml TEXT,
     created_by INTEGER NOT NULL,
     updated_by INTEGER NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -54,13 +53,15 @@ CREATE TABLE analyses (
     analysis_mode VARCHAR(50) DEFAULT 'PASS_ONLY',
     frequency_threshold REAL DEFAULT 1.0,
     pathogenicity_threshold REAL DEFAULT 0.5,
+    hpo_terms TEXT,            -- JSON array: [{"id":"HP:0001250","label":"Seizures"},...]
+    phenopacket_yaml TEXT,     -- Generated GA4GH Phenopacket v1.0 YAML
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING, RUNNING, COMPLETED, FAILED, CANCELLED
     progress_percent INTEGER DEFAULT 0,
     results_directory VARCHAR(500),
     output_html VARCHAR(500),
     output_tsv VARCHAR(500),
     output_vcf VARCHAR(500),
-    phenopacket_path VARCHAR(500),
+    phenopacket_path VARCHAR(500), -- Saved phenopacket file path
     started_at DATETIME,
     completed_at DATETIME,
     error_message TEXT,
@@ -116,12 +117,12 @@ BEGIN
     UPDATE individuals SET updated_at = datetime('now') WHERE id = NEW.id;
 END;
 
--- Trigger for tasks table
-CREATE TRIGGER update_tasks_updated_at
-    AFTER UPDATE ON tasks
+-- Trigger for analyses table
+CREATE TRIGGER update_analyses_updated_at
+    AFTER UPDATE ON analyses
     FOR EACH ROW
 BEGIN
-    UPDATE tasks SET updated_at = datetime('now') WHERE id = NEW.id;
+    UPDATE analyses SET updated_at = datetime('now') WHERE id = NEW.id;
 END;
 
 -- Sample data (optional - remove if not needed)
@@ -132,9 +133,9 @@ INSERT INTO individuals (
     full_name,
     sex,
     age_years,
+    age_months,
     medical_history,
     diagnosis,
-    hpo_terms,
     vcf_file_path,
     vcf_filename,
     created_by,
@@ -146,9 +147,9 @@ INSERT INTO individuals (
     'John Doe',
     'MALE',
     35,
+    0,
     'Individual with seizure disorder',
     'Epilepsy',
-    '[{"id": "HP:0001250", "label": "Seizures"}]',
     '/opt/exomiser/ikdrc/vcf/P0001_sample.vcf',
     'P0001_sample.vcf',
     1,  -- created by admin
@@ -157,8 +158,8 @@ INSERT INTO individuals (
     datetime('now')
 );
 
--- Insert a sample task (created by admin user)
-INSERT INTO tasks (
+-- Insert a sample analysis (created by admin user)
+INSERT INTO analyses (
     name,
     description,
     vcf_filename,
@@ -166,6 +167,7 @@ INSERT INTO tasks (
     analysis_mode,
     frequency_threshold,
     pathogenicity_threshold,
+    hpo_terms,
     status,
     progress_percent,
     individual_id,
@@ -181,6 +183,7 @@ INSERT INTO tasks (
     'PASS_ONLY',
     0.01,
     0.7,
+    '[{"id": "HP:0001250", "label": "Seizures"}]',
     'PENDING',
     0,
     1,  -- individual P0001

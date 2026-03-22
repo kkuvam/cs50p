@@ -10,8 +10,32 @@ from datetime import datetime
 
 analysis_bp = Blueprint("analysis", __name__)
 
-# Global dictionary to store real-time output for analyses
-analysis_outputs = {}
+# File-based log storage — shared across all Gunicorn workers via the persistent volume
+_LOG_DIR = "/opt/instance"
+
+
+def _log_path(analysis_id):
+    return os.path.join(_LOG_DIR, f"analysis_{analysis_id}.log")
+
+
+def _append_log(analysis_id, line):
+    os.makedirs(_LOG_DIR, exist_ok=True)
+    with open(_log_path(analysis_id), "a") as f:
+        f.write(line + "\n")
+
+
+def _read_log(analysis_id):
+    path = _log_path(analysis_id)
+    if not os.path.exists(path):
+        return []
+    with open(path, "r") as f:
+        return [l.rstrip("\n") for l in f if l.strip()]
+
+
+def _delete_log(analysis_id):
+    path = _log_path(analysis_id)
+    if os.path.exists(path):
+        os.remove(path)
 
 # ===== ANALYSIS CRUD ROUTES =====
 @analysis_bp.route("/analyses")
@@ -30,6 +54,8 @@ def analysis_add():
 
     if request.method == "POST":
         try:
+            import json as _json
+
             # Get form data
             name = request.form.get("name", "").strip()
             description = request.form.get("description", "").strip()
@@ -40,7 +66,13 @@ def analysis_add():
             frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5
 
-            # Use lowercase genome assembly directly as enum
+            # Parse HPO terms from hidden JSON field
+            hpo_terms_raw = request.form.get("hpo_terms", "")
+            try:
+                hpo_terms = _json.loads(hpo_terms_raw) if hpo_terms_raw else []
+            except (_json.JSONDecodeError, TypeError):
+                hpo_terms = []
+
             genome_assembly_enum = GenomeAssembly(genome_assembly)
 
             # Validation
@@ -56,14 +88,16 @@ def analysis_add():
                 flash("VCF filename is required", "error")
                 return render_template("analysis/add.html", individuals=individuals, user=current_user)
 
+            if not hpo_terms:
+                flash("At least one HPO term is required", "error")
+                return render_template("analysis/add.html", individuals=individuals, user=current_user)
+
             # Verify individual exists
             individual = Individual.query.get(individual_id)
             if not individual:
                 flash("Selected individual not found", "error")
                 return render_template("analysis/add.html", individuals=individuals, user=current_user)
 
-            # Create analysis (using Task model for now)
-            # Create new analysis
             analysis = Analysis(
                 name=name,
                 description=description,
@@ -73,6 +107,7 @@ def analysis_add():
                 analysis_mode=analysis_mode,
                 frequency_threshold=frequency_threshold,
                 pathogenicity_threshold=pathogenicity_threshold,
+                hpo_terms=hpo_terms,
                 created_by=current_user.id,
                 updated_by=current_user.id
             )
@@ -99,6 +134,8 @@ def analysis_edit(analysis_id):
 
     if request.method == "POST":
         try:
+            import json as _json
+
             # Update fields (only allow editing if analysis is not running)
             if analysis.status in [TaskStatus.RUNNING]:
                 flash("Cannot edit running analysis", "error")
@@ -108,12 +145,18 @@ def analysis_edit(analysis_id):
             analysis.description = request.form.get("description", "").strip() or None
             analysis.individual_id = request.form.get("individual_id", type=int)
             analysis.vcf_filename = request.form.get("vcf_filename", "").strip()
-            # Use lowercase genome assembly directly as enum
             genome_assembly = request.form.get("genome_assembly", "hg19")
             analysis.genome_assembly = GenomeAssembly(genome_assembly)
             analysis.analysis_mode = request.form.get("analysis_mode", "FULL")
             analysis.frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             analysis.pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5
+
+            # Update HPO terms
+            hpo_terms_raw = request.form.get("hpo_terms", "")
+            try:
+                analysis.hpo_terms = _json.loads(hpo_terms_raw) if hpo_terms_raw else []
+            except (_json.JSONDecodeError, TypeError):
+                analysis.hpo_terms = []
 
             # Update audit trail
             analysis.updated_by = current_user.id
@@ -226,18 +269,12 @@ def analysis_results(analysis_id):
 @login_required
 def analysis_output(analysis_id):
     """Get current analysis output for polling"""
-    if analysis_id in analysis_outputs:
-        return jsonify({
-            "success": True,
-            "output": analysis_outputs[analysis_id],
-            "line_count": len(analysis_outputs[analysis_id])
-        })
-    else:
-        return jsonify({
-            "success": True,
-            "output": [],
-            "line_count": 0
-        })
+    lines = _read_log(analysis_id)
+    return jsonify({
+        "success": True,
+        "output": lines,
+        "line_count": len(lines)
+    })
 
 @analysis_bp.route("/analysis/<int:analysis_id>/status")
 @login_required
@@ -306,8 +343,8 @@ def run_exomiser_analysis(analysis_id):
             if not analysis:
                 return
 
-            # Initialize output storage for this analysis
-            analysis_outputs[analysis_id] = []
+            # Clear any previous log file for this analysis
+            _delete_log(analysis_id)
 
             # Update status to running and clear previous log
             analysis.status = TaskStatus.RUNNING
@@ -315,14 +352,11 @@ def run_exomiser_analysis(analysis_id):
             analysis.log = None  # Clear previous log
             db.session.commit()
 
-            analysis_outputs[analysis_id].append("Starting Exomiser analysis...")
+            _append_log(analysis_id, "Starting Exomiser analysis...")
 
-            # Generate phenopacket YAML for the individual
-            individual = analysis.individual
-            phenopacket_content = individual.generate_phenopacket_yaml(
-                creator="Exomiser Web Interface",
-                genome_assembly=analysis.genome_assembly.value,
-                vcf_filename=analysis.vcf_filename
+            # Generate phenopacket YAML from the analysis (HPO terms now live here)
+            phenopacket_content = analysis.generate_phenopacket_yaml(
+                creator="Exomiser Web Interface"
             )
 
             # Save phenopacket to file in /opt/exomiser/ikdrc/phenopacket/
@@ -337,7 +371,7 @@ def run_exomiser_analysis(analysis_id):
             analysis.phenopacket_path = phenopacket_file
             db.session.commit()
 
-            analysis_outputs[analysis_id].append(f"Generated phenopacket: {phenopacket_file}")
+            _append_log(analysis_id, f"Generated phenopacket: {phenopacket_file}")
 
             # Prepare Exomiser command following the instructions:
             cmd = [
@@ -346,7 +380,7 @@ def run_exomiser_analysis(analysis_id):
                 "--sample", phenopacket_file
             ]
 
-            analysis_outputs[analysis_id].append(f"Running command: {' '.join(cmd)}")
+            _append_log(analysis_id, f"Running command: {' '.join(cmd)}")
 
             # Start subprocess with real-time output capture
             process = subprocess.Popen(
@@ -367,7 +401,7 @@ def run_exomiser_analysis(analysis_id):
                     if output:
                         line = output.strip()
                         if line:  # Only store non-empty lines
-                            analysis_outputs[analysis_id].append(line)
+                            _append_log(analysis_id, line)
                 else:
                     # If no stdout, just wait for process to complete
                     if process.poll() is not None:
@@ -383,7 +417,7 @@ def run_exomiser_analysis(analysis_id):
                 analysis.completed_at = datetime.utcnow()
                 analysis.error_message = None
 
-                analysis_outputs[analysis_id].append("Analysis completed successfully!")
+                _append_log(analysis_id, "Analysis completed successfully!")
 
                 # Set results directory path
                 analysis.results_directory = "/opt/exomiser/ikdrc/results"
@@ -405,11 +439,11 @@ def run_exomiser_analysis(analysis_id):
                                 try:
                                     os.rename(html_src, html_dst)
                                     html_src = html_dst
-                                    analysis_outputs[analysis_id].append(f"Results saved to: {sample_html}")
+                                    _append_log(analysis_id, f"Results saved to: {sample_html}")
                                 except OSError as e:
-                                    analysis_outputs[analysis_id].append(f"Results at: {filename} (rename to {sample_html} failed: {e})")
+                                    _append_log(analysis_id, f"Results at: {filename} (rename to {sample_html} failed: {e})")
                             else:
-                                analysis_outputs[analysis_id].append(f"Results saved to: {filename}")
+                                _append_log(analysis_id, f"Results saved to: {filename}")
 
                             analysis.output_html = html_src
 
@@ -419,26 +453,24 @@ def run_exomiser_analysis(analysis_id):
                                 try:
                                     if vcf_src != vcf_dst:
                                         os.rename(vcf_src, vcf_dst)
-                                    analysis_outputs[analysis_id].append(f"VCF saved to: {sample_vcf}")
+                                    _append_log(analysis_id, f"VCF saved to: {sample_vcf}")
                                 except OSError as e:
-                                    analysis_outputs[analysis_id].append(f"VCF at: {stem}.vcf (rename to {sample_vcf} failed: {e})")
+                                    _append_log(analysis_id, f"VCF at: {stem}.vcf (rename to {sample_vcf} failed: {e})")
                             break
             else:
                 analysis.status = TaskStatus.FAILED
                 analysis.error_message = f"Exomiser process failed with return code {return_code}"
-                analysis_outputs[analysis_id].append(f"Analysis failed with return code: {return_code}")
+                _append_log(analysis_id, f"Analysis failed with return code: {return_code}")
 
             # Store complete log in database for debugging
-            if analysis_id in analysis_outputs:
-                analysis.log = "\n".join(analysis_outputs[analysis_id])
+            analysis.log = "\n".join(_read_log(analysis_id))
 
             db.session.commit()
 
-            # Keep output in memory for a while after completion (30 minutes)
+            # Delete the temp log file after 30 minutes (results are now in the DB)
             def cleanup_output():
                 time.sleep(1800)  # 30 minutes
-                if analysis_id in analysis_outputs:
-                    del analysis_outputs[analysis_id]
+                _delete_log(analysis_id)
 
             cleanup_thread = threading.Thread(target=cleanup_output)
             cleanup_thread.daemon = True
@@ -451,20 +483,11 @@ def run_exomiser_analysis(analysis_id):
                 analysis.status = TaskStatus.FAILED
                 analysis.error_message = f"Error running analysis: {str(e)}"
 
-                # Store error log in database
-                if analysis_id in analysis_outputs:
-                    analysis_outputs[analysis_id].append(f"Error: {str(e)}")
-                    analysis_outputs[analysis_id].append("Analysis failed due to error")
-                    analysis.log = "\n".join(analysis_outputs[analysis_id])
-                else:
-                    analysis.log = f"Error: {str(e)}\nAnalysis failed due to error"
+                _append_log(analysis_id, f"Error: {str(e)}")
+                _append_log(analysis_id, "Analysis failed due to error")
+                analysis.log = "\n".join(_read_log(analysis_id))
 
                 db.session.commit()
-
-                # Store error in output if storage exists
-                if analysis_id in analysis_outputs:
-                    analysis_outputs[analysis_id].append(f"Error: {str(e)}")
-                    analysis_outputs[analysis_id].append("Analysis failed due to error")
 
 @analysis_bp.route("/analysis/<int:analysis_id>/view")
 @login_required
