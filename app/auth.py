@@ -12,7 +12,7 @@ def login():
         password = request.form.get("password", "")
         remember = request.form.get("remember") is not None
 
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email, is_deleted=False).first()
 
         if user and user.check_password(password):
             if not user.is_active:
@@ -42,7 +42,7 @@ def register():
             flash("Passwords do not match", "danger")
             return redirect(url_for("auth.register"))
 
-        if User.query.filter_by(email=email).first():
+        if User.query.filter_by(email=email, is_deleted=False).first():
             flash("Email already registered", "warning")
             return redirect(url_for("auth.register"))
 

@@ -42,7 +42,7 @@ def _delete_log(analysis_id):
 @login_required
 def analysis_list():
     """Analysis list page - shows all analyses for all users"""
-    analyses = Analysis.query.order_by(Analysis.created_at.desc()).all()
+    analyses = Analysis.query.filter_by(is_deleted=False).order_by(Analysis.created_at.desc()).all()
     return render_template("analysis/analyses.html", analyses=analyses, user=current_user)
 
 @analysis_bp.route("/analysis/add", methods=["GET", "POST"])
@@ -50,7 +50,7 @@ def analysis_list():
 def analysis_add():
     """Add new analysis"""
     # Get available individuals for dropdown
-    individuals = Individual.query.order_by(Individual.identity).all()
+    individuals = Individual.query.filter_by(is_deleted=False).order_by(Individual.identity).all()
 
     if request.method == "POST":
         try:
@@ -93,7 +93,7 @@ def analysis_add():
                 return render_template("analysis/add.html", individuals=individuals, user=current_user)
 
             # Verify individual exists
-            individual = Individual.query.get(individual_id)
+            individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first()
             if not individual:
                 flash("Selected individual not found", "error")
                 return render_template("analysis/add.html", individuals=individuals, user=current_user)
@@ -129,8 +129,8 @@ def analysis_add():
 @login_required
 def analysis_edit(analysis_id):
     """Edit existing analysis"""
-    analysis = Analysis.query.get_or_404(analysis_id)
-    individuals = Individual.query.order_by(Individual.identity).all()
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
+    individuals = Individual.query.filter_by(is_deleted=False).order_by(Individual.identity).all()
 
     if request.method == "POST":
         try:
@@ -171,7 +171,7 @@ def analysis_edit(analysis_id):
                 return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
 
             # Verify individual exists
-            individual = Individual.query.get(analysis.individual_id)
+            individual = Individual.query.filter_by(id=analysis.individual_id, is_deleted=False).first()
             if not individual:
                 flash("Selected individual not found", "error")
                 return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user)
@@ -195,8 +195,8 @@ def analysis_edit(analysis_id):
 @analysis_bp.route("/analysis/<int:analysis_id>/delete", methods=["GET", "POST"])
 @login_required
 def analysis_delete(analysis_id):
-    """Delete analysis with confirmation"""
-    analysis = Analysis.query.get_or_404(analysis_id)
+    """Soft-delete analysis with confirmation"""
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
 
     if request.method == "POST":
         try:
@@ -206,7 +206,8 @@ def analysis_delete(analysis_id):
                 return render_template("analysis/delete.html", analysis=analysis, user=current_user)
 
             analysis_name = analysis.name
-            db.session.delete(analysis)
+            analysis.is_deleted = True
+            analysis.deleted_at = datetime.utcnow()
             db.session.commit()
 
             flash(f"Analysis '{analysis_name}' deleted successfully", "success")
@@ -223,7 +224,7 @@ def analysis_delete(analysis_id):
 @login_required
 def analysis_run(analysis_id):
     """Run analysis and show execution status"""
-    analysis = Analysis.query.get_or_404(analysis_id)
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
 
     if request.method == "POST":
         # Start the analysis job
@@ -256,7 +257,7 @@ def analysis_run(analysis_id):
 @login_required
 def analysis_results(analysis_id):
     """Redirect to raw HTML results"""
-    analysis = Analysis.query.get_or_404(analysis_id)
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
 
     if analysis.status != TaskStatus.COMPLETED:
         flash("Analysis not completed yet", "warning")
@@ -280,7 +281,7 @@ def analysis_output(analysis_id):
 @login_required
 def analysis_status(analysis_id):
     """Get current analysis status for polling"""
-    analysis = Analysis.query.get_or_404(analysis_id)
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
     return jsonify({
         "success": True,
         "status": analysis.status.value,
@@ -293,7 +294,7 @@ def analysis_status(analysis_id):
 @login_required
 def analysis_download(analysis_id):
     """Download analysis results file"""
-    analysis = Analysis.query.get_or_404(analysis_id)
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
 
     if analysis.status != TaskStatus.COMPLETED:
         flash("Analysis not completed yet", "warning")
@@ -499,7 +500,7 @@ def analysis_view(analysis_id):
 @login_required
 def analysis_html(analysis_id):
     """Serve the raw HTML content directly"""
-    analysis = Analysis.query.get_or_404(analysis_id)
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
 
     if analysis.status != TaskStatus.COMPLETED:
         return "<html><body><h2>Analysis not completed yet</h2></body></html>", 200
@@ -536,5 +537,5 @@ def analysis_html(analysis_id):
 @login_required
 def results():
     """Results page - shows analysis results and status"""
-    analyses = Analysis.query.order_by(Analysis.updated_at.desc()).all()
+    analyses = Analysis.query.filter_by(is_deleted=False).order_by(Analysis.updated_at.desc()).all()
     return render_template("analysis/results.html", analyses=analyses, user=current_user)

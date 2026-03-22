@@ -137,15 +137,15 @@ def index():
     # Handle both public index and authenticated dashboard
     if current_user.is_authenticated:
         # Get dashboard statistics
-        total_analyses = Analysis.query.count()
-        total_individuals = Individual.query.count()
+        total_analyses = Analysis.query.filter_by(is_deleted=False).count()
+        total_individuals = Individual.query.filter_by(is_deleted=False).count()
 
         # Success/Failure statistics
-        successful_analyses = Analysis.query.filter_by(status=TaskStatus.COMPLETED).count()
-        failed_analyses = Analysis.query.filter_by(status=TaskStatus.FAILED).count()
-        pending_analyses = Analysis.query.filter_by(status=TaskStatus.PENDING).count()
-        running_analyses = Analysis.query.filter_by(status=TaskStatus.RUNNING).count()
-        cancelled_analyses = Analysis.query.filter_by(status=TaskStatus.CANCELLED).count()
+        successful_analyses = Analysis.query.filter_by(status=TaskStatus.COMPLETED, is_deleted=False).count()
+        failed_analyses = Analysis.query.filter_by(status=TaskStatus.FAILED, is_deleted=False).count()
+        pending_analyses = Analysis.query.filter_by(status=TaskStatus.PENDING, is_deleted=False).count()
+        running_analyses = Analysis.query.filter_by(status=TaskStatus.RUNNING, is_deleted=False).count()
+        cancelled_analyses = Analysis.query.filter_by(status=TaskStatus.CANCELLED, is_deleted=False).count()
 
         # Calculate success rate
         if total_analyses > 0:
@@ -156,6 +156,7 @@ def index():
         # Calculate mean runtime for completed analyses
         completed_analyses = Analysis.query.filter(
             Analysis.status == TaskStatus.COMPLETED,
+            Analysis.is_deleted == False,
             Analysis.started_at.isnot(None),
             Analysis.completed_at.isnot(None)
         ).all()
@@ -184,12 +185,14 @@ def index():
         # Get recent successful analyses for the results table
         recent_analyses = Analysis.query.join(Individual).filter(
             Analysis.status == TaskStatus.COMPLETED,
+            Analysis.is_deleted == False,
+            Individual.is_deleted == False,
             Analysis.output_html.isnot(None)
         ).order_by(Analysis.completed_at.desc()).limit(5).all()
 
         # Calculate phenotype distribution for the chart (HPO terms now live on Analysis)
         phenotype_distribution = {}
-        all_analyses = Analysis.query.all()
+        all_analyses = Analysis.query.filter_by(is_deleted=False).all()
 
         for analysis in all_analyses:
             if analysis.hpo_terms and isinstance(analysis.hpo_terms, list):
@@ -288,7 +291,7 @@ def admin_required(f):
 @admin_required
 def admin_users():
     """Admin user management page"""
-    users = User.query.order_by(User.created_at.desc()).all()
+    users = User.query.filter_by(is_deleted=False).order_by(User.created_at.desc()).all()
     return render_template("admin/users.html", users=users, user=current_user)
 
 @routes_bp.route("/admin/users/<int:user_id>/reset-password", methods=["GET", "POST"])
@@ -296,7 +299,7 @@ def admin_users():
 @admin_required
 def admin_reset_password(user_id):
     """Reset user password"""
-    user_to_reset = User.query.get_or_404(user_id)
+    user_to_reset = User.query.filter_by(id=user_id, is_deleted=False).first_or_404()
 
     if request.method == "POST":
         try:
@@ -358,7 +361,7 @@ def admin_add_user():
                 return render_template("admin/add_user.html")
 
             # Check if email already exists
-            existing_user = User.query.filter_by(email=email).first()
+            existing_user = User.query.filter_by(email=email, is_deleted=False).first()
             if existing_user:
                 flash("A user with this email already exists", "error")
                 return render_template("admin/add_user.html")
@@ -390,7 +393,7 @@ def admin_add_user():
 @admin_required
 def admin_edit_user(user_id):
     """Edit an existing user"""
-    user_to_edit = User.query.get_or_404(user_id)
+    user_to_edit = User.query.filter_by(id=user_id, is_deleted=False).first_or_404()
 
     if request.method == "POST":
         try:
@@ -406,7 +409,7 @@ def admin_edit_user(user_id):
                 return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
 
             # Check if email already exists (but not for the current user)
-            existing_user = User.query.filter(User.email == email, User.id != user_id).first()
+            existing_user = User.query.filter(User.email == email, User.id != user_id, User.is_deleted == False).first()
             if existing_user:
                 flash("A user with this email already exists", "error")
                 return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
@@ -437,7 +440,7 @@ def admin_edit_user(user_id):
 @admin_required
 def admin_delete_user(user_id):
     """Delete a user"""
-    user_to_delete = User.query.get_or_404(user_id)
+    user_to_delete = User.query.filter_by(id=user_id, is_deleted=False).first_or_404()
 
     # Prevent deleting yourself
     if user_to_delete.id == current_user.id:
@@ -453,7 +456,8 @@ def admin_delete_user(user_id):
                 return render_template("admin/delete_user.html", user_to_delete=user_to_delete)
 
             email = user_to_delete.email
-            db.session.delete(user_to_delete)
+            user_to_delete.is_deleted = True
+            user_to_delete.deleted_at = datetime.utcnow()
             db.session.commit()
 
             flash(f"User {email} has been deleted successfully", "success")
@@ -490,9 +494,11 @@ def api_search_analyses():
             )
         )
 
-    # Only show completed analyses with results
+    # Only show completed, non-deleted analyses with results
     query = query.filter(
         Analysis.status == TaskStatus.COMPLETED,
+        Analysis.is_deleted == False,
+        Individual.is_deleted == False,
         Analysis.output_html.isnot(None)
     )
 
@@ -506,7 +512,7 @@ def api_search_analyses():
     results = []
     for analysis in analyses:
         # Get individual data safely
-        individual = Individual.query.get(analysis.individual_id) if analysis.individual_id else None
+        individual = Individual.query.filter_by(id=analysis.individual_id, is_deleted=False).first() if analysis.individual_id else None
         individual_identity = individual.identity if individual else f"Individual {analysis.individual_id}"
 
         results.append({
@@ -528,7 +534,7 @@ def api_search_analyses():
 @login_required
 def serve_analysis_report(analysis_id):
     """Serve analysis HTML report files"""
-    analysis = Analysis.query.get_or_404(analysis_id)
+    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
 
     # Check if report exists
     if not analysis.output_html or not os.path.exists(analysis.output_html):
