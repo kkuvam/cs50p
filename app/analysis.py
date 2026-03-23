@@ -407,8 +407,8 @@ def run_exomiser_analysis(analysis_id):
 
             # Prepare Exomiser command following the instructions:
             cmd = [
-                "java", "-Xmx4g", "-jar", "/opt/exomiser/exomiser-cli-15.0.0.jar",
-                "analyse", "--analysis", "/opt/exomiser/analysis.yml",
+                "java", "-Xmx4g", "-jar", "/opt/exomiser/exomiser-cli-14.1.0.jar",
+                "--analysis", "/opt/exomiser/analysis.yml",
                 "--sample", phenopacket_file
             ]
 
