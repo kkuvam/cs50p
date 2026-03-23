@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./compose/Dockerfile
       args:
-        - EXOMISER_VERSION=15.0.0
+        - EXOMISER_VERSION=14.1.0
     image: exomiser-ui:latest
     container_name: exomiser-ui
     volumes:
