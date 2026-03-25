@@ -1,5 +1,5 @@
 # File: app/individual.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_login import login_required, current_user
 from models import db, Individual, Analysis, SexType
 from datetime import datetime
@@ -201,31 +201,6 @@ def individual_delete(individual_id):
             return render_template("individual/delete.html", individual=individual, user=current_user)
 
     return render_template("individual/delete.html", individual=individual, user=current_user)
-
-@individual_bp.route("/individual/<int:individual_id>/download_vcf")
-@login_required
-def download_vcf(individual_id):
-    """Download VCF file for an individual"""
-    individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
-
-    # Check if VCF file exists
-    if not individual.vcf_file_path or not os.path.exists(individual.vcf_file_path):
-        flash("VCF file not found", "error")
-        return redirect(url_for('individual.individual_view', individual_id=individual_id))
-
-    try:
-        # Use the original filename for download (without timestamp or identity prefix)
-        original_filename = individual.vcf_filename or os.path.basename(individual.vcf_file_path)
-
-        return send_file(
-            individual.vcf_file_path,
-            as_attachment=True,
-            download_name=original_filename,
-            mimetype='text/plain'
-        )
-    except Exception as e:
-        flash(f"Error downloading file: {str(e)}", "error")
-        return redirect(url_for('individual.individual_view', individual_id=individual_id))
 
 
 @individual_bp.route("/api/individual/<int:individual_id>/clinical-history")

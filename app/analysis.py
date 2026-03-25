@@ -346,25 +346,6 @@ def analysis_download(analysis_id):
     return send_file(results_file, as_attachment=True,
                     download_name=download_filename)
 
-@analysis_bp.route("/analysis/<int:analysis_id>/download_vcf")
-@login_required
-def analysis_download_vcf(analysis_id):
-    """Download the VCF output file"""
-    analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
-
-    if analysis.status != TaskStatus.COMPLETED:
-        flash("Analysis not completed yet", "warning")
-        return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
-
-    if not analysis.output_vcf or not os.path.exists(analysis.output_vcf):
-        flash("VCF output file not found", "error")
-        return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
-
-    download_filename = f"{analysis.individual.identity}-exomiser.vcf.gz"
-    return send_file(analysis.output_vcf, as_attachment=True,
-                     download_name=download_filename,
-                     mimetype="application/gzip")
-
 def run_exomiser_analysis(analysis_id):
     """Background function to run Exomiser analysis with simple output storage"""
     from main import app  # Import here to avoid circular imports

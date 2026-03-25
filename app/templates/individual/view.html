@@ -145,15 +145,6 @@
               <h4 class="text-sm font-medium text-green-800 dark:text-green-200">VCF File Uploaded</h4>
               <p class="text-sm text-green-700 dark:text-green-300">{{ individual.vcf_filename if individual.vcf_filename else (individual.vcf_file_path.split('/')[-1] if individual.vcf_file_path else 'Unknown file') }}</p>
             </div>
-            <div class="flex space-x-2">
-              <a href="{{ url_for('individual.download_vcf', individual_id=individual.id) }}"
-                 class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-green-700 bg-green-100 hover:bg-green-200 dark:text-green-200 dark:bg-green-800 dark:hover:bg-green-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Download
-              </a>
-            </div>
           </div>
         {% else %}
           <div class="p-6 text-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
