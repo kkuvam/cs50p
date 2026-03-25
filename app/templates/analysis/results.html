@@ -141,9 +141,6 @@
                     {% if analysis.output_html %}
                     <a href="{{ url_for('analysis.analysis_download', analysis_id=analysis.id) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 text-sm mr-2">HTML</a>
                     {% endif %}
-                    {% if analysis.output_vcf %}
-                    <a href="{{ url_for('analysis.analysis_download_vcf', analysis_id=analysis.id) }}" class="text-purple-600 hover:text-purple-800 dark:text-purple-400 text-sm">VCF</a>
-                    {% endif %}
                   {% else %}
                   <span class="text-gray-400 text-sm">No results</span>
                   {% endif %}
