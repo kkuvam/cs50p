@@ -21,7 +21,7 @@ RUN groupadd -g 1001 exomiser && \
     chown exomiser:exomiser /home/exomiser
 
 # Set environment variables
-ENV EXOMISER_VERSION=15.0.0
+ENV EXOMISER_VERSION=14.1.0
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
