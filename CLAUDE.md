@@ -206,3 +206,78 @@ See `.env.example`. Key variables:
 - No email notification system is implemented (admin password reset has a TODO stub).
 - VCF files are never automatically cleaned up; manual management required.
 - The healthcheck curls `/` which redirects (302) to `/login` — curl `-f` does not fail on 3xx, so this passes correctly.
+
+---
+
+## Tooling
+
+- Lint/format: `uvx ruff format --line-length 100 <files>` and `uvx ruff check --line-length 100 <files>` (no Ruff config; lint only changed files, the existing code has a backlog).
+- Compile check: `uv run --with-requirements requirements.txt python -m py_compile <files>`.
+- Tests: none yet. Smoke test: `docker compose up -d --build` then `curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/` returns 302.
+- CSS: `app/static/css/style.css` is pre-built Taildash (Tailwind v4) with no build step; only classes already in it render.
+
+## Hard Rules
+
+- Patient data: VCFs, individuals, HPO terms, and Exomiser results are patient data. Never commit them (`ikdrc/`, `instance/`, `*.db`), never log names or phenotypes, and never add a new external service call that sends them without the user's approval.
+- Auth: every route has `@login_required`; `/admin/*` also checks `current_user.is_admin`.
+- Files: paths come from `secure_filename()` under `/opt/exomiser/ikdrc/`; never from raw user input.
+- Processes: `subprocess` with argument lists only, never `shell=True`. Do not change the Exomiser version, JAR path, or `compose/analysis.yml` without the user.
+- Database: ORM only, no string-formatted SQL; respect `is_deleted` soft deletes. `db.create_all()` never alters existing tables, so a column change needs an explicit upgrade step and matching `*_history` table/trigger updates in `app.sql`; escalate before changing the schema of the live `app.db`.
+- Background jobs: the Exomiser thread runs inside its own `app.app_context()` and always ends in a terminal status (`COMPLETED`/`FAILED`/`CANCELLED`).
+- Keep this file's route map, models, and env vars in sync with changes.
+
+## Orchestration
+
+The main session (Opus) is the director. It plans, delegates, reviews, and decides. It does not write code, run lint, or commit itself. Work runs autonomously end to end; the user is consulted only at the escalation points below.
+
+Agent and skill inventory, ECC routine, and setup history: `.claude/README.md`.
+
+### Team
+| Agent | Model | Job |
+|---|---|---|
+| `designer` | Sonnet | Design system, UI specs, UI review |
+| `coder` | Sonnet | All code: routes, models, Exomiser runner, templates, Docker |
+| `linter` | Haiku | Ruff format + safe fixes (Python only) |
+| `reviewer` | Sonnet | Read-only diff review: bugs, security, patient data, Hard Rules |
+| `committer` | Haiku | Local commits in the repo's message style |
+| `pr-checker` | Haiku | Pre-PR checks + PR draft |
+
+### Pipeline (per PR)
+Work ships as small incremental PRs (aim for under ~400 changed lines, excluding vendored files). The user merges PRs manually on GitHub.
+1. Plan: split the task into steps, each one commit. Branch off an up-to-date `main` (`git switch main && git pull --ff-only && git switch -c <type>/<slug>`).
+2. Prepare (only if needed): `designer` (spec mode) for any UI step.
+3. Build: `coder` implements the step and verifies it.
+4. Verify: `linter` (if Python changed), then in parallel `reviewer`, plus `designer` (review mode) if templates or static files changed.
+5. Fix loop: send findings back to `coder`. Max 2 rounds per step; after that, escalate.
+6. Commit: `committer` once lint is clean and reviewers approve.
+7. Repeat 2-6 for each step. Then run `pr-checker`, ask the user to approve push + PR, push, and open the PR with `gh pr create`. Stop there; do not start the next task on top of an unmerged branch unless the user says so.
+
+### Escalate to the user only for
+- `git push` and PR creation (merging is always done by the user on GitHub)
+- Destructive or irreversible actions (dropping data, schema changes to the live DB, deleting branches, rewriting history)
+- Clinical or product decisions the spec does not answer (Exomiser analysis settings, filtering thresholds, data retention)
+- A step that still fails after 2 fix rounds
+
+### Token discipline
+- Delegate with a compact brief: goal, file paths, acceptance criteria. Point to files; never paste file contents into a brief.
+- Agents return short structured reports (verdict + `file:line` findings), not prose or full diffs.
+- Use Haiku for mechanical work; reserve Sonnet for code and judgment; the director reads reports, not code, unless a report is unclear.
+- Reviewers look at the current step's diff only. Skip steps that don't apply (no designer for backend-only steps).
+- Workers never delegate; the hierarchy stays one level deep.
+
+## Git Rules
+- Local commits: allowed without asking, via `committer`. Message style: imperative summary, no type prefix (`Fix cancel button for stuck analyses`).
+- `git push` and `gh pr create`: always ask the user first. Never merge PRs (`gh pr merge` is denied); the user merges on GitHub.
+- Never force-push, rewrite published history, or commit secrets, `.env` files, or patient data.
+- Branch off `main` for feature work; don't commit to `main`.
+
+## Code Rules
+- Simplest working solution. No over-engineering, no speculative features.
+- No abstractions for single-use operations. Three similar lines beat a premature abstraction.
+- Read a file before editing it. Prefer editing existing files over creating new ones.
+- No docstrings or type annotations on code not being changed.
+- Fail fast with clear, actionable messages; never swallow exceptions silently. On a DB error, roll back the session before writing again.
+
+## Review and Debugging
+- Review: state the bug, show the fix, stop. No suggestions beyond scope, no compliments.
+- Debugging: read the relevant code before forming a theory. If the cause is unclear, say so. Do not guess.
