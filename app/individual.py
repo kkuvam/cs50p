@@ -1,15 +1,35 @@
 # File: app/individual.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, abort
-from flask_login import login_required, current_user
-from models import db, Individual, Analysis, SexType
-from datetime import datetime
 import os
-import uuid
 import time
+from datetime import datetime
+
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
+from models import Analysis, Individual, SexType, db
+from werkzeug.utils import secure_filename
 
 individual_bp = Blueprint("individual", __name__)
 
-# Function removed - we now store original filenames without cleanup
+VCF_UPLOAD_DIR = "/opt/exomiser/ikdrc/vcf"
+ALLOWED_VCF_EXTENSIONS = (".vcf", ".vcf.gz")
+
+
+def save_vcf_upload(vcf_file):
+    """Sanitize and save an uploaded VCF. Returns (stored_path, display_name).
+
+    Raises ValueError with a user-facing message if the filename is invalid.
+    """
+    display_name = secure_filename(vcf_file.filename or "")
+    if not display_name:
+        raise ValueError("Invalid VCF filename")
+    if not display_name.lower().endswith(ALLOWED_VCF_EXTENSIONS):
+        raise ValueError("VCF file must have a .vcf or .vcf.gz extension")
+
+    os.makedirs(VCF_UPLOAD_DIR, exist_ok=True)
+    # Timestamp prefix avoids collisions: <timestamp>_<sanitized filename>
+    stored_path = os.path.join(VCF_UPLOAD_DIR, f"{int(time.time())}_{display_name}")
+    vcf_file.save(stored_path)
+    return stored_path, display_name
 
 # ===== INDIVIDUAL CRUD ROUTES =====
 @individual_bp.route("/individuals")
@@ -63,16 +83,11 @@ def individual_add():
                 return render_template("individual/add.html", user=current_user)
 
             # Process VCF file upload
-            vcf_upload_dir = "/opt/exomiser/ikdrc/vcf"
-            os.makedirs(vcf_upload_dir, exist_ok=True)
-
-            # Create timestamped filename to avoid collisions: timestamp_originalfilename
-            timestamp = int(time.time())
-            timestamped_filename = f"{timestamp}_{vcf_file.filename}"
-            vcf_file_path = os.path.join(vcf_upload_dir, timestamped_filename)
-
-            # Save the file
-            vcf_file.save(vcf_file_path)
+            try:
+                vcf_file_path, vcf_display_name = save_vcf_upload(vcf_file)
+            except ValueError as e:
+                flash(str(e), "error")
+                return render_template("individual/add.html", user=current_user)
 
             individual = Individual(
                 identity=identity,
@@ -82,7 +97,7 @@ def individual_add():
                 age_months=age_months,
                 medical_history=medical_history or None,
                 diagnosis=diagnosis or None,
-                vcf_filename=vcf_file.filename,
+                vcf_filename=vcf_display_name,
                 vcf_file_path=vcf_file_path,
                 created_by=current_user.id,
                 updated_by=current_user.id
@@ -96,7 +111,7 @@ def individual_add():
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error creating individual: {str(e)}", "error")
+            flash(f"Error creating individual: {e!s}", "error")
             return render_template("individual/add.html", user=current_user)
 
     return render_template("individual/add.html", user=current_user)
@@ -128,19 +143,16 @@ def individual_edit(individual_id):
             # Handle VCF file upload (optional)
             vcf_file = request.files.get("vcf_file")
             if vcf_file and vcf_file.filename:
-                # Create timestamped filename to avoid collisions: timestamp_originalfilename
-                timestamp = int(time.time())
-                timestamped_filename = f"{timestamp}_{vcf_file.filename}"
+                try:
+                    file_path, display_name = save_vcf_upload(vcf_file)
+                except ValueError as e:
+                    flash(str(e), "error")
+                    return render_template("individual/edit.html", individual=individual, user=current_user)
 
-                vcf_dir = "/opt/exomiser/ikdrc/vcf"
-                os.makedirs(vcf_dir, exist_ok=True)
-                file_path = os.path.join(vcf_dir, timestamped_filename)
-
-                vcf_file.save(file_path)
-
-                # Update individual record with original filename (for display) and timestamped path (for storage)
                 individual.vcf_file_path = file_path
-                individual.vcf_filename = vcf_file.filename  # Keep original filename for display            # Update audit trail
+                individual.vcf_filename = display_name
+
+            # Update audit trail
             individual.updated_by = current_user.id
 
             # Validation
@@ -160,7 +172,7 @@ def individual_edit(individual_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error updating individual: {str(e)}", "error")
+            flash(f"Error updating individual: {e!s}", "error")
             return render_template("individual/edit.html", individual=individual, user=current_user)
 
     return render_template("individual/edit.html", individual=individual, user=current_user)
@@ -197,7 +209,7 @@ def individual_delete(individual_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error deleting individual: {str(e)}", "error")
+            flash(f"Error deleting individual: {e!s}", "error")
             return render_template("individual/delete.html", individual=individual, user=current_user)
 
     return render_template("individual/delete.html", individual=individual, user=current_user)
