@@ -11,6 +11,7 @@ services:
     volumes:
       # Development: mount source code for hot reload
       - ./app:/opt/app:ro
+      - ./scripts:/opt/scripts:ro   # one-off tools, e.g. migrate_sqlite_to_pg.py
       # Persistent data volumes
       - ./instance:/opt/instance
       - ./logs:/opt/logs
@@ -27,7 +28,7 @@ services:
       - FLASK_DEBUG=${FLASK_DEBUG:-0}
       - SECRET_KEY=${SECRET_KEY:?Set SECRET_KEY in .env (see .env.example)}
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-false}
-      - DATABASE_URL=sqlite:////opt/instance/app.db
+      - DATABASE_URL=${DATABASE_URL:-sqlite:////opt/instance/app.db}
       # Java/Exomiser configuration
       - JAVA_OPTS=-Xms2g -Xmx${MAX_MEMORY:-4g}
       - EXOMISER_DATA_DIR=/opt/exomiser/data

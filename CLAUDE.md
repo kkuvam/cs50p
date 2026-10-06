@@ -17,7 +17,7 @@ The project was originally a CS50P final project and is being actively developed
 | Layer | Technology |
 |-------|-----------|
 | Backend | Python 3, Flask 2.2+, Flask-Login, Flask-SQLAlchemy |
-| Database | SQLite (via SQLAlchemy, stored at `/opt/instance/app.db`) |
+| Database | SQLite (current, at `/opt/instance/app.db`) / PostgreSQL 17 (target), via SQLAlchemy |
 | Frontend | Jinja2 HTML templates, vanilla JS, Select2 (vendor-bundled) |
 | Analysis Engine | Exomiser CLI 14.1.0 (Java, invoked via `subprocess`) |
 | Container | Docker (single container: Amazon Corretto 21 base + Python) |
@@ -177,7 +177,7 @@ See `.env.example`. Key variables:
 |----------|---------|-------|
 | `SECRET_KEY` | none (required) | App refuses to start if unset; generate with `python3 -c "import secrets; print(secrets.token_hex(32))"` |
 | `SESSION_COOKIE_SECURE` | `false` | Set `true` when served over HTTPS (Secure cookies break login on plain HTTP) |
-| `DATABASE_URL` | `sqlite:////opt/instance/app.db` | SQLite path |
+| `DATABASE_URL` | `sqlite:////opt/instance/app.db` | SQLite (default) or PostgreSQL, e.g. `postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser` |
 | `PORT` | `8000` | Host port for Docker |
 | `FLASK_ENV` | `production` | `development` enables the debug server only when running `python main.py` |
 | `MAX_MEMORY` | `4g` | JVM max heap for Exomiser |
@@ -227,7 +227,7 @@ See `.env.example`. Key variables:
 - Auth: every route has `@login_required`; `/admin/*` also checks `current_user.is_admin`.
 - Files: paths come from `secure_filename()` under `/opt/exomiser/ikdrc/`; never from raw user input.
 - Processes: `subprocess` with argument lists only, never `shell=True`. Do not change the Exomiser version, JAR path, or `compose/analysis.yml` without the user.
-- Database: ORM only, no string-formatted SQL; respect `is_deleted` soft deletes. `db.create_all()` never alters existing tables, so a column change needs an explicit upgrade step and matching `*_history` table/trigger updates in `app.sql`; escalate before changing the schema of the live `app.db`.
+- Database: ORM only, no string-formatted SQL; respect `is_deleted` soft deletes. `db.create_all()` never alters existing tables, so a column change needs an explicit upgrade step and matching `*_history` table/trigger updates. History triggers exist in two places, `app.sql` (SQLite) and `scripts/pg/history.sql` (PostgreSQL), and a column change must update both; escalate before changing the schema of the live `app.db`.
 - Background jobs: the Exomiser thread runs inside its own `app.app_context()` and always ends in a terminal status (`COMPLETED`/`FAILED`/`CANCELLED`).
 - Access model: all active users are one trusted lab team and may view and edit every individual and analysis; this is intended, not a finding.
 - AutoHPO's LLM endpoint (`OPENAI_BASE_URL`) is always an on-site model; never point it at an external service.
@@ -285,6 +285,12 @@ Work ships as small incremental PRs (aim for under ~400 changed lines, excluding
 - Read a file before editing it. Prefer editing existing files over creating new ones.
 - No docstrings or type annotations on code not being changed.
 - Fail fast with clear, actionable messages; never swallow exceptions silently. On a DB error, roll back the session before writing again.
+
+## Migrating to PostgreSQL
+1. `docker compose stop web`, then `docker compose build` (the image needs psycopg). `scripts/` is mounted at `/opt/scripts`.
+2. `docker compose run --rm -e TARGET_DATABASE_URL='postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser' web python /opt/scripts/migrate_sqlite_to_pg.py --sqlite /opt/instance/app.db`
+3. The script opens SQLite read-only in one snapshot, refuses (exit 2) a target whose `public` schema has any table, view, sequence or type, and fails on any column mismatch. It copies in one transaction, then creates the history triggers (after the copy, so no duplicate history rows), resets sequences, and checks row counts, per-table checksums of raw vs converted values, ORM read-back, sequences and a trigger smoke test. Output is `MIGRATION OK` or `MIGRATION FAILED`; it never prints row contents.
+4. On success set `DATABASE_URL=postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser` in `.env` and `docker compose up -d`.
 
 ## Review and Debugging
 - Review: state the bug, show the fix, stop. No suggestions beyond scope, no compliments.
