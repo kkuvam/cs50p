@@ -188,7 +188,7 @@
       /* 2️⃣  Add picked term to list, clear bar -------------------------- */
       $('#hpo-search').on('select2:select', e => {
         const d = e.params.data;
-        if (!$chosen.find(`option[value="${d.id}"]`).length) {
+        if (!$chosen.find('option').filter(function () { return this.value === d.id; }).length) {
           $chosen.append(new Option(d.text, d.id, true, true));
         }
         $('#hpo-search').val(null).trigger('change');
