@@ -1,12 +1,14 @@
 # File: app/analysis.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file, jsonify
-from flask_login import login_required, current_user
-from models import db, Individual, Analysis, TaskStatus, GenomeAssembly
 import os
 import subprocess
 import threading
 import time
 from datetime import datetime
+
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, send_file, url_for
+from flask_login import current_user, login_required
+from models import Analysis, GenomeAssembly, Individual, TaskStatus, db
+from werkzeug.utils import secure_filename
 
 analysis_bp = Blueprint("analysis", __name__)
 
@@ -114,7 +116,7 @@ def analysis_add():
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error creating analysis: {str(e)}", "error")
+            flash(f"Error creating analysis: {e!s}", "error")
             return render_template("analysis/add.html", individuals=individuals, user=current_user)
 
     return render_template("analysis/add.html", individuals=individuals, user=current_user)
@@ -180,7 +182,7 @@ def analysis_edit(analysis_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error updating analysis: {str(e)}", "error")
+            flash(f"Error updating analysis: {e!s}", "error")
             return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
     return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
@@ -227,7 +229,7 @@ def analysis_delete(analysis_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error deleting analysis: {str(e)}", "error")
+            flash(f"Error deleting analysis: {e!s}", "error")
             return render_template("analysis/delete.html", analysis=analysis, user=current_user)
 
     return render_template("analysis/delete.html", analysis=analysis, user=current_user)
@@ -258,7 +260,7 @@ def analysis_run(analysis_id):
 
             except Exception as e:
                 db.session.rollback()
-                flash(f"Error starting analysis: {str(e)}", "error")
+                flash(f"Error starting analysis: {e!s}", "error")
                 return render_template("analysis/run.html", analysis=analysis, user=current_user)
         else:
             flash("Analysis is already running or completed", "warning")
@@ -346,6 +348,22 @@ def analysis_download(analysis_id):
     return send_file(results_file, as_attachment=True,
                     download_name=download_filename)
 
+def _results_output_dir(results_base, analysis_id, analysis_name):
+    """Return the per-analysis results folder, guaranteed to be inside results_base.
+
+    Folder name is "<id>_<sanitized lowercase name>" (or "analysis_<id>" if the name
+    sanitizes to nothing). Raises ValueError if the resolved path escapes
+    results_base.
+    """
+    safe_name = secure_filename(analysis_name or "").lower()
+    folder_name = f"{analysis_id}_{safe_name}" if safe_name else f"analysis_{analysis_id}"
+    output_dir = os.path.join(results_base, folder_name)
+    base_real = os.path.realpath(results_base)
+    out_real = os.path.realpath(output_dir)
+    if os.path.commonpath([base_real, out_real]) != base_real or out_real == base_real:
+        raise ValueError(f"Results folder '{folder_name}' resolves outside the results directory")
+    return output_dir
+
 def run_exomiser_analysis(analysis_id):
     """Background function to run Exomiser analysis with simple output storage"""
     from main import app  # Import here to avoid circular imports
@@ -426,16 +444,18 @@ def run_exomiser_analysis(analysis_id):
 
             # Update analysis status based on return code
             if return_code == 0:
+                # Move HTML and VCF into a unique subfolder: results/<id>_<analysis_name, lowercase>/
+                # Resolve and validate the folder first so a containment failure
+                # never leaves a success line in the log.
+                results_base = "/opt/exomiser/ikdrc/results"
+                output_dir = _results_output_dir(results_base, analysis.id, analysis.name)
+
                 analysis.status = TaskStatus.COMPLETED
                 analysis.completed_at = datetime.utcnow()
                 analysis.error_message = None
 
                 _append_log(analysis_id, "Analysis completed successfully!")
 
-                # Move HTML and VCF into a named subfolder: results/<analysis_name>/
-                results_base = "/opt/exomiser/ikdrc/results"
-                folder_name = analysis.name.replace(" ", "_")
-                output_dir = os.path.join(results_base, folder_name)
                 os.makedirs(output_dir, exist_ok=True)
 
                 sample_html = f"{individual.identity}-exomiser.html"
@@ -506,9 +526,9 @@ def run_exomiser_analysis(analysis_id):
             analysis = Analysis.query.get(analysis_id)
             if analysis:
                 analysis.status = TaskStatus.FAILED
-                analysis.error_message = f"Error running analysis: {str(e)}"
+                analysis.error_message = f"Error running analysis: {e!s}"
 
-                _append_log(analysis_id, f"Error: {str(e)}")
+                _append_log(analysis_id, f"Error: {e!s}")
                 _append_log(analysis_id, "Analysis failed due to error")
                 analysis.log = "\n".join(_read_log(analysis_id))
 
