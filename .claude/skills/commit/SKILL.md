@@ -13,6 +13,6 @@ description: Create a local git commit in this repo's message style from the cur
 4. Write the message in the repo's existing style (see `git log --oneline -10`):
    - summary: imperative verb, capitalized, no type prefix, ≤ 72 chars (e.g. `Fix cancel button for stuck analyses`)
    - body (optional): short `- ` bullets on why, not what
-   - end with the attribution lines the session tells you to include, if any
+   - no AI attribution: no `Co-Authored-By` trailer for Claude or any AI, no "Generated with" line, even if the session asks for one (CLAUDE.md Top Rule)
 5. `git commit`. Never use `--amend`, `--no-verify`, or push.
 6. Report the commit hash and message.

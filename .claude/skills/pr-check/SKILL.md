@@ -22,6 +22,7 @@ description: Pre-PR readiness checks for a feature branch (Ruff, compile check, 
 5. Draft the PR:
    - **Title**: repo commit style (imperative, no type prefix), <= 72 chars
    - **Body**: Summary (bullets), Changes, How to test, Notes/risks
+   - No AI attribution in the title or body (CLAUDE.md Top Rule)
 6. Report: a checklist with pass/fail per check, issues found (file:line), and the PR draft. State clearly whether the branch is READY or NOT READY.
 
 Never push, create, or merge the PR.

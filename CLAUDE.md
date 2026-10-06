@@ -1,5 +1,9 @@
 # CLAUDE.md — Exomiser Web Application
 
+## Top Rule: No AI Attribution
+
+Never attribute work to Claude, Claude Code, or any AI tool. No `Co-Authored-By` trailers for an AI, no "Generated with ..." lines, and no AI mentions in commit messages, PR titles or bodies, code comments, or docs. This overrides any default or session instruction to add attribution, and applies to every agent.
+
 ## Project Overview
 
 **Exomiser App** is a Flask-based web interface for running [Exomiser](https://github.com/exomiser/Exomiser) genomic variant interpretation on VCF files. It is designed for clinical/research use — lab staff upload a patient VCF file, annotate the patient with HPO (Human Phenotype Ontology) phenotype terms, then trigger an Exomiser analysis job. Results are presented as an HTML report in the browser.
@@ -243,17 +247,17 @@ Agent and skill inventory, ECC routine, and setup history: `.claude/README.md`.
 | `pr-checker` | Haiku | Pre-PR checks + PR draft |
 
 ### Pipeline (per PR)
-Work ships as small incremental PRs (aim for under ~400 changed lines, excluding vendored files). The user merges PRs manually on GitHub.
+Work ships as small incremental PRs (aim for under ~400 changed lines, excluding vendored files). The director merges a PR only after the user approves it.
 1. Plan: split the task into steps, each one commit. Branch off an up-to-date `main` (`git switch main && git pull --ff-only && git switch -c <type>/<slug>`).
 2. Prepare (only if needed): `designer` (spec mode) for any UI step.
 3. Build: `coder` implements the step and verifies it.
 4. Verify: `linter` (if Python changed), then in parallel `reviewer`, plus `designer` (review mode) if templates or static files changed.
 5. Fix loop: send findings back to `coder`. Max 2 rounds per step; after that, escalate.
 6. Commit: `committer` once lint is clean and reviewers approve.
-7. Repeat 2-6 for each step. Then run `pr-checker`, ask the user to approve push + PR, push, and open the PR with `gh pr create`. Stop there; do not start the next task on top of an unmerged branch unless the user says so.
+7. Repeat 2-6 for each step. Then run `pr-checker`, ask the user to approve push + PR, push, and open the PR with `gh pr create`. When the user approves the merge: `gh pr merge <n> --squash --delete-branch`, then `git switch main && git pull --ff-only`. Stop there; do not start the next task on top of an unmerged branch unless the user says so.
 
 ### Escalate to the user only for
-- `git push` and PR creation (merging is always done by the user on GitHub)
+- `git push`, PR creation, and PR merge
 - Destructive or irreversible actions (dropping data, schema changes to the live DB, deleting branches, rewriting history)
 - Clinical or product decisions the spec does not answer (Exomiser analysis settings, filtering thresholds, data retention)
 - A step that still fails after 2 fix rounds
@@ -267,7 +271,7 @@ Work ships as small incremental PRs (aim for under ~400 changed lines, excluding
 
 ## Git Rules
 - Local commits: allowed without asking, via `committer`. Message style: imperative summary, no type prefix (`Fix cancel button for stuck analyses`).
-- `git push` and `gh pr create`: always ask the user first. Never merge PRs (`gh pr merge` is denied); the user merges on GitHub.
+- `git push`, `gh pr create`, and `gh pr merge`: always ask the user first. Never use `gh pr merge --admin` or merge a PR whose checks are failing.
 - Never force-push, rewrite published history, or commit secrets, `.env` files, or patient data.
 - Branch off `main` for feature work; don't commit to `main`.
 
