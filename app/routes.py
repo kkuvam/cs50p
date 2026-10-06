@@ -1,6 +1,7 @@
 # File: app/routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import login_required, current_user
+from analysis import REPORT_HEADERS
 from models import db, User, Analysis, Individual, TaskStatus
 from datetime import datetime, timedelta
 from functools import wraps
@@ -542,7 +543,9 @@ def serve_analysis_report(analysis_id):
         return redirect(url_for('routes.index'))
 
     try:
-        return send_file(analysis.output_html, as_attachment=False)
+        response = send_file(analysis.output_html, as_attachment=False)
+        response.headers.update(REPORT_HEADERS)
+        return response
     except Exception as e:
         flash(f"Error serving report: {str(e)}", "error")
         return redirect(url_for('routes.index'))

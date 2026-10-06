@@ -12,6 +12,14 @@ from werkzeug.utils import secure_filename
 
 analysis_bp = Blueprint("analysis", __name__)
 
+# Exomiser reports are untrusted HTML: sandbox them into an opaque origin (no allow-same-origin)
+REPORT_HEADERS = {
+    "Content-Security-Policy": (
+        "sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
+    ),
+    "X-Content-Type-Options": "nosniff",
+}
+
 # File-based log storage — shared across all Gunicorn workers via the persistent volume
 _LOG_DIR = "/opt/logs"
 
@@ -575,7 +583,10 @@ def analysis_html(analysis_id):
     with open(results_file, 'r', encoding='utf-8') as f:
         html_content = f.read()
 
-    return html_content, 200, {'Content-Type': 'text/html; charset=utf-8'}
+    return html_content, 200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        **REPORT_HEADERS,
+    }
 
 @analysis_bp.route("/results")
 @login_required

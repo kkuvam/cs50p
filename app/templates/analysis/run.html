@@ -97,7 +97,7 @@
       </svg>
       <h3 class="text-white font-medium">Analysis Output</h3>
     </div>
-    <div id="analysis-output" class="bg-black rounded p-3 text-green-400 font-mono text-sm max-h-64 overflow-y-auto">
+    <div id="analysis-output" role="log" aria-live="polite" aria-label="Analysis output" tabindex="0" class="bg-black rounded p-3 text-green-400 font-mono text-sm max-h-64 overflow-y-auto">
       <div class="text-gray-500">Initializing analysis...</div>
     </div>
   </div>
@@ -361,9 +361,17 @@
   let lastLineCount = 0;
   let isAnalysisRunning = true;
 
+  function appendLogLine(cls, text, timestamp) {
+    const div = document.createElement('div');
+    div.className = cls;
+    div.textContent = '[' + timestamp + '] ' + text;
+    outputElement.appendChild(div);
+  }
+
   if (outputElement) {
     // Clear initial content
-    outputElement.innerHTML = '<div class="text-white">[' + new Date().toLocaleTimeString() + '] Starting analysis...</div>';
+    outputElement.textContent = '';
+    appendLogLine('text-white', 'Starting analysis...', new Date().toLocaleTimeString());
   }
 
   function pollAnalysisOutput() {
@@ -382,7 +390,7 @@
             // Only add the new lines (append, don't rebuild all)
             const newLines = data.output.slice(lastLineCount);
             newLines.forEach(line => {
-              outputElement.innerHTML += '<div class="text-white">[' + timestamp + '] ' + line + '</div>';
+              appendLogLine('text-white', line, timestamp);
             });
 
             // Auto-scroll to bottom
@@ -413,8 +421,8 @@
             if (outputElement) {
               const timestamp = new Date().toLocaleTimeString();
               const statusMessage = status === 'completed' ? 'Analysis completed successfully!' : 'Analysis failed.';
-              outputElement.innerHTML += '<div class="text-green-300">[' + timestamp + '] ' + statusMessage + '</div>';
-              outputElement.innerHTML += '<div class="text-blue-300">[' + timestamp + '] Refreshing page to show results...</div>';
+              appendLogLine('text-green-300', statusMessage, timestamp);
+              appendLogLine('text-blue-300', 'Refreshing page to show results...', timestamp);
             }
 
             setTimeout(() => window.location.reload(), 3000);

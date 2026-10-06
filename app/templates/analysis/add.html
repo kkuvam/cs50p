@@ -401,17 +401,39 @@ document.getElementById('autohpo-analyse-btn').addEventListener('click', functio
     autohpoResults.forEach((t, i) => {
       if (!t.hpo_id) return; // skip unmatched
       const id = `autohpo-term-${i}`;
-      checklist.insertAdjacentHTML('beforeend', `
-        <label for="${id}" class="flex items-start gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded p-1">
-          <input type="checkbox" id="${id}" value="${i}" class="mt-0.5 autohpo-check">
-          <span class="text-sm">
-            <span class="font-medium text-gray-900 dark:text-white">${t.hpo_id}</span>
-            <span class="text-gray-600 dark:text-gray-400"> — ${t.name}</span>
-            ${t.definition ? `<br><span class="text-xs text-gray-400">${t.definition.slice(0, 100)}${t.definition.length > 100 ? '…' : ''}</span>` : ''}
-            <br><span class="text-xs text-purple-600 dark:text-purple-400">Extracted: ${t.term}</span>
-          </span>
-        </label>
-      `);
+      const label = document.createElement('label');
+      label.htmlFor = id;
+      label.className = 'flex items-start gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded p-1';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.id = id;
+      cb.value = String(i);
+      cb.className = 'mt-0.5 autohpo-check';
+      const box = document.createElement('span');
+      box.className = 'text-sm';
+      const mk = (cls, text) => {
+        const s = document.createElement('span');
+        s.className = cls;
+        s.textContent = text;
+        return s;
+      };
+      box.append(
+        mk('font-medium text-gray-900 dark:text-white', t.hpo_id),
+        ' ',
+        mk('text-gray-600 dark:text-gray-400', ' \u2014 ' + t.name)
+      );
+      if (t.definition) {
+        box.append(
+          document.createElement('br'),
+          mk('text-xs text-gray-400', t.definition.slice(0, 100) + (t.definition.length > 100 ? '\u2026' : ''))
+        );
+      }
+      box.append(
+        document.createElement('br'),
+        mk('text-xs text-purple-600 dark:text-purple-400', 'Extracted: ' + t.term)
+      );
+      label.append(cb, box);
+      checklist.appendChild(label);
     });
     if (checklist.children.length === 0) {
       checklist.innerHTML = '<p class="text-sm text-gray-500 py-2">No HPO terms found. Try editing the clinical text.</p>';

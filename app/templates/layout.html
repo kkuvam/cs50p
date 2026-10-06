@@ -517,15 +517,12 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
         }
 
         // Custom formatting for search results
-        var $container = $(
-          '<div class="select2-result-analysis">' +
-            '<div class="analysis-name">' + (result.name || result.text) + '</div>' +
-            '<div class="analysis-details text-sm text-gray-500">' +
-              'Individual: ' + (result.individual_id || 'N/A') + ' | ' +
-              'Completed: ' + (result.completed_at || 'N/A') +
-            '</div>' +
-          '</div>'
-        );
+        var $container = $('<div class="select2-result-analysis"></div>');
+        $container.append($('<div class="analysis-name"></div>').text(result.name || result.text));
+        $container.append($('<div class="analysis-details text-sm text-gray-500"></div>').text(
+          'Individual: ' + (result.individual_id || 'N/A') + ' | ' +
+          'Completed: ' + (result.completed_at || 'N/A')
+        ));
 
         return $container;
       },
