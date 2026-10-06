@@ -17,7 +17,7 @@ The project was originally a CS50P final project and is being actively developed
 | Layer | Technology |
 |-------|-----------|
 | Backend | Python 3, Flask 2.2+, Flask-Login, Flask-SQLAlchemy |
-| Database | SQLite (current, at `/opt/instance/app.db`) / PostgreSQL 17 (target), via SQLAlchemy |
+| Database | PostgreSQL 17 (`exomiser` on the p-mini host); SQLite remains the local dev default. Via SQLAlchemy |
 | Frontend | Jinja2 HTML templates, vanilla JS, Select2 (vendor-bundled) |
 | Analysis Engine | Exomiser CLI 14.1.0 (Java, invoked via `subprocess`) |
 | Container | Docker (single container: Amazon Corretto 21 base + Python) |
@@ -43,7 +43,7 @@ cd app
 python main.py   # runs Flask dev server on port 8000
 ```
 
-The app expects the database directory at `/opt/instance/`. When running locally this is created automatically.
+SQLite at `/opt/instance/app.db` is the dev default; the directory is created automatically when running locally.
 
 ### Current status check
 
@@ -88,7 +88,7 @@ cs50p/
 │   ├── analysis.yml            # Exomiser analysis configuration (passed to CLI with --analysis)
 │   └── application.properties  # Exomiser application.properties (data dir config)
 ├── docker-compose.yml          # Single-service compose file
-├── instance/                   # Persistent SQLite DB (mounted at /opt/instance)
+├── instance/                   # Dev SQLite DB location (mounted at /opt/instance)
 ├── ikdrc/                      # Persistent data dir (mounted at /opt/exomiser/ikdrc)
 │   ├── vcf/                    # Uploaded VCF files (timestamped: <ts>_<original>.vcf)
 │   ├── phenopacket/            # Generated phenopacket YAML files (analysis_<id>.yml)
@@ -192,7 +192,7 @@ See `.env.example`. Key variables:
 | Path | Purpose |
 |------|---------|
 | `/opt/app` | Flask application code (mounted from `./app`) |
-| `/opt/instance/app.db` | SQLite database (persistent volume) |
+| `/opt/instance/app.db` | SQLite database, dev only. In production the DB is PostgreSQL via `DATABASE_URL` |
 | `/opt/exomiser/` | Exomiser CLI installation root |
 | `/opt/exomiser/data/` | Exomiser variant databases (large, mounted from external drive) |
 | `/opt/exomiser/ikdrc/vcf/` | Uploaded VCF files |
@@ -227,7 +227,7 @@ See `.env.example`. Key variables:
 - Auth: every route has `@login_required`; `/admin/*` also checks `current_user.is_admin`.
 - Files: paths come from `secure_filename()` under `/opt/exomiser/ikdrc/`; never from raw user input.
 - Processes: `subprocess` with argument lists only, never `shell=True`. Do not change the Exomiser version, JAR path, or `compose/analysis.yml` without the user.
-- Database: ORM only, no string-formatted SQL; respect `is_deleted` soft deletes. `db.create_all()` never alters existing tables, so a column change needs an explicit upgrade step and matching `*_history` table/trigger updates. History triggers exist in two places, `app.sql` (SQLite) and `scripts/pg/history.sql` (PostgreSQL), and a column change must update both; escalate before changing the schema of the live `app.db`.
+- Database: ORM only, no string-formatted SQL; respect `is_deleted` soft deletes. `db.create_all()` never alters existing tables, so a column change needs an explicit upgrade step and matching `*_history` table/trigger updates. History triggers exist in two places, `app.sql` (SQLite) and `scripts/pg/history.sql` (PostgreSQL), and a column change must update both; escalate before changing the schema of the production `exomiser` database.
 - Background jobs: the Exomiser thread runs inside its own `app.app_context()` and always ends in a terminal status (`COMPLETED`/`FAILED`/`CANCELLED`).
 - Access model: all active users are one trusted lab team and may view and edit every individual and analysis; this is intended, not a finding.
 - AutoHPO's LLM endpoint (`OPENAI_BASE_URL`) is always an on-site model; never point it at an external service.
@@ -287,10 +287,38 @@ Work ships as small incremental PRs (aim for under ~400 changed lines, excluding
 - Fail fast with clear, actionable messages; never swallow exceptions silently. On a DB error, roll back the session before writing again.
 
 ## Migrating to PostgreSQL
+p-mini was migrated on 2026-10-06 (SQLite backups kept in `~/Sites/backup`). Steps for any other host:
+
 1. `docker compose stop web`, then `docker compose build` (the image needs psycopg). `scripts/` is mounted at `/opt/scripts`.
 2. `docker compose run --rm -e TARGET_DATABASE_URL='postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser' web python /opt/scripts/migrate_sqlite_to_pg.py --sqlite /opt/instance/app.db`
 3. The script opens SQLite read-only in one snapshot, refuses (exit 2) a target whose `public` schema has any table, view, sequence or type, and fails on any column mismatch. It copies in one transaction, then creates the history triggers (after the copy, so no duplicate history rows), resets sequences, and checks row counts, per-table checksums of raw vs converted values, ORM read-back, sequences and a trigger smoke test. Output is `MIGRATION OK` or `MIGRATION FAILED`; it never prints row contents.
 4. On success set `DATABASE_URL=postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser` in `.env` and `docker compose up -d`.
+
+## Backups (p-mini)
+- Nightly at 02:30 by the LaunchAgent `deploy/p-mini/com.ikdrc.exomiser.pgbackup.plist`, which runs `scripts/pg_backup.sh` as `priya` over the local Unix socket (no password in any file). Install once:
+  ```bash
+  mkdir -p ~/Sites/backup/pg
+  cp ~/Sites/cs50p/deploy/p-mini/com.ikdrc.exomiser.pgbackup.plist ~/Library/LaunchAgents/
+  launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.ikdrc.exomiser.pgbackup.plist
+  launchctl kickstart -k gui/$(id -u)/com.ikdrc.exomiser.pgbackup   # run now
+  ```
+- Dumps (`exomiser-YYYYmmdd-HHMMSS.dump` plus `.sha256`) and `backup.log` live in `~/Sites/backup/pg`. Retention is 14 days (`RETENTION_DAYS`); only `exomiser-*.dump(.sha256)` files are pruned and the newest dump is never deleted.
+- Each run verifies the dump: `pg_restore --list` has entries, a restore into a temporary database (dropped afterwards) has the same row counts as the live DB for the 6 tables, and 9 non-internal triggers exist. Any mismatch exits non-zero and keeps the dump.
+- `OFFSITE_DIR` (optional env var, add it to the plist `EnvironmentVariables`) copies each dump and checksum to another folder or drive and verifies it. If it is set but missing (drive not mounted) the run exits non-zero after the local backup succeeded.
+- Restore (DESTRUCTIVE: replaces the live database; only with the user's go-ahead):
+  ```bash
+  ( cd ~/Sites/backup/pg && shasum -a 256 -c <dump>.sha256 )   # 1. verify the chosen dump
+  ( cd ~/Sites/cs50p && docker compose stop web )              # 2. stop the app
+  pg_dump -Fc exomiser -f ~/Sites/backup/pre-restore-$(date +%Y%m%d-%H%M%S).dump   # 3. fresh dump of the current DB
+  psql -d postgres -Atc "SELECT count(*) FROM pg_stat_activity WHERE datname='exomiser'"   # 4. must be 0
+  dropdb exomiser
+  createdb -O exomiser exomiser
+  pg_restore -d exomiser --no-owner --role=exomiser --exit-on-error --single-transaction <dump>
+  ( cd ~/Sites/cs50p && docker compose up -d )                 # then check row counts
+  ```
+- Not covered: VCFs, phenopackets and results in `~/Documents/ikdrc` are not part of this backup.
+- Dumps are unencrypted patient data. Any `OFFSITE_DIR` media must be trusted or encrypted.
+- The job is a LaunchAgent, so it only runs while `priya` is logged in, the same as Docker Desktop and the brew services. A missed night is visible as a stale `backup.log`.
 
 ## Deploying to p-mini
 - Production `.env` sets `COMPOSE_FILE=docker-compose.yml:deploy/p-mini/docker-compose.override.yml` and `PORT=80`.
