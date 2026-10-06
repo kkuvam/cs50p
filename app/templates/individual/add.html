@@ -42,6 +42,7 @@
 
   <!-- Individual Add Form -->
   <form method="POST" enctype="multipart/form-data" class="space-y-8">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Basic Information Card -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
       <div class="flex items-center mb-6">

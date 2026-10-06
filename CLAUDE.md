@@ -161,7 +161,7 @@ Represents one Exomiser run. Key fields:
 
 ## User Registration Flow
 
-New users register via `/register` — accounts are created with `is_active=False`. An admin must log in to `/admin/users` and activate the account before the user can log in.
+New users register via `/register` — accounts are created with `is_active=False` and the user is told the account is pending admin approval. Login refuses inactive users with a "not active" message. An admin must log in to `/admin/users` and activate the account before the user can log in.
 
 Default admin credentials (seeded in `app.sql`):
 - Email: `admin@exomiser.local`
@@ -175,10 +175,11 @@ See `.env.example`. Key variables:
 
 | Variable | Default | Notes |
 |----------|---------|-------|
-| `SECRET_KEY` | `dev-secret-change-in-production` | Change for production |
+| `SECRET_KEY` | none (required) | App refuses to start if unset; generate with `python3 -c "import secrets; print(secrets.token_hex(32))"` |
+| `SESSION_COOKIE_SECURE` | `false` | Set `true` when served over HTTPS (Secure cookies break login on plain HTTP) |
 | `DATABASE_URL` | `sqlite:////opt/instance/app.db` | SQLite path |
 | `PORT` | `8000` | Host port for Docker |
-| `FLASK_ENV` | `development` | Set to `production` in prod |
+| `FLASK_ENV` | `production` | `development` enables the debug server only when running `python main.py` |
 | `MAX_MEMORY` | `4g` | JVM max heap for Exomiser |
 | `GUNICORN_WORKERS` | `2` | Gunicorn worker count |
 | `GUNICORN_THREADS` | `4` | Threads per worker |
@@ -228,6 +229,9 @@ See `.env.example`. Key variables:
 - Processes: `subprocess` with argument lists only, never `shell=True`. Do not change the Exomiser version, JAR path, or `compose/analysis.yml` without the user.
 - Database: ORM only, no string-formatted SQL; respect `is_deleted` soft deletes. `db.create_all()` never alters existing tables, so a column change needs an explicit upgrade step and matching `*_history` table/trigger updates in `app.sql`; escalate before changing the schema of the live `app.db`.
 - Background jobs: the Exomiser thread runs inside its own `app.app_context()` and always ends in a terminal status (`COMPLETED`/`FAILED`/`CANCELLED`).
+- Access model: all active users are one trusted lab team and may view and edit every individual and analysis; this is intended, not a finding.
+- AutoHPO's LLM endpoint (`OPENAI_BASE_URL`) is always an on-site model; never point it at an external service.
+- CSRF: Flask-WTF `CSRFProtect` is global; every POST form carries `csrf_token` and every JS POST sends `X-CSRFToken` from the `csrf-token` meta tag.
 - Keep this file's route map, models, and env vars in sync with changes.
 
 ## Orchestration

@@ -39,6 +39,7 @@
 
         <!-- Add User Form -->
         <form method="POST" class="space-y-6 pt-6">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- Email -->

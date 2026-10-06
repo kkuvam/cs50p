@@ -216,6 +216,7 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
                   {% endwith %}
 
 	                <form method="POST" action="{{ url_for('auth.register') }}">
+	                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			            	<div class="text-center">
 				              <h1 class="text-2xl leading-normal mb-3 font-bold text-gray-800 dark:text-gray-300 text-center">Join Now</h1>
 								    </div>

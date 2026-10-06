@@ -23,9 +23,10 @@ services:
       - "${PORT:-8000}:8000"
     environment:
       # Flask configuration
-      - FLASK_ENV=${FLASK_ENV:-development}
-      - FLASK_DEBUG=${FLASK_DEBUG:-1}
-      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-in-production}
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - FLASK_DEBUG=${FLASK_DEBUG:-0}
+      - SECRET_KEY=${SECRET_KEY:?Set SECRET_KEY in .env (see .env.example)}
+      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-false}
       - DATABASE_URL=sqlite:////opt/instance/app.db
       # Java/Exomiser configuration
       - JAVA_OPTS=-Xms2g -Xmx${MAX_MEMORY:-4g}

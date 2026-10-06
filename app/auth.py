@@ -1,7 +1,7 @@
 # File: app/auth.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required, current_user
-from models import db, User
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
+from models import User, db
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -16,7 +16,7 @@ def login():
 
         if user and user.check_password(password):
             if not user.is_active:
-                flash("Account is disabled. Contact admin.", "warning")
+                flash("Your account is not active. It may be pending admin approval or disabled; contact an admin.", "warning")
                 return redirect(url_for("auth.login"))
 
             login_user(user, remember=remember)
@@ -46,11 +46,11 @@ def register():
             flash("Email already registered", "warning")
             return redirect(url_for("auth.register"))
 
-        user = User(email=email, full_name=full_name, is_active=True)
+        user = User(email=email, full_name=full_name, is_active=False)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        flash("Registration successful. You can now log in.", "success")
+        flash("Registration successful. Your account is pending admin approval; you can log in once it is activated.", "success")
         return redirect(url_for("auth.login"))
 
     return render_template("register.html")
