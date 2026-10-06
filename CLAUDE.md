@@ -153,7 +153,7 @@ Represents one Exomiser run. Key fields:
 7. Completed report served at `/analysis/<id>/html` (raw HTML) or `/analysis/<id>/report` (send_file).
 
 **Important constraints:**
-- Exomiser data directory must be mounted at `/opt/exomiser/data` (volume: `/Volumes/Extreme/Exomiser/data`)
+- Exomiser data directory must be mounted at `/opt/exomiser/data` (dev default in `docker-compose.yml`: `/Volumes/Extreme/Exomiser/data`; on p-mini it is `/Volumes/Exomiser/Data` via the override)
 - Exomiser CLI JAR is at `/opt/exomiser/exomiser-cli-14.1.0.jar` (downloaded at image build time)
 - No job queue — analyses run in background threads; gunicorn worker restart will lose in-progress jobs
 
@@ -291,6 +291,12 @@ Work ships as small incremental PRs (aim for under ~400 changed lines, excluding
 2. `docker compose run --rm -e TARGET_DATABASE_URL='postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser' web python /opt/scripts/migrate_sqlite_to_pg.py --sqlite /opt/instance/app.db`
 3. The script opens SQLite read-only in one snapshot, refuses (exit 2) a target whose `public` schema has any table, view, sequence or type, and fails on any column mismatch. It copies in one transaction, then creates the history triggers (after the copy, so no duplicate history rows), resets sequences, and checks row counts, per-table checksums of raw vs converted values, ORM read-back, sequences and a trigger smoke test. Output is `MIGRATION OK` or `MIGRATION FAILED`; it never prints row contents.
 4. On success set `DATABASE_URL=postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser` in `.env` and `docker compose up -d`.
+
+## Deploying to p-mini
+- Production `.env` sets `COMPOSE_FILE=docker-compose.yml:deploy/p-mini/docker-compose.override.yml` and `PORT=80`.
+- Deploy: `git pull --ff-only && docker compose up -d --build` in `~/Sites/cs50p`.
+- The override mounts the database, logs and patient files from `/Users/priya/Documents/{instance,logs,ikdrc}`.
+- Machine-specific settings live only in `deploy/p-mini/`; secrets live only in `.env`, never in git.
 
 ## Review and Debugging
 - Review: state the bug, show the fix, stop. No suggestions beyond scope, no compliments.

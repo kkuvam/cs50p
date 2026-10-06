@@ -1,0 +1,13 @@
+# Compose override for the p-mini production host.
+# Used through COMPOSE_FILE=docker-compose.yml:deploy/p-mini/docker-compose.override.yml
+# in that host's .env. Port 80 comes from PORT=80 in .env.
+# Paths only, no secrets.
+services:
+  web:
+    volumes:
+      - /Users/priya/Documents/instance:/opt/instance
+      - /Users/priya/Documents/logs:/opt/logs
+      - /Volumes/Exomiser/Data:/opt/exomiser/data
+      - /Users/priya/Documents/ikdrc:/opt/exomiser/ikdrc
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
