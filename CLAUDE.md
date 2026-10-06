@@ -147,7 +147,7 @@ Represents one Exomiser run. Key fields:
    a. Generates a Phenopacket YAML from the individual record → saves to `/opt/exomiser/ikdrc/phenopacket/analysis_<id>.yml`
    b. Invokes: `java -Xmx4g -jar /opt/exomiser/exomiser-cli-14.1.0.jar --analysis /opt/exomiser/analysis.yml --sample <phenopacket_file>`
    c. Captures stdout/stderr line-by-line into `analysis_outputs[analysis_id]` (in-memory dict).
-   d. On success (exit code 0): scans `/opt/exomiser/ikdrc/results/` for `<identity>*.html`, renames to `<identity>-exomiser.html`, stores path in `analysis.output_html`.
+   d. On success (exit code 0): scans `/opt/exomiser/ikdrc/results/` for `<identity>*.html`, moves it into `/opt/exomiser/ikdrc/results/<analysis_id>_<secure_filename(name).lower()>/` (always lowercase, e.g. `42_trio_1/`; `analysis_<id>/` if the name sanitizes to empty; path containment is checked) as `<identity>-exomiser.html`, stores path in `analysis.output_html`.
    e. Updates `analysis.status` and saves `analysis.log` to DB.
 6. The run page polls `/analysis/<id>/status` and `/analysis/<id>/output` every few seconds for live updates.
 7. Completed report served at `/analysis/<id>/html` (raw HTML) or `/analysis/<id>/report` (send_file).
