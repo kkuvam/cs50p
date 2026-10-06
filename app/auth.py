@@ -5,6 +5,7 @@ from models import User, db
 
 auth_bp = Blueprint("auth", __name__)
 
+
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -16,7 +17,10 @@ def login():
 
         if user and user.check_password(password):
             if not user.is_active:
-                flash("Your account is not active. It may be pending admin approval or disabled; contact an admin.", "warning")
+                flash(
+                    "Your account is not active. It may be pending admin approval or disabled; contact an admin.",
+                    "warning",
+                )
                 return redirect(url_for("auth.login"))
 
             login_user(user, remember=remember)
@@ -50,7 +54,10 @@ def register():
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        flash("Registration successful. Your account is pending admin approval; you can log in once it is activated.", "success")
+        flash(
+            "Registration successful. Your account is pending admin approval; you can log in once it is activated.",
+            "success",
+        )
         return redirect(url_for("auth.login"))
 
     return render_template("register.html")

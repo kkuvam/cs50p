@@ -15,7 +15,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "").strip()
 if not SECRET_KEY:
     raise RuntimeError(
         "SECRET_KEY is not set. Generate one with "
-        "`python3 -c \"import secrets; print(secrets.token_hex(32))\"` "
+        '`python3 -c "import secrets; print(secrets.token_hex(32))"` '
         "and put it in .env as SECRET_KEY=<value>."
     )
 
@@ -51,6 +51,7 @@ def handle_csrf_error(e):
     flash("Your session expired, please try again.", "warning")
     return redirect(url_for("routes.index"))
 
+
 # init db
 db.init_app(app)
 
@@ -59,9 +60,11 @@ login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.init_app(app)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 # register blueprints
 app.register_blueprint(auth_bp)
