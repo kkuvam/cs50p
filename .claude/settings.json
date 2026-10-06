@@ -35,5 +35,6 @@
   "model": "claude-opus-5-5",
   "enabledPlugins": {
     "ecc@ecc": false
-  }
+  },
+  "attribution": { "commit": "", "pr": "" }
 }
