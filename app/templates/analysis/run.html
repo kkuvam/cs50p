@@ -412,7 +412,7 @@
         if (data.success) {
           const status = data.status.toLowerCase();
 
-          if (status === 'completed' || status === 'failed') {
+          if (status === 'completed' || status === 'failed' || status === 'cancelled') {
             // Analysis is complete, stop polling and reload page to show final state
             isAnalysisRunning = false;
             clearInterval(pollInterval);
@@ -420,7 +420,7 @@
 
             if (outputElement) {
               const timestamp = new Date().toLocaleTimeString();
-              const statusMessage = status === 'completed' ? 'Analysis completed successfully!' : 'Analysis failed.';
+              const statusMessage = status === 'completed' ? 'Analysis completed successfully!' : (status === 'cancelled' ? 'Analysis cancelled.' : 'Analysis failed.');
               appendLogLine('text-green-300', statusMessage, timestamp);
               appendLogLine('text-blue-300', 'Refreshing page to show results...', timestamp);
             }
