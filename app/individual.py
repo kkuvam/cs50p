@@ -1,11 +1,15 @@
 # File: app/individual.py
+import gzip
 import os
+import secrets
 import time
+import zlib
 from datetime import datetime
 
 from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from safe_log import log_error
+from sqlalchemy.exc import IntegrityError
 from models import Analysis, Individual, SexType, db
 from werkzeug.utils import secure_filename
 
@@ -13,12 +17,48 @@ individual_bp = Blueprint("individual", __name__)
 
 VCF_UPLOAD_DIR = "/opt/exomiser/ikdrc/vcf"
 ALLOWED_VCF_EXTENSIONS = (".vcf", ".vcf.gz")
+VCF_MAGIC = b"##fileformat=VCF"
+
+
+def check_vcf_content(vcf_file, is_gz):
+    """Raise ValueError unless the stream looks like a VCF. Reads only the first bytes
+    (a gzip header plus a small decompressed prefix), then rewinds the stream."""
+    stream = vcf_file.stream
+    stream.seek(0)
+    try:
+        if is_gz:
+            # BGZF is gzip with extra header fields; gzip.GzipFile reads both
+            with gzip.GzipFile(fileobj=stream, mode="rb") as gz:
+                head = gz.read(len(VCF_MAGIC))
+        else:
+            head = stream.read(len(VCF_MAGIC))
+    except (OSError, EOFError, zlib.error):
+        raise ValueError("File is not a valid VCF") from None
+    finally:
+        stream.seek(0)
+    if head != VCF_MAGIC:
+        raise ValueError("File is not a valid VCF")
+
+
+def is_identity_conflict(exc):
+    """True if an IntegrityError is the unique-identity index. Checked server-side only;
+    the DB message is never logged or shown."""
+    return "uq_individuals_identity_active" in str(exc.orig)
+
+
+def delete_new_vcf(path):
+    """Remove a VCF saved by this request after a later failure."""
+    if path:
+        try:
+            os.remove(path)
+        except OSError:
+            pass
 
 
 def save_vcf_upload(vcf_file):
     """Sanitize and save an uploaded VCF. Returns (stored_path, display_name).
 
-    Raises ValueError with a user-facing message if the filename is invalid.
+    Raises ValueError with a user-facing message if the filename or content is invalid.
     """
     display_name = secure_filename(vcf_file.filename or "")
     if not display_name:
@@ -26,10 +66,18 @@ def save_vcf_upload(vcf_file):
     if not display_name.lower().endswith(ALLOWED_VCF_EXTENSIONS):
         raise ValueError("VCF file must have a .vcf or .vcf.gz extension")
 
+    check_vcf_content(vcf_file, display_name.lower().endswith(".gz"))
+
     os.makedirs(VCF_UPLOAD_DIR, exist_ok=True)
-    # Timestamp prefix avoids collisions: <timestamp>_<sanitized filename>
-    stored_path = os.path.join(VCF_UPLOAD_DIR, f"{int(time.time())}_{display_name}")
-    vcf_file.save(stored_path)
+    # Timestamp and random suffix avoid collisions: <timestamp>_<8 hex>_<sanitized filename>
+    stored_path = os.path.join(
+        VCF_UPLOAD_DIR, f"{int(time.time())}_{secrets.token_hex(4)}_{display_name}"
+    )
+    try:
+        vcf_file.save(stored_path)
+    except BaseException:
+        delete_new_vcf(stored_path)
+        raise
     return stored_path, display_name
 
 # ===== INDIVIDUAL CRUD ROUTES =====
@@ -45,6 +93,7 @@ def individual_list():
 def individual_add():
     """Add new individual"""
     if request.method == "POST":
+        vcf_file_path = None
         try:
             # Get form data
             identity = request.form.get("identity", "").strip()
@@ -105,13 +154,22 @@ def individual_add():
             )
 
             db.session.add(individual)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except IntegrityError as ie:
+                db.session.rollback()
+                delete_new_vcf(vcf_file_path)
+                if is_identity_conflict(ie):  # lost a race with another request
+                    flash("Individual with this identity already exists", "error")
+                    return render_template("individual/add.html", user=current_user)
+                raise
 
             flash(f"Individual '{identity}' created successfully", "success")
             return redirect(url_for("individual.individual_list"))
 
         except Exception as e:
             db.session.rollback()
+            delete_new_vcf(vcf_file_path)
             log_error(current_app.logger, "Failed to create individual", e)
             flash("Error creating individual. Please try again or contact an admin.", "error")
             return render_template("individual/add.html", user=current_user)
@@ -132,48 +190,82 @@ def individual_edit(individual_id):
     individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
 
     if request.method == "POST":
+        new_vcf_path = None
         try:
-            # Update fields
-            individual.identity = request.form.get("identity", "").strip()
-            individual.full_name = request.form.get("full_name", "").strip() or None
-            individual.sex = SexType(request.form.get("sex", "UNKNOWN"))
-            individual.age_years = request.form.get("age_years", type=int) or 0
-            individual.age_months = request.form.get("age_months", type=int) or 0
-            individual.medical_history = request.form.get("medical_history", "").strip() or None
-            individual.diagnosis = request.form.get("diagnosis", "").strip() or None
-
-            # Handle VCF file upload (optional)
+            # Read and validate everything before touching the ORM object or saving a file
+            identity = request.form.get("identity", "").strip()
+            full_name = request.form.get("full_name", "").strip() or None
+            sex = SexType(request.form.get("sex", "UNKNOWN"))
+            age_years = request.form.get("age_years", type=int) or 0
+            age_months = request.form.get("age_months", type=int) or 0
+            medical_history = request.form.get("medical_history", "").strip() or None
+            diagnosis = request.form.get("diagnosis", "").strip() or None
             vcf_file = request.files.get("vcf_file")
-            if vcf_file and vcf_file.filename:
+            has_new_vcf = bool(vcf_file and vcf_file.filename)
+
+            if not identity:
+                flash("Identity is required", "error")
+                return render_template(
+                    "individual/edit.html", individual=individual, user=current_user
+                )
+
+            if not full_name:
+                flash("Full Name is required", "error")
+                return render_template(
+                    "individual/edit.html", individual=individual, user=current_user
+                )
+
+            existing = (
+                Individual.query.filter_by(identity=identity, is_deleted=False)
+                .filter(Individual.id != individual_id)
+                .first()
+            )
+            if existing:
+                flash("Another individual with this identity already exists", "error")
+                return render_template(
+                    "individual/edit.html", individual=individual, user=current_user
+                )
+
+            new_vcf_name = None
+            if has_new_vcf:
                 try:
-                    file_path, display_name = save_vcf_upload(vcf_file)
+                    new_vcf_path, new_vcf_name = save_vcf_upload(vcf_file)
                 except ValueError as e:
                     flash(str(e), "error")
                     return render_template("individual/edit.html", individual=individual, user=current_user)
 
-                individual.vcf_file_path = file_path
-                individual.vcf_filename = display_name
-
-            # Update audit trail
+            # All checks passed: apply changes
+            individual.identity = identity
+            individual.full_name = full_name
+            individual.sex = sex
+            individual.age_years = age_years
+            individual.age_months = age_months
+            individual.medical_history = medical_history
+            individual.diagnosis = diagnosis
+            if new_vcf_path:
+                # the old file stays on disk (retention decision)
+                individual.vcf_file_path = new_vcf_path
+                individual.vcf_filename = new_vcf_name
             individual.updated_by = current_user.id
 
-            # Validation
-            if not individual.identity:
-                flash("Identity is required", "error")
-                return render_template("individual/edit.html", individual=individual, user=current_user)
+            try:
+                db.session.commit()
+            except IntegrityError as ie:
+                db.session.rollback()
+                delete_new_vcf(new_vcf_path)
+                if is_identity_conflict(ie):
+                    flash("Individual with this identity already exists", "error")
+                    return render_template(
+                        "individual/edit.html", individual=individual, user=current_user
+                    )
+                raise
 
-            # Check for duplicate identity among active individuals (excluding current)
-            existing = Individual.query.filter_by(identity=individual.identity, is_deleted=False).filter(Individual.id != individual_id).first()
-            if existing:
-                flash(f"Another individual with Identity '{individual.identity}' already exists", "error")
-                return render_template("individual/edit.html", individual=individual, user=current_user)
-
-            db.session.commit()
             flash(f"Individual '{individual.identity}' updated successfully", "success")
             return redirect(url_for("individual.individual_list"))
 
         except Exception as e:
             db.session.rollback()
+            delete_new_vcf(new_vcf_path)
             log_error(current_app.logger, "Failed to update individual", e)
             flash("Error updating individual. Please try again or contact an admin.", "error")
             return render_template("individual/edit.html", individual=individual, user=current_user)

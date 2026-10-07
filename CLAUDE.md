@@ -116,13 +116,15 @@ cs50p/
 - Email/password auth (Werkzeug PBKDF2 hashing)
 - `is_active` — new registrations default to `False`; admin must activate
 - `is_admin` — grants access to `/admin/*` routes
+- Deactivated or deleted users are logged out on their next request (`load_user` returns `None`)
+- `users_history` no longer stores password hashes: the column remains but the triggers write `NULL`
 
 ### Individual
 Represents a patient/sample. Key fields:
-- `identity` — unique patient ID (e.g. `P0001`), used as Exomiser sample name
+- `identity` — unique patient ID (e.g. `P0001`), used as Exomiser sample name; unique among non-deleted individuals (partial unique index `uq_individuals_identity_active`)
 - `hpo_terms` — JSON array of `{"id": "HP:0001250", "label": "Seizures"}` objects
 - `vcf_filename` — original upload filename (for display/download)
-- `vcf_file_path` — server path: `/opt/exomiser/ikdrc/vcf/<timestamp>_<filename>`
+- `vcf_file_path` — server path: `/opt/exomiser/ikdrc/vcf/<timestamp>_<8 hex>_<filename>`
 - `phenopacket_yaml` — auto-generated GA4GH Phenopacket v1.0 YAML (regenerated on save)
 
 ### Analysis
@@ -294,6 +296,15 @@ p-mini was migrated on 2026-10-06 (SQLite backups kept in `~/Sites/backup`). Ste
 2. `docker compose run --rm -e TARGET_DATABASE_URL='postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser' web python /opt/scripts/migrate_sqlite_to_pg.py --sqlite /opt/instance/app.db`
 3. The script opens SQLite read-only in one snapshot, refuses (exit 2) a target whose `public` schema has any table, view, sequence or type, and fails on any column mismatch. It copies in one transaction, then creates the history triggers (after the copy, so no duplicate history rows), resets sequences, and checks row counts, per-table checksums of raw vs converted values, ORM read-back, sequences and a trigger smoke test. Output is `MIGRATION OK` or `MIGRATION FAILED`; it never prints row contents.
 4. On success set `DATABASE_URL=postgresql+psycopg://exomiser:<password>@host.docker.internal:5432/exomiser` in `.env` and `docker compose up -d`.
+
+## Schema upgrades
+`db.create_all()` does not alter existing databases, so schema changes ship as idempotent scripts in `scripts/pg/`. To apply `upgrade_20261007.sql` on p-mini (unique active identity index, users history trigger without password hashes, blanks old `users_history.password_hash`), as `priya` in `~/Sites/cs50p`:
+```bash
+pg_dump -Fc exomiser -f ~/Sites/backup/pre-upgrade-$(date +%Y%m%d-%H%M%S).dump   # 1. fresh dump
+psql -d exomiser -v ON_ERROR_STOP=1 -f scripts/pg/upgrade_20261007.sql           # 2. one transaction; safe to re-run
+```
+The index step fails (and nothing is applied) if two non-deleted individuals share an identity; resolve those first.
+Dumps and backups taken before `upgrade_20261007.sql` still contain the old `users_history.password_hash` values; treat them as sensitive until they are pruned. `scripts/migrate_sqlite_to_pg.py` writes `NULL` for that column.
 
 ## Backups (p-mini)
 - Nightly at 02:30 by the LaunchAgent `deploy/p-mini/com.ikdrc.exomiser.pgbackup.plist`, which runs `scripts/pg_backup.sh` as `priya` over the local Unix socket (no password in any file). Install once:

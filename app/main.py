@@ -1,5 +1,6 @@
 # File: app/main.py
 import os
+from urllib.parse import urlparse
 
 from analysis import analysis_bp
 from auth import auth_bp
@@ -34,6 +35,8 @@ app.config.update(
     WTF_CSRF_TIME_LIMIT=None,
     SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL", "sqlite:////opt/instance/app.db"),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    # Werkzeug spools large uploads to disk; requests over this get a 413
+    MAX_CONTENT_LENGTH=2 * 1024 * 1024 * 1024,
     # keep row values out of SQLAlchemy exceptions and logged tracebacks
     SQLALCHEMY_ENGINE_OPTIONS={"hide_parameters": True},
 )
@@ -54,6 +57,15 @@ def handle_csrf_error(e):
     return redirect(url_for("routes.index"))
 
 
+@app.errorhandler(413)
+def handle_too_large(e):
+    flash("File too large (max 2 GB)", "error")
+    ref = request.referrer
+    if ref and urlparse(ref).netloc == request.host:
+        return redirect(ref)
+    return redirect(url_for("individual.individual_list"))
+
+
 # init db
 db.init_app(app)
 
@@ -65,7 +77,11 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    user = db.session.get(User, int(user_id))
+    # deactivated or deleted users lose their session on the next request
+    if user is None or not user.is_active or user.is_deleted:
+        return None
+    return user
 
 
 # register blueprints

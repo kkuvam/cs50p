@@ -70,6 +70,16 @@ class Individual(db.Model):
     Stores individual information and phenotype data for genomic analysis.
     """
     __tablename__ = "individuals"
+    __table_args__ = (
+        # identity is unique among non-deleted individuals only (soft delete frees it)
+        db.Index(
+            "uq_individuals_identity_active",
+            "identity",
+            unique=True,
+            postgresql_where=db.text("is_deleted = false"),
+            sqlite_where=db.text("is_deleted = 0"),
+        ),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     identity = db.Column(db.String(50), nullable=False, index=True)  # e.g. P0001
