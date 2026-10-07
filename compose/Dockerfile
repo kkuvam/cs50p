@@ -65,15 +65,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 EXPOSE 8000
 
 # Run Gunicorn with optimized settings
-CMD ["gunicorn", \
-     "--bind", "0.0.0.0:8000", \
-     "--workers", "2", \
-     "--threads", "4", \
-     "--timeout", "120", \
-     "--keep-alive", "2", \
-     "--max-requests", "1000", \
-     "--max-requests-jitter", "100", \
-     "--log-level", "info", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "main:app"]
+# No --max-requests: recycling a worker would kill the analyses it is running
+CMD exec gunicorn --bind 0.0.0.0:8000 --workers "${GUNICORN_WORKERS:-2}" --threads "${GUNICORN_THREADS:-4}" --timeout 120 --keep-alive 2 --log-level info --access-logfile - --error-logfile - main:app
