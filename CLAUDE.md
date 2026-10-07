@@ -129,7 +129,7 @@ Represents a patient/sample. Key fields:
 Represents one Exomiser run. Key fields:
 - `individual_id` — FK to Individual
 - `vcf_filename` — VCF filename passed to Exomiser (auto-populated from individual)
-- `genome_assembly` — `hg19` or `hg38`
+- `genome_assembly` — `hg19` or `hg38` (hg38 is hidden in the UI and new hg38 selections are rejected until hg38 data is installed; existing hg38 rows can still be saved)
 - `analysis_mode` — `PASS_ONLY` or `FULL`
 - `status` — `PENDING` → `RUNNING` → `COMPLETED` / `FAILED` / `CANCELLED`
 - `output_html` — full path to Exomiser HTML report
@@ -142,12 +142,12 @@ Represents one Exomiser run. Key fields:
 1. User creates an **Individual** record, uploads a VCF file.
 2. User creates an **Analysis** record, selects the individual, confirms VCF filename and genome assembly.
 3. User navigates to `/analysis/<id>/run` and clicks **Run**.
-4. Flask sets status = `RUNNING` and spawns a **daemon thread** (`run_exomiser_analysis`).
+4. Flask atomically claims the run (conditional update to `RUNNING`), writes the run file `/opt/logs/analysis_<id>.pid` (token, owning worker pid and start time, Java pid) and spawns a **daemon thread** (`run_exomiser_analysis`).
 5. The thread:
    a. Generates a Phenopacket YAML from the individual record → saves to `/opt/exomiser/ikdrc/phenopacket/analysis_<id>.yml`
    b. Invokes: `java -Xmx4g -jar /opt/exomiser/exomiser-cli-14.1.0.jar --analysis /opt/exomiser/analysis.yml --sample <phenopacket_file>`
-   c. Captures stdout/stderr line-by-line into `analysis_outputs[analysis_id]` (in-memory dict).
-   d. On success (exit code 0): scans `/opt/exomiser/ikdrc/results/` for `<identity>*.html`, moves it into `/opt/exomiser/ikdrc/results/<analysis_id>_<secure_filename(name).lower()>/` (always lowercase, e.g. `42_trio_1/`; `analysis_<id>/` if the name sanitizes to empty; path containment is checked) as `<identity>-exomiser.html`, stores path in `analysis.output_html`.
+   c. Captures stdout/stderr line-by-line into the shared log file `/opt/logs/analysis_<id>.log`. Java runs in its own process group; it is killed after `EXOMISER_TIMEOUT_HOURS` (run FAILED) or on Cancel.
+   d. On success (exit code 0): scans `/opt/exomiser/ikdrc/results/` for `<identity>*.html`, moves it into `/opt/exomiser/ikdrc/results/<analysis_id>_<secure_filename(name).lower()>/` (always lowercase, e.g. `42_trio_1/`; `analysis_<id>/` if the name sanitizes to empty; path containment is checked) as `<identity>-exomiser.html`, stores path in `analysis.output_html`. Exit 0 without an HTML report is FAILED, never COMPLETED.
    e. Updates `analysis.status` and saves `analysis.log` to DB.
 6. The run page polls `/analysis/<id>/status` and `/analysis/<id>/output` every few seconds for live updates.
 7. Completed report served at `/analysis/<id>/html` (raw HTML) or `/analysis/<id>/report` (send_file).
@@ -155,7 +155,7 @@ Represents one Exomiser run. Key fields:
 **Important constraints:**
 - Exomiser data directory must be mounted at `/opt/exomiser/data` (dev default in `docker-compose.yml`: `/Volumes/Extreme/Exomiser/data`; on p-mini it is `/Volumes/Exomiser/Data` via the override)
 - Exomiser CLI JAR is at `/opt/exomiser/exomiser-cli-14.1.0.jar` (downloaded at image build time)
-- No job queue — analyses run in background threads; gunicorn worker restart will lose in-progress jobs
+- No job queue — analyses run in background threads; a worker or container restart kills in-progress jobs; the stale-run reaper then marks them FAILED (or CANCELLED for runs from before run files existed). Gunicorn runs without `--max-requests` so workers are not recycled mid-run
 
 ---
 
@@ -181,6 +181,7 @@ See `.env.example`. Key variables:
 | `PORT` | `8000` | Host port for Docker |
 | `FLASK_ENV` | `production` | `development` enables the debug server only when running `python main.py` |
 | `MAX_MEMORY` | `4g` | JVM max heap for Exomiser |
+| `EXOMISER_TIMEOUT_HOURS` | `2` | Max hours for one Exomiser run before it is killed and marked FAILED |
 | `GUNICORN_WORKERS` | `2` | Gunicorn worker count |
 | `GUNICORN_THREADS` | `4` | Threads per worker |
 | `EXOMISER_VERSION` | `14.1.0` | Exomiser CLI version (build arg) |
@@ -207,7 +208,7 @@ See `.env.example`. Key variables:
 
 - `app.sql` sample data inserts into a `tasks` table that no longer exists (renamed to `analyses`). The SQL file is reference-only and not run at startup.
 - The `docker-compose.yml` `version:` key is obsolete in newer Docker Compose versions (produces a warning; harmless).
-- Gunicorn runs multiple workers — `analysis_outputs` (in-memory dict for live log streaming) is not shared across workers. Live output may not work if the polling request hits a different worker than the one running the job.
+- Gunicorn runs multiple workers; live output and run state live in files under `/opt/logs` and the database, so any worker can serve the polling requests.
 - No email notification system is implemented (admin password reset has a TODO stub).
 - VCF files are never automatically cleaned up; manual management required.
 - The healthcheck curls `/` which redirects (302) to `/login` — curl `-f` does not fail on 3xx, so this passes correctly.
