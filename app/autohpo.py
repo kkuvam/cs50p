@@ -195,7 +195,12 @@ def autohpo_suggest():
         llm_response = _call_llm(clinical_text)
     except Exception as exc:
         logger.error("AutoHPO LLM call failed: %s", type(exc).__name__)
-        return jsonify({"error": "AutoHPO model unavailable. Please load the qwen2.5* model in LM Studio."}), 503
+        model = (os.environ.get("OPENAI_MODEL_ID") or "").strip()
+        if not model or model == "default":
+            model = "qwen2.5-coder-7b-instruct-mlx"
+        return jsonify(
+            {"error": f"AutoHPO model unavailable. Please load the {model} model in LM Studio."}
+        ), 503
 
     terms = _parse_terms(llm_response)
     logger.info("AutoHPO: parsed %d terms", len(terms))
