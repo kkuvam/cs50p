@@ -3,8 +3,9 @@ import os
 import time
 from datetime import datetime
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from safe_log import log_error
 from models import Analysis, Individual, SexType, db
 from werkzeug.utils import secure_filename
 
@@ -111,7 +112,8 @@ def individual_add():
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error creating individual: {e!s}", "error")
+            log_error(current_app.logger, "Failed to create individual", e)
+            flash("Error creating individual. Please try again or contact an admin.", "error")
             return render_template("individual/add.html", user=current_user)
 
     return render_template("individual/add.html", user=current_user)
@@ -172,7 +174,8 @@ def individual_edit(individual_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error updating individual: {e!s}", "error")
+            log_error(current_app.logger, "Failed to update individual", e)
+            flash("Error updating individual. Please try again or contact an admin.", "error")
             return render_template("individual/edit.html", individual=individual, user=current_user)
 
     return render_template("individual/edit.html", individual=individual, user=current_user)
@@ -209,7 +212,8 @@ def individual_delete(individual_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error deleting individual: {e!s}", "error")
+            log_error(current_app.logger, "Failed to delete individual", e)
+            flash("Error deleting individual. Please try again or contact an admin.", "error")
             return render_template("individual/delete.html", individual=individual, user=current_user)
 
     return render_template("individual/delete.html", individual=individual, user=current_user)
@@ -230,12 +234,9 @@ def get_individual_clinical_history(individual_id):
 @login_required
 def get_individual_vcf_info(individual_id):
     """API endpoint to get individual's VCF filename for analysis form"""
-    try:
-        individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
-        return {
-            "vcf_filename": individual.vcf_filename,
-            "identity": individual.identity,
-            "has_vcf_file": bool(individual.vcf_file_path and os.path.exists(individual.vcf_file_path)) if individual.vcf_file_path else False
-        }
-    except Exception as e:
-        return {"error": str(e)}, 400
+    individual = Individual.query.filter_by(id=individual_id, is_deleted=False).first_or_404()
+    return {
+        "vcf_filename": individual.vcf_filename,
+        "identity": individual.identity,
+        "has_vcf_file": bool(individual.vcf_file_path and os.path.exists(individual.vcf_file_path)) if individual.vcf_file_path else False
+    }

@@ -5,8 +5,9 @@ import threading
 import time
 from datetime import datetime
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, send_file, url_for
+from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, send_file, url_for
 from flask_login import current_user, login_required
+from safe_log import log_error
 from models import Analysis, GenomeAssembly, Individual, TaskStatus, db
 from werkzeug.utils import secure_filename
 
@@ -124,7 +125,8 @@ def analysis_add():
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error creating analysis: {e!s}", "error")
+            log_error(current_app.logger, "Failed to create analysis", e)
+            flash("Error creating analysis. Please try again or contact an admin.", "error")
             return render_template("analysis/add.html", individuals=individuals, user=current_user)
 
     return render_template("analysis/add.html", individuals=individuals, user=current_user)
@@ -190,7 +192,8 @@ def analysis_edit(analysis_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error updating analysis: {e!s}", "error")
+            log_error(current_app.logger, "Failed to update analysis", e)
+            flash("Error updating analysis. Please try again or contact an admin.", "error")
             return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
     return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
@@ -237,7 +240,8 @@ def analysis_delete(analysis_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error deleting analysis: {e!s}", "error")
+            log_error(current_app.logger, "Failed to delete analysis", e)
+            flash("Error deleting analysis. Please try again or contact an admin.", "error")
             return render_template("analysis/delete.html", analysis=analysis, user=current_user)
 
     return render_template("analysis/delete.html", analysis=analysis, user=current_user)
@@ -268,7 +272,8 @@ def analysis_run(analysis_id):
 
             except Exception as e:
                 db.session.rollback()
-                flash(f"Error starting analysis: {e!s}", "error")
+                log_error(current_app.logger, "Failed to start analysis", e)
+                flash("Error starting analysis. Please try again or contact an admin.", "error")
                 return render_template("analysis/run.html", analysis=analysis, user=current_user)
         else:
             flash("Analysis is already running or completed", "warning")
@@ -292,6 +297,7 @@ def analysis_results(analysis_id):
 @login_required
 def analysis_output(analysis_id):
     """Get current analysis output for polling"""
+    Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
     lines = _read_log(analysis_id)
     return jsonify({
         "success": True,
@@ -488,7 +494,7 @@ def run_exomiser_analysis(analysis_id):
                                 _append_log(analysis_id, f"HTML saved to: {html_dst}")
                             except OSError as e:
                                 analysis.output_html = html_src
-                                _append_log(analysis_id, f"HTML move failed ({e}), staying at: {html_src}")
+                                _append_log(analysis_id, f"HTML move failed ({type(e).__name__}), staying in results folder")
 
                             # Move vcf.gz into subfolder with standard name
                             if os.path.isfile(vcf_gz_src):
@@ -499,16 +505,16 @@ def run_exomiser_analysis(analysis_id):
                                     _append_log(analysis_id, f"VCF saved to: {vcf_gz_dst}")
                                 except OSError as e:
                                     analysis.output_vcf = vcf_gz_src
-                                    _append_log(analysis_id, f"VCF move failed ({e}), staying at: {vcf_gz_src}")
+                                    _append_log(analysis_id, f"VCF move failed ({type(e).__name__}), staying in results folder")
                                 # Move .tbi index alongside the gz
                                 if os.path.isfile(vcf_tbi_src):
                                     try:
                                         os.rename(vcf_tbi_src, os.path.join(output_dir, sample_vcf_tbi))
                                         _append_log(analysis_id, f"VCF index saved to: {sample_vcf_tbi}")
                                     except OSError as e:
-                                        _append_log(analysis_id, f"VCF index move failed ({e})")
+                                        _append_log(analysis_id, f"VCF index move failed ({type(e).__name__})")
                             else:
-                                _append_log(analysis_id, f"No VCF output found at: {vcf_gz_src}")
+                                _append_log(analysis_id, "No VCF output found in results folder")
                             break
             else:
                 analysis.status = TaskStatus.FAILED
@@ -531,12 +537,14 @@ def run_exomiser_analysis(analysis_id):
 
     except Exception as e:
         with app.app_context():
+            db.session.rollback()
             analysis = Analysis.query.get(analysis_id)
             if analysis:
                 analysis.status = TaskStatus.FAILED
-                analysis.error_message = f"Error running analysis: {e!s}"
+                analysis.error_message = f"Error running analysis: {type(e).__name__}"
 
-                _append_log(analysis_id, f"Error: {e!s}")
+                log_error(app.logger, f"Analysis {analysis_id} failed", e)
+                _append_log(analysis_id, f"Error: {type(e).__name__}")
                 _append_log(analysis_id, "Analysis failed due to error")
                 analysis.log = "\n".join(_read_log(analysis_id))
 

@@ -203,6 +203,6 @@ def search_hpo_results(query: str, limit: int = 5) -> tuple[list[dict], dict]:
         ]
         return results, debug
     except Exception as exc:
-        logger.error("search_hpo_results(%r) FAILED: %s", search_q, exc)
-        debug["error"] = str(exc)
+        logger.error("search_hpo_results failed: %s", type(exc).__name__)
+        debug["error"] = "search failed"
         return [], debug

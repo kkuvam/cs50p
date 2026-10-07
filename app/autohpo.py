@@ -11,7 +11,6 @@ import re
 import requests as http_requests
 from flask import Blueprint, jsonify, request
 from flask_login import login_required
-
 from hpo import search_hpo_memory, search_hpo_results
 
 logger = logging.getLogger(__name__)
@@ -195,11 +194,11 @@ def autohpo_suggest():
     try:
         llm_response = _call_llm(clinical_text)
     except Exception as exc:
-        logger.error("AutoHPO LLM call failed: %s", exc)
-        return jsonify({"error": f"LLM unavailable: {exc}"}), 503
+        logger.error("AutoHPO LLM call failed: %s", type(exc).__name__)
+        return jsonify({"error": "AutoHPO model unavailable. Please load the qwen2.5* model in LM Studio."}), 503
 
     terms = _parse_terms(llm_response)
-    logger.info("AutoHPO: parsed %d terms: %s", len(terms), terms)
+    logger.info("AutoHPO: parsed %d terms", len(terms))
 
     results = []
     for term in terms:
