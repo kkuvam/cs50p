@@ -240,6 +240,9 @@ def analysis_add():
             description = request.form.get("description", "").strip()
             individual_id = request.form.get("individual_id", type=int)
             genome_assembly = request.form.get("genome_assembly", "hg19")
+            if genome_assembly != "hg19":
+                flash("Only hg19 is available on this server", "error")
+                return render_template("analysis/add.html", individuals=individuals, user=current_user)
             analysis_mode = request.form.get("analysis_mode", "FULL")
             frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0
             pathogenicity_threshold = request.form.get("pathogenicity_threshold", type=float) or 0.5
@@ -315,10 +318,14 @@ def analysis_edit(analysis_id):
                 flash("Cannot edit running analysis", "error")
                 return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
 
+            genome_assembly = request.form.get("genome_assembly", "hg19")
+            if genome_assembly != "hg19" and genome_assembly != analysis.genome_assembly.value:
+                flash("Only hg19 is available on this server", "error")
+                return render_template("analysis/edit.html", analysis=analysis, individuals=individuals, user=current_user, now=datetime.utcnow())
+
             analysis.name = request.form.get("name", "").strip()
             analysis.description = request.form.get("description", "").strip() or None
             analysis.individual_id = request.form.get("individual_id", type=int)
-            genome_assembly = request.form.get("genome_assembly", "hg19")
             analysis.genome_assembly = GenomeAssembly(genome_assembly)
             analysis.analysis_mode = request.form.get("analysis_mode", "FULL")
             analysis.frequency_threshold = request.form.get("frequency_threshold", type=float) or 1.0

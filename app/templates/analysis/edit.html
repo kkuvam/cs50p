@@ -114,7 +114,7 @@
             <select name="genome_assembly" id="genome_assembly" disabled
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed">
               <option value="hg19" {% if analysis.genome_assembly.value == 'hg19' %}selected{% endif %}>hg19/GRCh37</option>
-              <option value="hg38" {% if analysis.genome_assembly.value == 'hg38' %}selected{% endif %}>hg38/GRCh38</option>
+              {% if analysis.genome_assembly.value == 'hg38' %}<option value="hg38" selected>hg38/GRCh38</option>{% endif %}
             </select>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Currently fixed to hg19</p>
           </div>
