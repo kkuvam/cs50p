@@ -48,6 +48,13 @@ COPY --chown=exomiser:exomiser requirements.txt /opt/app/requirements.txt
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r /opt/app/requirements.txt
 
+# Bake the HPO embedding model into the image so the app works offline.
+# HF_HOME is fixed and readable by the exomiser user; runtime never reaches the network.
+ENV HF_HOME=/opt/hf
+RUN python3 -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" && \
+    chown -R exomiser:exomiser /opt/hf
+ENV HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+
 # Copy application code
 COPY --chown=exomiser:exomiser ./app /opt/app
 

@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import re
+import threading
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,9 @@ logger = logging.getLogger(__name__)
 HPO_INDEX_UID = "hpo"
 HPO_EMBEDDING_DIMENSIONS = int(os.environ.get("HPO_EMBEDDING_DIMENSIONS", "384"))
 HPO_EMBEDDING_MODEL = (os.environ.get("HPO_EMBEDDING_MODEL") or "all-MiniLM-L6-v2").strip()
+
+# Guards the lazy loads below; reentrant because init_app() calls _load_hpo_memory().
+_init_lock = threading.RLock()
 
 _client = None
 _index = None
@@ -71,15 +75,18 @@ def _load_hpo_memory() -> None:
     global _hpo_terms
     if _hpo_terms:
         return
-    for path in _DEFAULT_HPO_JSON_PATHS:
-        if path and path.exists():
-            try:
-                _hpo_terms[:] = _parse_obographs(path)
-                logger.info("Loaded %d HPO terms from %s", len(_hpo_terms), path)
-                return
-            except Exception as exc:
-                logger.warning("Failed to load HPO JSON from %s: %s", path, exc)
-    logger.warning("hp.json not found — in-memory HPO search disabled")
+    with _init_lock:
+        if _hpo_terms:
+            return
+        for path in _DEFAULT_HPO_JSON_PATHS:
+            if path and path.exists():
+                try:
+                    _hpo_terms[:] = _parse_obographs(path)
+                    logger.info("Loaded %d HPO terms from %s", len(_hpo_terms), path)
+                    return
+                except Exception as exc:
+                    logger.warning("Failed to load HPO JSON from %s: %s", path, exc)
+        logger.warning("hp.json not found — in-memory HPO search disabled")
 
 
 def search_hpo_memory(query: str, limit: int = 20) -> list[dict]:
@@ -114,29 +121,36 @@ def init_app() -> None:
     """Initialise in-memory HPO search, Meilisearch client, and embedding model. Idempotent."""
     _load_hpo_memory()
     global _client, _index, _embedding_model
-    if _client is None:
-        try:
-            from meilisearch import Client as MeilisearchClient
-            url = (os.environ.get("MEILISEARCH_URL") or "http://localhost:7700").strip()
-            api_key = (os.environ.get("MEILI_MASTER_KEY") or "").strip() or None
-            _client = MeilisearchClient(url, api_key=api_key)
-            _index = _client.index(HPO_INDEX_UID)
-            health = _client.health()
-            logger.info("Meilisearch health OK: %s — %s", url, health)
-        except ImportError:
-            logger.warning("meilisearch package not installed — AutoHPO disabled")
-        except Exception as exc:
-            logger.error("Meilisearch init FAILED: %s", exc)
+    if _client is not None and _embedding_model is not None:
+        return
+    with _init_lock:
+        if _client is None:
+            try:
+                from meilisearch import Client as MeilisearchClient
+                url = (os.environ.get("MEILISEARCH_URL") or "http://localhost:7700").strip()
+                api_key = (os.environ.get("MEILI_MASTER_KEY") or "").strip() or None
+                _client = MeilisearchClient(url, api_key=api_key)
+                _index = _client.index(HPO_INDEX_UID)
+                health = _client.health()
+                logger.info("Meilisearch health OK: %s — %s", url, health)
+            except ImportError:
+                logger.warning("meilisearch package not installed — AutoHPO disabled")
+            except Exception as exc:
+                logger.error("Meilisearch init FAILED: %s", exc)
 
-    if _embedding_model is None:
-        try:
-            from sentence_transformers import SentenceTransformer
-            _embedding_model = SentenceTransformer(HPO_EMBEDDING_MODEL)
-            logger.info("Embedding model loaded: %s", HPO_EMBEDDING_MODEL)
-        except ImportError:
-            logger.warning("sentence-transformers not installed — vector search disabled")
-        except Exception as exc:
-            logger.warning("Embedding model load failed: %s", exc)
+        if _embedding_model is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+                _embedding_model = SentenceTransformer(HPO_EMBEDDING_MODEL)
+                logger.info("Embedding model loaded: %s", HPO_EMBEDDING_MODEL)
+            except ImportError:
+                logger.warning("sentence-transformers not installed — vector search disabled")
+            except Exception as exc:
+                logger.warning(
+                    "Embedding model load failed (%s); falling back to keyword search. "
+                    "Only the model baked into the image is available offline.",
+                    type(exc).__name__,
+                )
 
 
 def _get_index():

@@ -211,6 +211,7 @@ See `.env.example`. Key variables:
 - Gunicorn runs multiple workers; live output and run state live in files under `/opt/logs` and the database, so any worker can serve the polling requests.
 - No email notification system is implemented (admin password reset has a TODO stub).
 - VCF files are never automatically cleaned up; manual management required.
+- The AutoHPO embedding model (`all-MiniLM-L6-v2`) is baked into the image at build time under `HF_HOME=/opt/hf`, and the app runs with `HF_HUB_OFFLINE=1`; a different `HPO_EMBEDDING_MODEL` is not available offline and falls back to keyword search with a warning.
 - The healthcheck curls `/` which redirects (302) to `/login` — curl `-f` does not fail on 3xx, so this passes correctly.
 
 ---
