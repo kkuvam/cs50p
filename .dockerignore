@@ -10,3 +10,21 @@
 venv
 .git
 .envs/
+
+# Patient data and local state (never bake into the image)
+ikdrc/
+instance/
+logs/
+data/
+.env
+.env.*
+!.env.example
+**/*.db
+**/*.sqlite*
+**/*.zip
+**/*.vcf
+**/*.vcf.gz
+**/*.dump
+**/__pycache__/
+.claude/
+.venv
