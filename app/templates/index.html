@@ -235,14 +235,22 @@
 	                <!-- CPU Usage Gauge -->
 	                <div class="flex justify-center items-center">
 	                  <div class="relative w-30 h-30">
+	                    {% if system_metrics.cpu %}
 	                    <canvas id="CPUGaugeChart" class="max-w-full max-h-full"></canvas>
+	                    {% else %}
+	                    <div class="flex justify-center items-center w-full h-full text-center text-sm text-gray-500">CPU unavailable</div>
+	                    {% endif %}
 	                  </div>
 	                </div>
 
 	                <!-- Memory Usage Gauge -->
 	                <div class="flex justify-center items-center">
 	                  <div class="relative w-30 h-30">
+	                    {% if system_metrics.memory %}
 	                    <canvas id="MemoryGaugeChart" class="max-w-full max-h-full"></canvas>
+	                    {% else %}
+	                    <div class="flex justify-center items-center w-full h-full text-center text-sm text-gray-500">Memory unavailable</div>
+	                    {% endif %}
 	                  </div>
 	                </div>
 
@@ -253,16 +261,14 @@
 	                <!-- Storage Usage Gauge -->
 	                <div class="flex justify-center items-center">
 	                  <div class="relative w-30 h-30">
+	                    {% if system_metrics.storage %}
 	                    <canvas id="StorageGaugeChart" class="max-w-full max-h-full"></canvas>
+	                    {% else %}
+	                    <div class="flex justify-center items-center w-full h-full text-center text-sm text-gray-500">Storage unavailable</div>
+	                    {% endif %}
 	                  </div>
 	                </div>
 
-	                <!-- Docker Resources Gauge -->
-	                <div class="flex justify-center items-center">
-	                  <div class="relative w-30 h-30">
-	                    <canvas id="DockerGaugeChart" class="max-w-full max-h-full"></canvas>
-	                  </div>
-	                </div>
 	              </div>
 							</div>
 						</div>
@@ -294,11 +300,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // CPU Usage Gauge
     const cpuCtx = document.getElementById('CPUGaugeChart');
+    {% if system_metrics.cpu %}
     if (cpuCtx) {
-        const cpuUsage = {{ system_metrics.cpu_usage }};
+        const cpuUsage = {{ system_metrics.cpu.usage }};
         const cpuAvailable = 100 - cpuUsage;
-        const cpuCores = {{ system_metrics.cpu_cores }};
-        const cpuCoresUsed = {{ system_metrics.cpu_cores_used }};
+        const cpuCores = {{ system_metrics.cpu.cores }};
+        const cpuCoresUsed = {{ system_metrics.cpu.cores_used }};
 
         new Chart(cpuCtx, {
             type: 'doughnut',
@@ -339,14 +346,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }]
         });
     }
+    {% endif %}
 
     // Memory Usage Gauge
     const memoryCtx = document.getElementById('MemoryGaugeChart');
+    {% if system_metrics.memory %}
     if (memoryCtx) {
-        const memoryUsage = {{ system_metrics.memory_usage }};
+        const memoryUsage = {{ system_metrics.memory.usage }};
         const memoryAvailable = 100 - memoryUsage;
-        const memoryUsed = {{ system_metrics.memory_used }};
-        const memoryTotal = {{ system_metrics.memory_total }};
+        const memoryUsed = {{ system_metrics.memory.used }};
+        const memoryTotal = {{ system_metrics.memory.total }};
 
         new Chart(memoryCtx, {
             type: 'doughnut',
@@ -387,14 +396,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }]
         });
     }
+    {% endif %}
 
     // Storage Usage Gauge
     const storageCtx = document.getElementById('StorageGaugeChart');
+    {% if system_metrics.storage %}
     if (storageCtx) {
-        const storageUsage = {{ system_metrics.storage_usage }};
+        const storageUsage = {{ system_metrics.storage.usage }};
         const storageAvailable = 100 - storageUsage;
-        const storageUsed = {{ system_metrics.storage_used }};
-        const storageTotal = {{ system_metrics.storage_total }};
+        const storageUsed = {{ system_metrics.storage.used }};
+        const storageTotal = {{ system_metrics.storage.total }};
 
         new Chart(storageCtx, {
             type: 'doughnut',
@@ -435,53 +446,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }]
         });
     }
+    {% endif %}
 
-    // Docker Resources Gauge
-    const dockerCtx = document.getElementById('DockerGaugeChart');
-    if (dockerCtx) {
-        const dockerRunning = {{ system_metrics.docker_running }};
-        const dockerTotal = {{ system_metrics.docker_containers }};
-        const dockerStopped = dockerTotal - dockerRunning;
-
-        new Chart(dockerCtx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [dockerRunning, dockerStopped],
-                    backgroundColor: ['rgb(168, 85, 247)', 'rgb(229, 231, 235)'],
-                    borderWidth: 0,
-                    cutout: '70%'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
-                }
-            },
-            plugins: [{
-                id: 'gaugeText',
-                afterDraw: function(chart) {
-                    const ctx = chart.ctx;
-                    const centerX = chart.width / 2;
-                    const centerY = chart.height / 2;
-
-                    ctx.fillStyle = 'rgb(168, 85, 247)';
-                    ctx.font = 'bold 20px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(dockerRunning, centerX, centerY - 10);
-
-                    ctx.fillStyle = 'rgb(107, 114, 128)';
-                    ctx.font = '12px Arial';
-                    ctx.fillText('Running', centerX, centerY + 15);
-                    ctx.fillText('of ' + dockerTotal, centerX, centerY + 30);
-                }
-            }]
-        });
-    }
 
     // Analysis Status Pie Chart
     const analysisCtx = document.getElementById('AnalysisStatusChart');

@@ -9,126 +9,51 @@ from functools import wraps
 from sqlalchemy import func
 import os
 import psutil
-import shutil
-import subprocess
-import json
 
 routes_bp = Blueprint("routes", __name__)
 
+# Prime psutil so the first non-blocking cpu_percent() call is meaningful
+psutil.cpu_percent(interval=None)
+
 def get_system_metrics():
-    """Get system monitoring metrics (CPU, Memory, Storage, Docker)"""
-    metrics = {
-        'cpu_usage': 0,
-        'cpu_cores': 0,
-        'cpu_cores_used': 0,
-        'memory_usage': 0,
-        'memory_total': 0,
-        'memory_used': 0,
-        'storage_usage': 0,
-        'storage_total': 0,
-        'storage_used': 0,
-        'docker_containers': 0,
-        'docker_running': 0
-    }
+    """Get system monitoring metrics (CPU, Memory, Storage).
+
+    Each group is None when it could not be read."""
+    metrics = {'cpu': None, 'memory': None, 'storage': None}
+    logger = current_app.logger
 
     try:
-        # CPU Usage and Cores
-        import psutil
-        metrics['cpu_usage'] = round(psutil.cpu_percent(interval=1), 1)
-        metrics['cpu_cores'] = psutil.cpu_count(logical=True)  # Total logical cores
-        # Calculate cores "in use" based on CPU usage percentage
-        # This is an approximation: if CPU usage is 25% on 4 cores, ~1 core equivalent is busy
-        cpu_cores_used = round((metrics['cpu_usage'] / 100) * metrics['cpu_cores'], 1)
-        metrics['cpu_cores_used'] = cpu_cores_used
+        # Non-blocking: CPU usage since the previous call
+        cpu_usage = round(psutil.cpu_percent(interval=None), 1)
+        cpu_cores = psutil.cpu_count(logical=True)
+        metrics['cpu'] = {
+            'usage': cpu_usage,
+            'cores': cpu_cores,
+            # Approximation: 25% on 4 cores is ~1 core equivalent busy
+            'cores_used': round((cpu_usage / 100) * cpu_cores, 1),
+        }
+    except (OSError, TypeError) as e:
+        logger.warning("CPU metrics unavailable (%s)", type(e).__name__)
 
-        # Memory Usage
+    try:
         memory = psutil.virtual_memory()
-        metrics['memory_usage'] = round(memory.percent, 1)
-        metrics['memory_total'] = round(memory.total / (1024**3), 1)  # GB
-        metrics['memory_used'] = round(memory.used / (1024**3), 1)   # GB
+        metrics['memory'] = {
+            'usage': round(memory.percent, 1),
+            'total': round(memory.total / (1024**3), 1),  # GB
+            'used': round(memory.used / (1024**3), 1),    # GB
+        }
+    except OSError as e:
+        logger.warning("Memory metrics unavailable (%s)", type(e).__name__)
 
-        # Storage Usage (root filesystem)
-        disk = psutil.disk_usage('/')
-        metrics['storage_usage'] = round((disk.used / disk.total) * 100, 1)
-        metrics['storage_total'] = round(disk.total / (1024**3), 1)  # GB
-        metrics['storage_used'] = round(disk.used / (1024**3), 1)    # GB
-
-    except ImportError:
-        # Fallback if psutil is not available
-        try:
-            # Try to get basic info using system commands
-            # CPU usage and cores from /proc/stat and /proc/cpuinfo (Linux)
-            if os.path.exists('/proc/stat'):
-                with open('/proc/stat', 'r') as f:
-                    line = f.readline()
-                    cpu_times = [int(x) for x in line.split()[1:]]
-                    idle_time = cpu_times[3]
-                    total_time = sum(cpu_times)
-                    cpu_usage = round(100 * (1 - idle_time / total_time), 1)
-                    metrics['cpu_usage'] = cpu_usage
-
-            # Get CPU core count from /proc/cpuinfo (Linux)
-            if os.path.exists('/proc/cpuinfo'):
-                with open('/proc/cpuinfo', 'r') as f:
-                    cpu_cores = len([line for line in f if line.startswith('processor')])
-                    metrics['cpu_cores'] = cpu_cores
-                    # Calculate cores "in use" based on CPU usage
-                    metrics['cpu_cores_used'] = round((cpu_usage / 100) * cpu_cores, 1) if 'cpu_usage' in locals() else 0
-
-            # Memory from /proc/meminfo (Linux)
-            if os.path.exists('/proc/meminfo'):
-                with open('/proc/meminfo', 'r') as f:
-                    meminfo = {}
-                    for line in f:
-                        key, value = line.split(':')
-                        meminfo[key] = int(value.strip().split()[0]) * 1024  # Convert KB to bytes
-
-                    total = meminfo.get('MemTotal', 0)
-                    available = meminfo.get('MemAvailable', meminfo.get('MemFree', 0))
-                    used = total - available
-
-                    if total > 0:
-                        metrics['memory_usage'] = round((used / total) * 100, 1)
-                        metrics['memory_total'] = round(total / (1024**3), 1)
-                        metrics['memory_used'] = round(used / (1024**3), 1)
-
-            # Storage using shutil.disk_usage
-            disk_info = shutil.disk_usage('/')
-            metrics['storage_usage'] = round((disk_info.used / disk_info.total) * 100, 1)
-            metrics['storage_total'] = round(disk_info.total / (1024**3), 1)
-            metrics['storage_used'] = round(disk_info.used / (1024**3), 1)
-
-        except Exception:
-            # Ultimate fallback with dummy data
-            metrics.update({
-                'cpu_usage': 72.0,
-                'cpu_cores': 4,
-                'cpu_cores_used': 2.9,
-                'memory_usage': 78.0,
-                'memory_total': 16.0,
-                'memory_used': 12.5,
-                'storage_usage': 45.0,
-                'storage_total': 1000.0,
-                'storage_used': 450.0
-            })
-
-    # Docker container info
     try:
-        # Try to get Docker container information
-        result = subprocess.run(['docker', 'ps', '-a', '--format', 'json'],
-                               capture_output=True, text=True, timeout=5)
-        if result.returncode == 0:
-            containers = [json.loads(line) for line in result.stdout.strip().split('\n') if line]
-            metrics['docker_containers'] = len(containers)
-            metrics['docker_running'] = len([c for c in containers if c.get('State') == 'running'])
-        else:
-            # Fallback: assume this container is running
-            metrics['docker_containers'] = 1
-            metrics['docker_running'] = 1
-    except (subprocess.TimeoutExpired, subprocess.SubprocessError, FileNotFoundError, json.JSONDecodeError):
-        # Fallback: assume this container is running
-        metrics['docker_containers'] = 1
-        metrics['docker_running'] = 1
+        disk = psutil.disk_usage('/')
+        metrics['storage'] = {
+            'usage': round((disk.used / disk.total) * 100, 1),
+            'total': round(disk.total / (1024**3), 1),  # GB
+            'used': round(disk.used / (1024**3), 1),    # GB
+        }
+    except (OSError, ZeroDivisionError) as e:
+        logger.warning("Storage metrics unavailable (%s)", type(e).__name__)
 
     return metrics
 
