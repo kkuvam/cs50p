@@ -33,7 +33,7 @@
         <!-- Results Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 px-6">
           <!-- Total Analyses -->
-          <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+          <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 text-white">
             <div class="flex items-center">
               <div class="flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -41,14 +41,14 @@
                 </svg>
               </div>
               <div class="ml-4">
-                <p class="text-sm font-medium text-blue-100">Total Analyses</p>
+                <p class="text-sm font-medium text-white">Total Analyses</p>
                 <p class="text-2xl font-bold">{{ analyses|length }}</p>
               </div>
             </div>
           </div>
 
           <!-- Completed -->
-          <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+          <div class="bg-gradient-to-r from-green-700 to-green-800 rounded-lg p-6 text-white">
             <div class="flex items-center">
               <div class="flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,14 +56,14 @@
                 </svg>
               </div>
               <div class="ml-4">
-                <p class="text-sm font-medium text-green-100">Completed</p>
+                <p class="text-sm font-medium text-white">Completed</p>
                 <p class="text-2xl font-bold">{{ analyses|selectattr('status.value', 'equalto', 'COMPLETED')|list|length }}</p>
               </div>
             </div>
           </div>
 
           <!-- Running -->
-          <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-6 text-white">
+          <div class="bg-gradient-to-r from-yellow-700 to-yellow-800 rounded-lg p-6 text-white">
             <div class="flex items-center">
               <div class="flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,14 +71,14 @@
                 </svg>
               </div>
               <div class="ml-4">
-                <p class="text-sm font-medium text-yellow-100">Running</p>
+                <p class="text-sm font-medium text-white">Running</p>
                 <p class="text-2xl font-bold">{{ analyses|selectattr('status.value', 'equalto', 'RUNNING')|list|length }}</p>
               </div>
             </div>
           </div>
 
           <!-- Failed -->
-          <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+          <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-6 text-white">
             <div class="flex items-center">
               <div class="flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,7 +86,7 @@
                 </svg>
               </div>
               <div class="ml-4">
-                <p class="text-sm font-medium text-red-100">Failed</p>
+                <p class="text-sm font-medium text-white">Failed</p>
                 <p class="text-2xl font-bold">{{ analyses|selectattr('status.value', 'equalto', 'FAILED')|list|length }}</p>
               </div>
             </div>
@@ -148,7 +148,7 @@
                 <td class="px-6 py-4">
                   <div class="flex space-x-2">
                     <a href="{{ url_for('analysis.analysis_view', analysis_id=analysis.id) }}"
-                       class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View</a>
+                       class="font-medium text-blue-600 dark:text-blue-400 hover:underline">View</a>
                     {% if analysis.status.value == 'COMPLETED' and analysis.error_message %}
                     <a href="#" class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Logs</a>
                     {% endif %}
