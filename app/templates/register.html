@@ -305,16 +305,12 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
 
   <!--start::Global javascript (used in all pages)-->
   <script src="{{ url_for('static', filename='vendors/alpinejs/dist/cdn.min.js') }}"></script><!-- core js -->
-  <script src="{{ url_for('static', filename='vendors/flatpickr/dist/flatpickr.min.js') }}"></script><!-- input date -->
-  <script src="{{ url_for('static', filename='vendors/flatpickr/dist/plugins/rangePlugin.js') }}"></script><!-- input range date -->
-  <script src="{{ url_for('static', filename='vendors/pristinejs/dist/pristine.min.js') }}"></script><!-- form validation -->
-  <script src="{{ url_for('static', filename='vendors/simple-datatables/dist/umd/simple-datatables.js') }}"></script><!--sort table-->
   <!--end::Global javascript (used in all pages)-->
 
   <!-- Minify Global javascript (for production purpose) -->
   <!-- <script src="{{ url_for('static', filename='js/scripts.js') }}"></script> -->
    <!--start::Demo javascript ( initialize global javascript )-->
-  <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
   <!--start::Customizer js ( Only for demo purpose )-->
   <script src="{{ url_for('static', filename='js/customizer.js') }}"></script>

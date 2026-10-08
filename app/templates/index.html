@@ -717,3 +717,10 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='vendors/chart.js/dist/chart.umd.js') }}"></script>
+<script>
+Chart.defaults.color = localStorage.getItem('darkMode') === 'dark' ? '#d4d4d4' : '#525252';
+</script>
+{% endblock %}
