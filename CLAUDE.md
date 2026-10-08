@@ -232,7 +232,7 @@ See `.env.example`. Key variables:
 - Database: ORM only, no string-formatted SQL; respect `is_deleted` soft deletes. `db.create_all()` never alters existing tables, so a column change needs an explicit upgrade step and matching `*_history` table/trigger updates. History triggers exist in two places, `app.sql` (SQLite) and `scripts/pg/history.sql` (PostgreSQL), and a column change must update both; escalate before changing the schema of the production `exomiser` database.
 - Background jobs: the Exomiser thread runs inside its own `app.app_context()` and always ends in a terminal status (`COMPLETED`/`FAILED`/`CANCELLED`).
 - Access model: all active users are one trusted lab team and may view and edit every individual and analysis; this is intended, not a finding.
-- AutoHPO's LLM endpoint (`OPENAI_BASE_URL`) is always an on-site model; never point it at an external service.
+- AutoHPO's LLM endpoint (`OPENAI_BASE_URL`) is always an on-site model; never point it at an external service. `app/autohpo.py` enforces this: it refuses (503) unless `OPENAI_BASE_URL` is http(s) and resolves only to loopback, private, link-local, CGNAT (100.64.0.0/10) or IPv6 ULA addresses.
 - CSRF: Flask-WTF `CSRFProtect` is global; every POST form carries `csrf_token` and every JS POST sends `X-CSRFToken` from the `csrf-token` meta tag.
 - Keep this file's route map, models, and env vars in sync with changes.
 
