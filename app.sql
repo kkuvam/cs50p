@@ -46,6 +46,9 @@ CREATE TABLE individuals (
 -- Create index on identity for faster individual lookups
 CREATE INDEX ix_individuals_identity ON individuals (identity);
 
+-- identity is unique among non-deleted individuals only
+CREATE UNIQUE INDEX uq_individuals_identity_active ON individuals (identity) WHERE is_deleted = 0;
+
 -- Analyses table
 CREATE TABLE analyses (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -101,6 +104,7 @@ INSERT INTO users (
 -- ── History tables ───────────────────────────────────────────────────────
 -- Full row snapshot on every INSERT, UPDATE, DELETE.
 -- log and phenopacket_yaml excluded from analyses_history (large fields).
+-- users_history.password_hash stays as a column but is always written NULL.
 
 CREATE TABLE users_history (
     history_id    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -179,13 +183,13 @@ CREATE INDEX ix_analyses_history_id ON analyses_history (id);
 
 -- users
 CREATE TRIGGER users_history_insert AFTER INSERT ON users FOR EACH ROW
-BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('INSERT', datetime('now'), NEW.id, NEW.email, NEW.password_hash, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at); END;
+BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('INSERT', datetime('now'), NEW.id, NEW.email, NULL, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at); END;
 
 CREATE TRIGGER users_history_update AFTER UPDATE ON users FOR EACH ROW
-BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('UPDATE', datetime('now'), NEW.id, NEW.email, NEW.password_hash, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at); END;
+BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('UPDATE', datetime('now'), NEW.id, NEW.email, NULL, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at); END;
 
 CREATE TRIGGER users_history_delete AFTER DELETE ON users FOR EACH ROW
-BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('DELETE', datetime('now'), OLD.id, OLD.email, OLD.password_hash, OLD.full_name, OLD.is_active, OLD.is_admin, OLD.is_deleted, OLD.deleted_at, OLD.created_at, OLD.updated_at); END;
+BEGIN INSERT INTO users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at) VALUES ('DELETE', datetime('now'), OLD.id, OLD.email, NULL, OLD.full_name, OLD.is_active, OLD.is_admin, OLD.is_deleted, OLD.deleted_at, OLD.created_at, OLD.updated_at); END;
 
 -- individuals
 CREATE TRIGGER individuals_history_insert AFTER INSERT ON individuals FOR EACH ROW

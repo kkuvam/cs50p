@@ -155,6 +155,10 @@ def copy_table(conn, src, pg_table):
         if not raw:
             break
         batch = []
+        if name == "users_history":
+            # history no longer keeps password hashes: copy NULL, and checksum NULL on both sides
+            hi = names.index("password_hash")
+            raw = [tuple(None if i == hi else v for i, v in enumerate(r)) for r in raw]
         for r in raw:
             batch.append({c.name: convert(name, r[pk_idx], c, v) for c, v in zip(cols, r)})
             total = add_row(total, cols, r)

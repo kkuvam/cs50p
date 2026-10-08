@@ -2,6 +2,7 @@
 -- PostgreSQL counterpart of the history section of app.sql (SQLite). A column change
 -- on users, individuals or analyses must update both files.
 -- changed_at is naive UTC, like the app's datetime.utcnow columns.
+-- users_history.password_hash stays as a column but is always written NULL.
 -- analyses_history deliberately omits log and phenopacket_yaml (large fields).
 -- No percent signs here: the migration script runs each section as one string.
 
@@ -81,11 +82,11 @@ create function users_history_fn() returns trigger language plpgsql as $$
 begin
     if TG_OP = 'DELETE' then
         insert into users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at)
-        values (TG_OP, now() at time zone 'utc', OLD.id, OLD.email, OLD.password_hash, OLD.full_name, OLD.is_active, OLD.is_admin, OLD.is_deleted, OLD.deleted_at, OLD.created_at, OLD.updated_at);
+        values (TG_OP, now() at time zone 'utc', OLD.id, OLD.email, NULL, OLD.full_name, OLD.is_active, OLD.is_admin, OLD.is_deleted, OLD.deleted_at, OLD.created_at, OLD.updated_at);
         return OLD;
     end if;
     insert into users_history (operation, changed_at, id, email, password_hash, full_name, is_active, is_admin, is_deleted, deleted_at, created_at, updated_at)
-    values (TG_OP, now() at time zone 'utc', NEW.id, NEW.email, NEW.password_hash, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at);
+    values (TG_OP, now() at time zone 'utc', NEW.id, NEW.email, NULL, NEW.full_name, NEW.is_active, NEW.is_admin, NEW.is_deleted, NEW.deleted_at, NEW.created_at, NEW.updated_at);
     return NEW;
 end
 $$;
