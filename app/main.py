@@ -34,6 +34,8 @@ app.config.update(
     WTF_CSRF_TIME_LIMIT=None,
     SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL", "sqlite:////opt/instance/app.db"),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    # keep row values out of SQLAlchemy exceptions and logged tracebacks
+    SQLALCHEMY_ENGINE_OPTIONS={"hide_parameters": True},
 )
 
 # ensure db directory exists

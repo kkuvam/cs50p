@@ -1,7 +1,8 @@
 # File: app/routes.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import login_required, current_user
 from analysis import REPORT_HEADERS
+from safe_log import log_error
 from models import db, User, Analysis, Individual, TaskStatus
 from datetime import datetime, timedelta
 from functools import wraps
@@ -338,7 +339,8 @@ def admin_reset_password(user_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error resetting password: {str(e)}", "error")
+            log_error(current_app.logger, "Failed to reset password", e)
+            flash("Error resetting password. Please try again or contact an admin.", "error")
             return render_template("admin/reset_password.html", user_to_reset=user_to_reset)
 
     return render_template("admin/reset_password.html", user_to_reset=user_to_reset)
@@ -384,7 +386,8 @@ def admin_add_user():
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error creating user: {str(e)}", "error")
+            log_error(current_app.logger, "Failed to create user", e)
+            flash("Error creating user. Please try again or contact an admin.", "error")
             return render_template("admin/add_user.html")
 
     return render_template("admin/add_user.html")
@@ -431,7 +434,8 @@ def admin_edit_user(user_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error updating user: {str(e)}", "error")
+            log_error(current_app.logger, "Failed to update user", e)
+            flash("Error updating user. Please try again or contact an admin.", "error")
             return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
 
     return render_template("admin/edit_user.html", user_to_edit=user_to_edit)
@@ -466,7 +470,8 @@ def admin_delete_user(user_id):
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error deleting user: {str(e)}", "error")
+            log_error(current_app.logger, "Failed to delete user", e)
+            flash("Error deleting user. Please try again or contact an admin.", "error")
             return render_template("admin/delete_user.html", user_to_delete=user_to_delete)
 
     return render_template("admin/delete_user.html", user_to_delete=user_to_delete)
@@ -547,5 +552,6 @@ def serve_analysis_report(analysis_id):
         response.headers.update(REPORT_HEADERS)
         return response
     except Exception as e:
-        flash(f"Error serving report: {str(e)}", "error")
+        log_error(current_app.logger, "Failed to serve report", e)
+        flash("Error serving report. Please try again or contact an admin.", "error")
         return redirect(url_for('routes.index'))
