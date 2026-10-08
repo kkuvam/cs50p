@@ -165,9 +165,7 @@ Represents one Exomiser run. Key fields:
 
 New users register via `/register` — accounts are created with `is_active=False` and the user is told the account is pending admin approval. Login refuses inactive users with a "not active" message. An admin must log in to `/admin/users` and activate the account before the user can log in.
 
-Default admin credentials (seeded in `app.sql`):
-- Email: `admin@exomiser.local`
-- Password: `admin123`
+No admin is seeded. Create the first admin with `docker compose exec web python create_admin.py` (prompts for email and password), or non-interactively with `ADMIN_EMAIL` / `ADMIN_PASSWORD` set (`docker compose exec -e ADMIN_EMAIL=... -e ADMIN_PASSWORD=... web python create_admin.py`). The password must be at least 12 characters.
 
 ---
 

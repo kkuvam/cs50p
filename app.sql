@@ -81,25 +81,7 @@ CREATE TABLE analyses (
     FOREIGN KEY(updated_by) REFERENCES users (id)
 );
 
--- Create a default admin user (password is 'admin123')
--- Password hash generated with werkzeug.security.generate_password_hash('admin123')
-INSERT INTO users (
-    email,
-    password_hash,
-    full_name,
-    is_active,
-    is_admin,
-    created_at,
-    updated_at
-) VALUES (
-    'admin@exomiser.local',
-    'pbkdf2:sha256:1000000$SUVqCFHToYApqo3F$c86388c7f66826a42738a0382b1580d75dc314e1c18772081c1e1da82cf91f2b',
-    'System Administrator',
-    1,
-    1,
-    datetime('now'),
-    datetime('now')
-);
+-- No admin user is seeded. Create the first admin with app/create_admin.py.
 
 -- ── History tables ───────────────────────────────────────────────────────
 -- Full row snapshot on every INSERT, UPDATE, DELETE.
