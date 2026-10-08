@@ -6,7 +6,7 @@ import subprocess
 import threading
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, send_file, url_for
 from flask_login import current_user, login_required
@@ -23,6 +23,23 @@ REPORT_HEADERS = {
     ),
     "X-Content-Type-Options": "nosniff",
 }
+
+RESULTS_BASE = "/opt/exomiser/ikdrc/results"
+
+
+def report_file(analysis):
+    """Return the stored report path if it exists inside RESULTS_BASE, else None.
+
+    Never searches the results folder: only the path stored for this analysis counts."""
+    path = analysis.output_html
+    if not path:
+        return None
+    real = os.path.realpath(path)
+    base = os.path.realpath(RESULTS_BASE)
+    if os.path.commonpath([base, real]) != base or real == base or not os.path.isfile(real):
+        return None
+    return real
+
 
 # File-based log storage — shared across all Gunicorn workers via the persistent volume
 _LOG_DIR = "/opt/logs"
@@ -547,27 +564,9 @@ def analysis_download(analysis_id):
         flash("Analysis not completed yet", "warning")
         return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
 
-    # Find the results file
-    results_dir = "/opt/exomiser/ikdrc/results"
-    results_file = None
-
-    # First check if we have the path stored in the database
-    if analysis.output_html and os.path.exists(analysis.output_html):
-        results_file = analysis.output_html
-    else:
-        # Look for HTML results file using individual identity or analysis ID
-        if os.path.exists(results_dir):
-            for filename in os.listdir(results_dir):
-                if filename.endswith(".html"):
-                    # Check if filename contains individual identity or analysis ID
-                    if (analysis.individual.identity in filename or
-                        str(analysis_id) in filename or
-                        filename.startswith(analysis.individual.identity)):
-                        results_file = os.path.join(results_dir, filename)
-                        break
-
-    if not results_file or not os.path.exists(results_file):
-        flash("Results file not found", "error")
+    results_file = report_file(analysis)
+    if not results_file:
+        flash("Report file not found for this analysis", "error")
         return redirect(url_for("analysis.analysis_run", analysis_id=analysis_id))
 
     # Create download filename based on VCF filename format
@@ -620,13 +619,6 @@ def run_exomiser_analysis(analysis_id, token):
 
             individual = analysis.individual
             analysis_name = analysis.name
-            # Only reports written after the run started count (ignores stale ones)
-            started_ts = (
-                analysis.started_at.replace(tzinfo=timezone.utc).timestamp()
-                if analysis.started_at
-                else 0
-            )
-
             # Clear any previous log file and stale results for this analysis
             _delete_log(analysis_id)
             analysis.log = None
@@ -651,11 +643,21 @@ def run_exomiser_analysis(analysis_id, token):
 
             _append_log(analysis_id, f"Generated phenopacket: {phenopacket_file}")
 
+            # Exomiser writes to a known per-run folder and filename (CLI flags override
+            # outputDirectory in analysis.yml), so no scanning for reports is needed
+            results_base = RESULTS_BASE
+            output_dir = _results_output_dir(results_base, analysis_id, analysis_name)
+            os.makedirs(output_dir, exist_ok=True)
+            out_name = f"{secure_filename(individual.identity or '') or 'sample'}-exomiser"
+            started_ts = time.time()  # only outputs written after this count
+
             # Prepare Exomiser command following the instructions:
             cmd = [
                 "java", "-Xmx4g", "-jar", "/opt/exomiser/exomiser-cli-14.1.0.jar",
                 "--analysis", "/opt/exomiser/analysis.yml",
-                "--sample", phenopacket_file
+                "--sample", phenopacket_file,
+                "--output-directory", output_dir,
+                "--output-filename", out_name,
             ]
 
             _append_log(analysis_id, f"Running command: {' '.join(cmd)}")
@@ -724,60 +726,21 @@ def run_exomiser_analysis(analysis_id, token):
                 error_message = f"Timed out after {timeout_hours:g} h"
                 _append_log(analysis_id, f"Timed out after {timeout_hours:g} h; Exomiser was stopped")
             elif return_code == 0:
-                # Move HTML and VCF into a unique subfolder: results/<id>_<analysis_name, lowercase>/
-                # Resolve and validate the folder first so a containment failure
-                # never leaves a success line in the log.
-                results_base = "/opt/exomiser/ikdrc/results"
-                output_dir = _results_output_dir(results_base, analysis_id, analysis_name)
-                os.makedirs(output_dir, exist_ok=True)
-
-                sample_html = f"{individual.identity}-exomiser.html"
-                sample_vcf_gz = f"{individual.identity}-exomiser.vcf.gz"
-                sample_vcf_tbi = f"{individual.identity}-exomiser.vcf.gz.tbi"
-
-                # Derive expected VCF.gz filename from the individual's uploaded VCF path
-                vcf_stem = os.path.splitext(os.path.basename(individual.vcf_file_path))[0]
-                vcf_gz_src = os.path.join(results_base, vcf_stem + "-exomiser.vcf.gz")
-                vcf_tbi_src = vcf_gz_src + ".tbi"
-
-                if os.path.exists(results_base):
-                    for filename in os.listdir(results_base):
-                        html_src = os.path.join(results_base, filename)
+                html_path = os.path.join(output_dir, out_name + ".html")
+                if os.path.isfile(html_path) and os.path.getmtime(html_path) >= started_ts - 2:
+                    output_html = html_path
+                    _append_log(analysis_id, f"HTML saved to: {html_path}")
+                    for vcf_name in (out_name + ".vcf.gz", out_name + ".vcf"):
+                        vcf_path = os.path.join(output_dir, vcf_name)
                         if (
-                            filename.endswith(".html")
-                            and individual.identity in filename
-                            and os.path.getmtime(html_src) >= started_ts - 2
+                            os.path.isfile(vcf_path)
+                            and os.path.getmtime(vcf_path) >= started_ts - 2
                         ):
-                            # Move HTML into subfolder with standard name
-                            html_dst = os.path.join(output_dir, sample_html)
-                            try:
-                                os.rename(html_src, html_dst)
-                                output_html = html_dst
-                                _append_log(analysis_id, f"HTML saved to: {html_dst}")
-                            except OSError as e:
-                                output_html = html_src
-                                _append_log(analysis_id, f"HTML move failed ({type(e).__name__}), staying in results folder")
-
-                            # Move vcf.gz into subfolder with standard name
-                            if os.path.isfile(vcf_gz_src):
-                                vcf_gz_dst = os.path.join(output_dir, sample_vcf_gz)
-                                try:
-                                    os.rename(vcf_gz_src, vcf_gz_dst)
-                                    output_vcf = vcf_gz_dst
-                                    _append_log(analysis_id, f"VCF saved to: {vcf_gz_dst}")
-                                except OSError as e:
-                                    output_vcf = vcf_gz_src
-                                    _append_log(analysis_id, f"VCF move failed ({type(e).__name__}), staying in results folder")
-                                # Move .tbi index alongside the gz
-                                if os.path.isfile(vcf_tbi_src):
-                                    try:
-                                        os.rename(vcf_tbi_src, os.path.join(output_dir, sample_vcf_tbi))
-                                        _append_log(analysis_id, f"VCF index saved to: {sample_vcf_tbi}")
-                                    except OSError as e:
-                                        _append_log(analysis_id, f"VCF index move failed ({type(e).__name__})")
-                            else:
-                                _append_log(analysis_id, "No VCF output found in results folder")
+                            output_vcf = vcf_path
+                            _append_log(analysis_id, f"VCF saved to: {vcf_path}")
                             break
+                    else:
+                        _append_log(analysis_id, "No VCF output found in results folder")
 
                 if output_html and os.path.isfile(output_html):
                     new_status = TaskStatus.COMPLETED
@@ -865,27 +828,9 @@ def analysis_html(analysis_id):
     if analysis.status != TaskStatus.COMPLETED:
         return "<html><body><h2>Analysis not completed yet</h2></body></html>", 200
 
-    # Find the results file
-    results_dir = "/opt/exomiser/ikdrc/results"
-    results_file = None
-
-    # First check if we have the path stored in the database
-    if analysis.output_html and os.path.exists(analysis.output_html):
-        results_file = analysis.output_html
-    else:
-        # Look for HTML results file using individual identity or analysis ID
-        if os.path.exists(results_dir):
-            for filename in os.listdir(results_dir):
-                if filename.endswith(".html"):
-                    # Check if filename contains individual identity or analysis ID
-                    if (analysis.individual.identity in filename or
-                        str(analysis_id) in filename or
-                        filename.startswith(analysis.individual.identity)):
-                        results_file = os.path.join(results_dir, filename)
-                        break
-
-    if not results_file or not os.path.exists(results_file):
-        return "<html><body><h2>Results file not found</h2></body></html>", 404
+    results_file = report_file(analysis)
+    if not results_file:
+        return "<html><body><h2>Report file not found for this analysis</h2></body></html>", 404
 
     # Read and return the HTML file content
     with open(results_file, 'r', encoding='utf-8') as f:

@@ -1,13 +1,12 @@
 # File: app/routes.py
 from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import login_required, current_user
-from analysis import REPORT_HEADERS
+from analysis import REPORT_HEADERS, report_file
 from safe_log import log_error
 from models import db, User, Analysis, Individual, TaskStatus
 from datetime import datetime, timedelta
 from functools import wraps
 from sqlalchemy import func
-import os
 import psutil
 
 routes_bp = Blueprint("routes", __name__)
@@ -467,13 +466,14 @@ def serve_analysis_report(analysis_id):
     """Serve analysis HTML report files"""
     analysis = Analysis.query.filter_by(id=analysis_id, is_deleted=False).first_or_404()
 
-    # Check if report exists
-    if not analysis.output_html or not os.path.exists(analysis.output_html):
-        flash("Analysis report not found.", "error")
-        return redirect(url_for('routes.index'))
+    # Only the stored path, and only inside the results folder
+    report_path = report_file(analysis)
+    if not report_path:
+        flash("Report file not found for this analysis", "error")
+        return redirect(url_for('analysis.analysis_run', analysis_id=analysis_id))
 
     try:
-        response = send_file(analysis.output_html, as_attachment=False)
+        response = send_file(report_path, as_attachment=False)
         response.headers.update(REPORT_HEADERS)
         return response
     except Exception as e:
