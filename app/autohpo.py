@@ -4,9 +4,12 @@ Provides a Flask blueprint with POST /api/autohpo/suggest.
 """
 from __future__ import annotations
 
+import ipaddress
 import logging
 import os
 import re
+import socket
+from urllib.parse import urlparse
 
 import requests as http_requests
 from flask import Blueprint, jsonify, request
@@ -110,12 +113,52 @@ def _parse_terms(content: str) -> list[str]:
     return terms
 
 
+_ONSITE_NETS = [
+    ipaddress.ip_network(n)
+    for n in (
+        "127.0.0.0/8",
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/16",
+        "169.254.0.0/16",
+        "100.64.0.0/10",
+        "::1/128",
+        "fc00::/7",
+        "fe80::/10",
+    )
+]
+OFFSITE_MESSAGE = (
+    "AutoHPO is restricted to an on-site model server; "
+    "OPENAI_BASE_URL is not a local or private address."
+)
+
+
+class OffsiteEndpointError(Exception):
+    pass
+
+
+def _is_onsite_url(url: str) -> bool:
+    """True only if url is http(s) and its host resolves exclusively to on-site addresses."""
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https") or not parsed.hostname:
+            return False
+        infos = socket.getaddrinfo(parsed.hostname, parsed.port or 80, proto=socket.IPPROTO_TCP)
+        addrs = [ipaddress.ip_address(i[4][0].split("%")[0]) for i in infos]
+    except (ValueError, OSError):
+        return False
+    return bool(addrs) and all(any(a in net for net in _ONSITE_NETS) for a in addrs)
+
+
 def _call_llm(clinical_text: str) -> str:
     """Call local LLM via OpenAI-compatible API. Returns raw response content."""
     base_url = (os.environ.get("OPENAI_BASE_URL") or "http://localhost:1234/v1").rstrip("/")
     model_id = (os.environ.get("OPENAI_MODEL_ID") or "").strip()
     api_key = os.environ.get("OPENAI_API_KEY") or "NA"
 
+    if not _is_onsite_url(base_url):
+        logger.warning("AutoHPO refused: OPENAI_BASE_URL is not an on-site address")
+        raise OffsiteEndpointError
     url = f"{base_url}/chat/completions"
     payload = {
         "messages": [
@@ -132,7 +175,10 @@ def _call_llm(clinical_text: str) -> str:
 
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
-    resp = http_requests.post(url, json=payload, headers=headers, timeout=180)
+    # Ignore HTTP(S)_PROXY env vars so clinical text goes only to the validated host
+    session = http_requests.Session()
+    session.trust_env = False
+    resp = session.post(url, json=payload, headers=headers, timeout=180, allow_redirects=False)
     if not resp.ok:
         raise RuntimeError(f"HTTP {resp.status_code}: {resp.text[:300]}")
     data = resp.json()
@@ -193,6 +239,8 @@ def autohpo_suggest():
 
     try:
         llm_response = _call_llm(clinical_text)
+    except OffsiteEndpointError:
+        return jsonify({"error": OFFSITE_MESSAGE}), 503
     except Exception as exc:
         logger.error("AutoHPO LLM call failed: %s", type(exc).__name__)
         model = (os.environ.get("OPENAI_MODEL_ID") or "").strip()
