@@ -26,7 +26,7 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
   <!--end::Customizer Stylesheets (Only for demo purpose)-->
 
   <!-- google font -->
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
 
   <!-- Favicon  -->
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
@@ -463,7 +463,7 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
   <script src="{{ url_for('static', filename='vendors/simple-datatables/dist/umd/simple-datatables.js') }}"></script><!--sort table-->
 
   <!-- jQuery (required for Select2) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{{ url_for('static', filename='vendors/jquery/jquery-3.7.1.min.js') }}"></script>
 
   <!-- Select2 JS -->
   <script src="{{ url_for('static', filename='vendors/select2-4.1.0-rc.0/dist/js/select2.min.js') }}"></script>

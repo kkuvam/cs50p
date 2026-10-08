@@ -25,7 +25,7 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
   <!--end::Vendor Stylesheets (only on this page)-->
 
   <!-- google font -->
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
 
   <!-- Favicon  -->
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
@@ -304,7 +304,6 @@ get pure Tailwind CSS code here https://aribudin.gumroad.com/l/taildash -->
   <script src="{{ url_for('static', filename='vendors/alpinejs/dist/cdn.min.js') }}"></script><!-- core js -->
   <script src="{{ url_for('static', filename='vendors/flatpickr/dist/flatpickr.min.js') }}"></script><!-- input date -->
   <script src="{{ url_for('static', filename='vendors/flatpickr/dist/plugins/rangePlugin.js') }}"></script><!-- input range date -->
-  <script src="{{ url_for('static', filename='vendors/@yaireo/tagify/dist/tagify.js') }}"></script><!-- input tags -->
   <script src="{{ url_for('static', filename='vendors/pristinejs/dist/pristine.min.js') }}"></script><!-- form validation -->
   <script src="{{ url_for('static', filename='vendors/simple-datatables/dist/umd/simple-datatables.js') }}"></script><!--sort table-->
   <!--end::Global javascript (used in all pages)-->
